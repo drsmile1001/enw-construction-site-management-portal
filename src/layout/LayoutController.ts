@@ -56,11 +56,12 @@ export const useLayoutController = defineStore("layout", () => {
                 {
                   to: {
                     name: scope,
+                    params: currentRoute.params,
                   },
                 },
                 { default: () => "回到列表" }
               ),
-            key: "BACK",
+            key: scope,
           })
         }
       }
