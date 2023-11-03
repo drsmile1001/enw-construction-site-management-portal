@@ -1,4 +1,4 @@
-import { HTTPError, type NormalizedOptions } from "ky";
+import { HTTPError, type NormalizedOptions } from "ky"
 
 export function buildParms(query: {
   [key: string]:
@@ -7,21 +7,21 @@ export function buildParms(query: {
     | boolean
     | null
     | undefined
-    | (string | number | boolean)[];
+    | (string | number | boolean)[]
 }) {
-  const params = new URLSearchParams();
+  const params = new URLSearchParams()
   Object.keys(query).map((key) => {
-    const value = query[key];
-    if (value === "" || value === null || value === undefined) return;
+    const value = query[key]
+    if (value === "" || value === null || value === undefined) return
     if (typeof value === "object") {
       value.forEach((element) => {
-        params.append(key, element.toString());
-      });
+        params.append(key, element.toString())
+      })
     } else {
-      params.append(key, value.toString());
+      params.append(key, value.toString())
     }
-  });
-  return params;
+  })
+  return params
 }
 
 export class BadRequestHTTPError extends HTTPError {
@@ -31,14 +31,14 @@ export class BadRequestHTTPError extends HTTPError {
     options: NormalizedOptions,
     public errorCode: string
   ) {
-    super(response, request, options);
+    super(response, request, options)
   }
 }
 
 export async function tryGetErrorCode(error: unknown) {
   if (error instanceof HTTPError) {
-    const errorCode = await error.response.json();
-    if (typeof errorCode === "string") return errorCode;
+    const errorCode = await error.response.json()
+    if (typeof errorCode === "string") return errorCode
   }
-  return undefined;
+  return undefined
 }

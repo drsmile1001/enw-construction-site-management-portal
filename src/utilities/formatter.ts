@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from "dayjs"
 
 /** 格式化時間 */
 export const formatDateTime = (
@@ -6,9 +6,9 @@ export const formatDateTime = (
   template = "YYYY-MM-DD HH:mm:ss"
 ) => {
   if (!time) {
-    return "N/A";
+    return "N/A"
   }
-  const date = new Date(time);
+  const date = new Date(time)
 
-  return dayjs(date).format(template);
-};
+  return dayjs(date).format(template)
+}
