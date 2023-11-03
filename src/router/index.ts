@@ -7,8 +7,108 @@ export const routeRecords: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        name: "Home",
-        component: () => import("@/views/Home.vue"),
+        redirect: "site-basic-info",
+      },
+      {
+        path: "site-basic-info",
+        name: "SiteBasicInfo",
+        component: () => import("@/views/FakeDetailView.vue"),
+        meta: {
+          mainGroup: "管理設定",
+          subGroup: "工地設定",
+          title: "基本資料",
+        },
+      },
+      {
+        path: "site-abnormal-categories",
+        name: "SiteAbnormalCategories",
+        component: () => import("@/views/FakeTableView.vue"),
+        props: () => ({
+          actions: [{ label: "編輯", type: "modal" }],
+          itemName: "異常分類",
+        }),
+        meta: {
+          mainGroup: "管理設定",
+          subGroup: "工地設定",
+          title: "異常分類",
+        },
+      },
+      {
+        path: "site-vendors",
+        name: "SiteVendors",
+        component: () => import("@/views/FakeTableView.vue"),
+        props: () => ({
+          actions: [
+            {
+              label: "詳細頁",
+              type: "link",
+              toRouteName: "SiteVendorBasicInfo",
+              toRouteParamName: "vendorId",
+            },
+          ],
+          itemName: "廠商",
+        }),
+        meta: {
+          mainGroup: "管理設定",
+          subGroup: "廠商設定",
+          title: "廠商清冊",
+        },
+      },
+      {
+        path: "site-vendors/:vendorId",
+        children: [
+          {
+            path: "",
+            redirect: "basic-info",
+          },
+          {
+            path: "basic-info",
+            name: "SiteVendorBasicInfo",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "公司資料",
+              title: "基本資料",
+            },
+          },
+          {
+            path: "remittances",
+            name: "SiteVendorRemittances",
+            component: () => import("@/views/FakeTableView.vue"),
+            meta: {
+              mainGroup: "公司資料",
+              title: "匯款資料",
+            },
+          },
+          {
+            path: "documents",
+            name: "SiteVendorDocuments",
+            component: () => import("@/views/FakeTableView.vue"),
+            meta: {
+              mainGroup: "公司資料",
+              title: "作證文件",
+            },
+          },
+        ],
+        meta: {
+          backToRoute: "SiteVendors",
+          getScopeName: async (p) => {
+            return `${p.vendorId} 廠商`
+          },
+        },
+      },
+      {
+        path: "site-vendor-labels",
+        name: "SiteVendorLabels",
+        component: () => import("@/views/FakeTableView.vue"),
+        props: () => ({
+          actions: [{ label: "編輯", type: "modal" }],
+          itemName: "廠商標籤",
+        }),
+        meta: {
+          mainGroup: "管理設定",
+          subGroup: "廠商設定",
+          title: "廠商標籤",
+        },
       },
     ],
   },

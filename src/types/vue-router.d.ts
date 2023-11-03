@@ -4,8 +4,10 @@ import { Role } from "@/stores/user"
 declare module "vue-router" {
   interface RouteMeta {
     title?: string
-    mainTab?: string
-    subTab?: string
+    mainGroup?: string
+    subGroup?: string
+    backToRoute?: string
+    getScopeName?: (routeParams: RouteParams) => Promise<string>
     roles?: Role[]
   }
 }
