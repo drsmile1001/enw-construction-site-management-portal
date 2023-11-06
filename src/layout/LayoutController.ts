@@ -59,7 +59,7 @@ export const useLayoutController = defineStore("layout", () => {
                     params: currentRoute.params,
                   },
                 },
-                { default: () => "回到列表" }
+                { default: () => "📄 回到列表" }
               ),
             key: scope,
           })

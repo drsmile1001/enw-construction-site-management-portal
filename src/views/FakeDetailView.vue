@@ -1,11 +1,15 @@
 <template>
-    {{ title }}
+  <NForm label-placement="left" label-width="auto" size="medium">
+    <NFormItem v-for="field in fields" :label="field">
+      <NInput />
+    </NFormItem>
+  </NForm>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from "vue-router"
+export type FakeDetailViewProps = {
+  fields?: string[]
+}
 
-const currentRoute = useRoute()
-const title = computed(() => currentRoute.meta.title)
-
+defineProps<FakeDetailViewProps>()
 </script>

@@ -1,7 +1,7 @@
 /// <reference types="vite-svg-loader" />
 import "@/styles/index.scss"
 import "virtual:uno.css"
-import "@unocss/reset/tailwind.css"
+import "@unocss/reset/tailwind-compat.css"
 
 import { createApp } from "vue"
 import { createPinia } from "pinia"

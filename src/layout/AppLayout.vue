@@ -5,7 +5,7 @@
       <AppMenu />
       <NLayout :native-scrollbar="false">
         <div class="p-6">
-          <RouterView />
+          <RouterView :key="route.fullPath" />
         </div>
       </NLayout>
     </NLayout>
@@ -15,4 +15,7 @@
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
 import AppMenu from './AppMenu.vue';
+import { useRoute } from "vue-router"
+
+const route = useRoute()
 </script>

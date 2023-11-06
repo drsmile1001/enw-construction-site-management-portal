@@ -1,3 +1,5 @@
+import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
+import type { FakeTableViewProps } from "@/views/FakeTableView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
 export const routeRecords: RouteRecordRaw[] = [
@@ -13,6 +15,20 @@ export const routeRecords: RouteRecordRaw[] = [
         path: "site-basic-info",
         name: "SiteBasicInfo",
         component: () => import("@/views/FakeDetailView.vue"),
+        props: () =>
+          <FakeDetailViewProps>{
+            fields: [
+              "工地名稱",
+              "工地地址",
+              "工地負責人",
+              "施工期間",
+              "工務室電話",
+              "監造單位",
+              "施工單位",
+              "主辦機關",
+              "工地平面圖",
+            ],
+          },
         meta: {
           mainGroup: "管理設定",
           subGroup: "工地設定",
@@ -26,18 +42,21 @@ export const routeRecords: RouteRecordRaw[] = [
             path: "",
             name: "SiteDevices",
             component: () => import("@/views/FakeTableView.vue"),
-            props: () => ({
-              actions: [
-                { label: "編輯", type: "modal" },
-                {
-                  label: "點位設定",
-                  type: "link",
-                  toRouteName: "SiteDevicePoints",
-                  toRouteParamName: "deviceId",
-                },
-              ],
-              itemName: "Iot 設備",
-            }),
+            props: () =>
+              <FakeTableViewProps>{
+                actions: [
+                  { label: "編輯", type: "editor", editorFields: ["設備名稱"] },
+                  {
+                    label: "點位設定",
+                    type: "link",
+                    toRouteName: "SiteDevicePoints",
+                    toRouteParamName: "deviceId",
+                  },
+                  { label: "刪除", type: "confirm-delete" },
+                ],
+                itemName: "Iot 設備",
+                topRightActions: [{ label: "新增", type: "modal" }],
+              },
             meta: {
               mainGroup: "管理設定",
               subGroup: "工地設定",
@@ -64,10 +83,26 @@ export const routeRecords: RouteRecordRaw[] = [
                 path: "points",
                 name: "SiteDevicePoints",
                 component: () => import("@/views/FakeTableView.vue"),
-                props: () => ({
-                  actions: [{ label: "編輯", type: "modal" }],
-                  itemName: "點位",
-                }),
+                props: () =>
+                  <FakeTableViewProps>{
+                    actions: [
+                      {
+                        label: "編輯",
+                        type: "editor",
+                        editorFields: ["觸發條件", "模組名稱"],
+                      },
+                      { label: "刪除" },
+                    ],
+                    columns: ["ID", "觸發條件"],
+                    itemName: "點位",
+                    topRightActions: [
+                      {
+                        label: "新增",
+                        type: "editor",
+                        editorFields: ["ID", "觸發條件"],
+                      },
+                    ],
+                  },
                 meta: {
                   title: "點位設定",
                 },
@@ -97,17 +132,27 @@ export const routeRecords: RouteRecordRaw[] = [
             path: "",
             name: "SiteVendors",
             component: () => import("@/views/FakeTableView.vue"),
-            props: () => ({
-              actions: [
-                {
-                  label: "詳細頁",
-                  type: "link",
-                  toRouteName: "SiteVendorBasicInfo",
-                  toRouteParamName: "vendorId",
-                },
-              ],
-              itemName: "廠商",
-            }),
+            props: () =>
+              <FakeTableViewProps>{
+                actions: [
+                  {
+                    label: "資料檢視與維護",
+                    type: "link",
+                    toRouteName: "SiteVendorBasicInfo",
+                    toRouteParamName: "vendorId",
+                  },
+                  { label: "狀態變更", type: "modal" },
+                ],
+                itemName: "廠商",
+                columns: [
+                  "廠商名稱",
+                  "狀態",
+                  "主次類別",
+                  "統一編號",
+                  "異動稽核",
+                ],
+                topRightActions: [{ label: "新增", type: "modal" }],
+              },
             meta: {
               mainGroup: "管理設定",
               subGroup: "廠商設定",
@@ -134,6 +179,24 @@ export const routeRecords: RouteRecordRaw[] = [
                 path: "basic-info",
                 name: "SiteVendorBasicInfo",
                 component: () => import("@/views/FakeDetailView.vue"),
+                props: () =>
+                  <FakeDetailViewProps>{
+                    fields: [
+                      "廠商統編",
+                      "廠商類別",
+                      "代表人姓名",
+                      "登記地址",
+                      "營業地址",
+                      "核准設立日期",
+                      "最後核准變更日期",
+                      "廠商電話",
+                      "廠商傳真(選填)",
+                      "廠商電子信箱",
+                      "業務聯絡人姓名",
+                      "聯絡人手機",
+                      "聯絡人電子信箱",
+                    ],
+                  },
                 meta: {
                   mainGroup: "公司資料",
                   title: "基本資料",
@@ -166,54 +229,102 @@ export const routeRecords: RouteRecordRaw[] = [
                 },
               },
               {
-                path: "members",
+                path: "employees",
                 children: [
                   {
                     path: "",
-                    name: "VendorMembers",
+                    name: "VendorEmployees",
                     component: () => import("@/views/FakeTableView.vue"),
-                    props: () => ({
-                      actions: [
-                        {
-                          label: "詳細頁",
-                          type: "link",
-                          toRouteName: "VendorMemberBasicInfo",
-                          toRouteParamName: "memberId",
-                        },
-                      ],
-                      itemName: "員工",
-                    }),
+                    props: () =>
+                      <FakeTableViewProps>{
+                        actions: [
+                          {
+                            label: "詳細頁",
+                            type: "link",
+                            toRouteName: "VendorEmployeeBasicInfo",
+                            toRouteParamName: "employeeId",
+                          },
+                          {
+                            label: "刪除",
+                            type: "modal",
+                          },
+                        ],
+                        itemName: "員工",
+                        columns: ["工號", "姓名", "職稱", "照片"],
+                        topRightActions: [{ label: "新增", type: "modal" }],
+                      },
                     meta: {
                       title: "員工清冊",
                     },
                   },
                   {
-                    path: ":memberId",
+                    path: ":employeeId",
                     meta: {
-                      backToRoute: "VendorMembers",
+                      backToRoute: "VendorEmployees",
                       getScopeName: async (p) => {
-                        return `${p.vendorId} 廠商： ${p.memberId} 員工`
+                        return `${p.vendorId} 廠商： ${p.employeeId} 員工`
                       },
                     },
                     children: [
                       {
                         path: "",
                         redirect: (to) => ({
-                          name: "VendorMemberBasicInfo",
+                          name: "VendorEmployeeBasicInfo",
                           params: to.params,
                         }),
                       },
                       {
                         path: "basic-info",
-                        name: "VendorMemberBasicInfo",
+                        name: "VendorEmployeeBasicInfo",
                         component: () => import("@/views/FakeDetailView.vue"),
                         meta: {
                           title: "個人資訊",
                         },
+                        props: () =>
+                          <FakeDetailViewProps>{
+                            fields: [
+                              "姓名",
+                              "身份註記(無、原住民、外籍人士)",
+                              "身分證字號",
+                              "工號",
+                              "出生日期(西元)",
+                              "性別(選單)",
+                              "戶籍地址",
+                              "通訊地址(可同戶籍)",
+                              "行動電話",
+                              "電子信箱",
+                              "其它連絡電話",
+                              "最高學歷",
+                              "血型",
+                              "緊急聯絡人",
+                              "緊急連絡人電話",
+                              "投保公司",
+                              "勞(公)保證號",
+                              "投保日期(西元)",
+                              "最後異動紀錄",
+                            ],
+                          },
+                      },
+                      {
+                        path: "experience",
+                        name: "VendorEmployeeExperience",
+                        props: () =>
+                          <FakeTableViewProps>{
+                            actions: [
+                              { label: "編輯", type: "modal" },
+                              { label: "刪除" },
+                            ],
+                            itemName: "經歷",
+                            columns: ["工作經歷", "工作內容", "工作期間"],
+                          },
+                        component: () => import("@/views/FakeTableView.vue"),
+                        meta: {
+                          title: "經歷",
+                        },
                       },
                       {
                         path: "certificate",
-                        name: "VendorMemberCertificate",
+                        name: "VendorEmployeeCertificate",
                         props: () => ({
                           actions: [{ label: "編輯", type: "modal" }],
                           itemName: "證照",
@@ -234,10 +345,54 @@ export const routeRecords: RouteRecordRaw[] = [
                     path: "",
                     name: "VendorVehicles",
                     component: () => import("@/views/FakeTableView.vue"),
-                    props: () => ({
-                      actions: [{ label: "編輯", type: "modal" }],
-                      itemName: "車輛",
-                    }),
+                    props: () =>
+                      <FakeTableViewProps>{
+                        actions: [
+                          {
+                            label: "編輯",
+                            type: "editor",
+                            editorFields: [
+                              "機具類型",
+                              "機具名稱",
+                              "車牌號碼",
+                              "出廠年",
+                              "操作人員",
+                              "操作人員聯絡電話",
+                              "機具供應廠商",
+                              "機具供應廠商聯絡人",
+                              "機具供應廠商聯絡電話",
+                              "機具規格",
+                            ],
+                          },
+                          { label: "刪除", type: "confirm-delete" },
+                        ],
+                        itemName: "車輛",
+                        columns: [
+                          "機具類型",
+                          "機具名稱",
+                          "車牌號碼",
+                          "操作人員姓名",
+                          "操作人員聯絡電話",
+                        ],
+                        topRightActions: [
+                          {
+                            label: "新增",
+                            type: "editor",
+                            editorFields: [
+                              "機具類型",
+                              "機具名稱",
+                              "車牌號碼",
+                              "出廠年",
+                              "操作人員",
+                              "操作人員聯絡電話",
+                              "機具供應廠商",
+                              "機具供應廠商聯絡人",
+                              "機具供應廠商聯絡電話",
+                              "機具規格",
+                            ],
+                          },
+                        ],
+                      },
                     meta: {
                       title: "車輛清冊",
                     },
