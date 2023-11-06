@@ -7,7 +7,7 @@ export const routeRecords: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        redirect: "site-basic-info",
+        redirect: { name: "SiteBasicInfo" },
       },
       {
         path: "site-basic-info",
@@ -125,7 +125,10 @@ export const routeRecords: RouteRecordRaw[] = [
             children: [
               {
                 path: "",
-                redirect: "basic-info",
+                redirect: (to) => ({
+                  name: "SiteVendorBasicInfo",
+                  params: to.params,
+                }),
               },
               {
                 path: "basic-info",
@@ -195,7 +198,10 @@ export const routeRecords: RouteRecordRaw[] = [
                     children: [
                       {
                         path: "",
-                        redirect: "basic-info",
+                        redirect: (to) => ({
+                          name: "VendorMemberBasicInfo",
+                          params: to.params,
+                        }),
                       },
                       {
                         path: "basic-info",
@@ -221,6 +227,23 @@ export const routeRecords: RouteRecordRaw[] = [
                   },
                 ],
               },
+              {
+                path: "vehicles",
+                children: [
+                  {
+                    path: "",
+                    name: "VendorVehicles",
+                    component: () => import("@/views/FakeTableView.vue"),
+                    props: () => ({
+                      actions: [{ label: "編輯", type: "modal" }],
+                      itemName: "車輛",
+                    }),
+                    meta: {
+                      title: "車輛清冊",
+                    },
+                  },
+                ],
+              },
             ],
           },
         ],
@@ -237,6 +260,221 @@ export const routeRecords: RouteRecordRaw[] = [
           mainGroup: "管理設定",
           subGroup: "廠商設定",
           title: "廠商標籤",
+        },
+      },
+      {
+        path: "person-attendance",
+        children: [
+          {
+            path: "",
+            redirect: { name: "PersonAttendanceDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "PersonAttendanceDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "人員進出",
+              title: "今日進出狀況",
+            },
+          },
+          {
+            path: "logs",
+            name: "PersonAttendanceLogs",
+            component: () => import("@/views/FakeTableView.vue"),
+            props: () => ({
+              actions: [{ label: "詳細", type: "modal" }],
+              itemName: "人員進出記錄",
+            }),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "人員進出",
+              title: "歷史辨識紀錄",
+            },
+          },
+          {
+            path: "abnormal-logs",
+            name: "PersonAttendanceAbnormalLogs",
+            component: () => import("@/views/FakeTableView.vue"),
+            props: () => ({
+              actions: [{ label: "詳細", type: "modal" }],
+              itemName: "人員進出異常記錄",
+            }),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "人員進出",
+              title: "異常紀錄",
+            },
+          },
+        ],
+      },
+      {
+        path: "vehicle-attendance",
+        children: [
+          {
+            path: "",
+            redirect: { name: "VehicleAttendanceDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "VehicleAttendanceDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "車輛進出",
+              title: "今日進出狀況",
+            },
+          },
+          {
+            path: "logs",
+            name: "VehicleAttendanceLogs",
+            component: () => import("@/views/FakeTableView.vue"),
+            props: () => ({
+              actions: [{ label: "詳細", type: "modal" }],
+              itemName: "車輛進出記錄",
+            }),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "車輛進出",
+              title: "歷史辨識紀錄",
+            },
+          },
+          {
+            path: "abnormal-logs",
+            name: "VehicleAttendanceAbnormalLogs",
+            component: () => import("@/views/FakeTableView.vue"),
+            props: () => ({
+              actions: [{ label: "詳細", type: "modal" }],
+              itemName: "車輛進出異常記錄",
+            }),
+            meta: {
+              mainGroup: "工地進出管理",
+              subGroup: "車輛進出",
+              title: "異常紀錄",
+            },
+          },
+        ],
+      },
+      {
+        path: "environmental-monitoring",
+        children: [
+          {
+            path: "",
+            redirect: { name: "EnvironmentalMonitoringDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "EnvironmentalMonitoringDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地安全",
+              subGroup: "環境檢測",
+              title: "環境檢測儀表板",
+            },
+          },
+        ],
+      },
+      {
+        path: "device-safety",
+        children: [
+          {
+            path: "",
+            redirect: { name: "EnvironmentalMonitoringDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "DeviceSafetyDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地安全",
+              subGroup: "工地設備防護",
+              title: "工地設備防護儀表板",
+            },
+          },
+        ],
+      },
+      {
+        path: "danger-zone-contrl",
+        children: [
+          {
+            path: "",
+            redirect: { name: "DangerZoneControlDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "DangerZoneControlDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地安全",
+              subGroup: "工區人員安全",
+              title: "危險區域管制",
+            },
+          },
+        ],
+      },
+      {
+        path: "night-security",
+        children: [
+          {
+            path: "",
+            redirect: { name: "NightSecurityDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "NightSecurityDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地安全",
+              subGroup: "工區人員安全",
+              title: "夜間保全",
+            },
+          },
+        ],
+      },
+      {
+        path: "other-personnel-safety",
+        children: [
+          {
+            path: "",
+            redirect: { name: "NightSecurityDashboard" },
+          },
+          {
+            path: "dashboard",
+            name: "OtherPersonnelSafetyDashboard",
+            component: () => import("@/views/FakeDetailView.vue"),
+            meta: {
+              mainGroup: "工地安全",
+              subGroup: "工區人員安全",
+              title: "人員安全...",
+            },
+          },
+        ],
+      },
+      {
+        path: "inventories",
+        name: "Inventories",
+        component: () => import("@/views/FakeTableView.vue"),
+        props: () => ({
+          actions: [{ label: "編輯", type: "modal" }],
+          itemName: "資材",
+        }),
+        meta: {
+          mainGroup: "工地資材管理",
+          title: "資材庫存清冊",
+        },
+      },
+      {
+        path: "purchases",
+        name: "Purchases",
+        component: () => import("@/views/FakeTableView.vue"),
+        props: () => ({
+          actions: [{ label: "編輯", type: "modal" }],
+          itemName: "進場記錄",
+        }),
+        meta: {
+          mainGroup: "工地資材管理",
+          title: "進場記錄",
         },
       },
     ],
