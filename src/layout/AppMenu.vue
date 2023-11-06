@@ -15,7 +15,6 @@ const menuInstRef = ref<MenuInst | null>(null)
 const selectedKey = ref("")
 
 watch(() => currentRoute.name, (name) => {
-  console.log("currentRoute.name", name)
   selectedKey.value = name as string
   nextTick(() => {
     menuInstRef.value?.showOption(name as string)
