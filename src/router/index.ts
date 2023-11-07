@@ -31,7 +31,6 @@ export const routeRecords: RouteRecordRaw[] = [
           },
         meta: {
           mainGroup: "管理設定",
-          subGroup: "工地設定",
           title: "基本資料",
         },
       },
@@ -59,7 +58,6 @@ export const routeRecords: RouteRecordRaw[] = [
               },
             meta: {
               mainGroup: "管理設定",
-              subGroup: "工地設定",
               title: "Iot 設備清冊",
             },
           },
@@ -112,57 +110,21 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "site-abnormal-categories",
-        name: "SiteAbnormalCategories",
-        component: () => import("@/views/FakeTableView.vue"),
-        props: () => ({
-          actions: [{ label: "編輯", type: "modal" }],
-          itemName: "異常分類",
-        }),
-        meta: {
-          mainGroup: "管理設定",
-          subGroup: "工地設定",
-          title: "異常分類",
-        },
-      },
-      {
-        path: "site-vendors",
+        path: "vendors",
         children: [
           {
             path: "",
-            name: "SiteVendors",
-            component: () => import("@/views/FakeTableView.vue"),
-            props: () =>
-              <FakeTableViewProps>{
-                actions: [
-                  {
-                    label: "資料檢視與維護",
-                    type: "link",
-                    toRouteName: "SiteVendorBasicInfo",
-                    toRouteParamName: "vendorId",
-                  },
-                  { label: "狀態變更", type: "modal" },
-                ],
-                itemName: "廠商",
-                columns: [
-                  "廠商名稱",
-                  "狀態",
-                  "主次類別",
-                  "統一編號",
-                  "異動稽核",
-                ],
-                topRightActions: [{ label: "新增", type: "modal" }],
-              },
+            name: "Vendors",
+            component: () => import("@/views/Venders.vue"),
             meta: {
               mainGroup: "管理設定",
-              subGroup: "廠商設定",
               title: "廠商清冊",
             },
           },
           {
             path: ":vendorId",
             meta: {
-              backToRoute: "SiteVendors",
+              backToRoute: "Vendors",
               getScopeName: async (p) => {
                 return `${p.vendorId} 廠商`
               },
@@ -404,20 +366,6 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "site-vendor-labels",
-        name: "SiteVendorLabels",
-        component: () => import("@/views/FakeTableView.vue"),
-        props: () => ({
-          actions: [{ label: "編輯", type: "modal" }],
-          itemName: "廠商標籤",
-        }),
-        meta: {
-          mainGroup: "管理設定",
-          subGroup: "廠商設定",
-          title: "廠商標籤",
-        },
-      },
-      {
         path: "person-attendance",
         children: [
           {
@@ -446,20 +394,6 @@ export const routeRecords: RouteRecordRaw[] = [
               mainGroup: "工地進出管理",
               subGroup: "人員進出",
               title: "歷史辨識紀錄",
-            },
-          },
-          {
-            path: "abnormal-logs",
-            name: "PersonAttendanceAbnormalLogs",
-            component: () => import("@/views/FakeTableView.vue"),
-            props: () => ({
-              actions: [{ label: "詳細", type: "modal" }],
-              itemName: "人員進出異常記錄",
-            }),
-            meta: {
-              mainGroup: "工地進出管理",
-              subGroup: "人員進出",
-              title: "異常紀錄",
             },
           },
         ],
@@ -493,20 +427,6 @@ export const routeRecords: RouteRecordRaw[] = [
               mainGroup: "工地進出管理",
               subGroup: "車輛進出",
               title: "歷史辨識紀錄",
-            },
-          },
-          {
-            path: "abnormal-logs",
-            name: "VehicleAttendanceAbnormalLogs",
-            component: () => import("@/views/FakeTableView.vue"),
-            props: () => ({
-              actions: [{ label: "詳細", type: "modal" }],
-              itemName: "車輛進出異常記錄",
-            }),
-            meta: {
-              mainGroup: "工地進出管理",
-              subGroup: "車輛進出",
-              title: "異常紀錄",
             },
           },
         ],

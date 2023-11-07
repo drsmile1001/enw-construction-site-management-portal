@@ -52,7 +52,7 @@
   <FormModal
     v-if="editor"
     v-model:show="showEditor"
-    title="編輯"
+    :title="editorTitle"
     :fields="editor.fields"
     :model-loader="editorModelLoader"
     :submit-model="editorModelSubmit"
@@ -113,6 +113,7 @@ export type EditorOptions<TItem, TUpdaterModel> = {
   fields: FormModalFieldOption<TUpdaterModel>[]
   modelBuilder: (item: TItem) => Promise<TUpdaterModel>
   method: (model: TUpdaterModel, item: TItem) => Promise<void>
+  titleBuilder?: (item: TItem) => string
 }
 
 export type RowActionOptions<TItem> = {
@@ -225,6 +226,11 @@ const columns = computed(() => {
 const showCreator = ref(false)
 const showEditor = ref(false)
 const editorItem = ref<TItem>()
+const editorTitle = computed(
+  () =>
+    (editorItem.value && props.editor?.titleBuilder?.(editorItem.value)) ??
+    "編輯"
+)
 async function editorModelLoader() {
   if (!editorItem.value || !props.editor)
     throw new Error("editorItem or editor is not defined")
