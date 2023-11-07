@@ -9,7 +9,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[vue]": {
-        "editor.defaultFormatter": "Vue.volar"
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -22,4 +22,5 @@
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "editor.tabSize": 2,
+    "prettier.tabWidth": 2,
 }

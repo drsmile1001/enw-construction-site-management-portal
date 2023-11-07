@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import AppHeader from './AppHeader.vue';
-import AppMenu from './AppMenu.vue';
+import AppHeader from "./AppHeader.vue"
+import AppMenu from "./AppMenu.vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()

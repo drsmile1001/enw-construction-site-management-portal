@@ -7,7 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import { NConfigProvider, NDialogProvider } from 'naive-ui';
+import { NConfigProvider, NDialogProvider } from "naive-ui"
 import { zhTW, dateZhTW } from "naive-ui"
-
 </script>
