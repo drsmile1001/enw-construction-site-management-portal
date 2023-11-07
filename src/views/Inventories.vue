@@ -6,6 +6,7 @@
     :creator="creatorOption"
     :editor="editorOption"
     :row-actions="rowActions"
+    :delete-method="deleteMethod"
   >
   </TableView>
 </template>
@@ -22,6 +23,7 @@ import {
   queryInventory,
   createInventory,
   updateInventory,
+  deleteInventory,
 } from "@/stores/InventoryRepo"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
 
@@ -115,5 +117,9 @@ const editorOption: EditorOptions<Inventory> = {
   fields: fieldsOptions,
   modelBuilder: async (item) => item,
   method: (item) => updateInventory(item.id, item),
+}
+
+function deleteMethod(item: Inventory) {
+  return deleteInventory(item.id)
 }
 </script>

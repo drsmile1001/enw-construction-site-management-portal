@@ -49,3 +49,11 @@ export async function updateInventory(id: string, inventory: Inventory) {
   }
   data[index] = JSON.parse(JSON.stringify(inventory))
 }
+
+export async function deleteInventory(id: string) {
+  const index = data.findIndex((item) => item.id === id)
+  if (index === -1) {
+    throw new Error("Not found")
+  }
+  data.splice(index, 1)
+}

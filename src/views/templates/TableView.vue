@@ -72,7 +72,12 @@ import type {
 } from "naive-ui/es/data-table/src/interface"
 import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
 import { ITEMS_PER_PAGE } from "@/environment"
-import { NButton, NButtonGroup, type PaginationProps } from "naive-ui"
+import {
+  NButton,
+  NButtonGroup,
+  NPopconfirm,
+  type PaginationProps,
+} from "naive-ui"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
 
 export interface QueryBase extends Record<string, string | number | undefined> {
@@ -94,6 +99,7 @@ export type TableViewProps<TItem> = {
   creator?: CreatorOptions<TItem>
   editor?: EditorOptions<TItem>
   rowActions?: RowActionOptions<TItem>[]
+  deleteMethod?: (item: TItem) => Promise<void>
 }
 
 export type CreatorOptions<TItem> = {
@@ -182,16 +188,28 @@ const columns = computed(() => {
             }
             if (action.type === "delete") {
               return h(
-                NButton,
+                NPopconfirm,
                 {
-                  type: "error",
-                  size: "small",
-                  secondary: true,
-                  onClick: () => {
-                    console.log("delete")
+                  onPositiveClick: async () => {
+                    if (!props.deleteMethod)
+                      throw new Error("deleteMethod is not defined")
+                    await props.deleteMethod(row)
+                    await search()
                   },
                 },
-                { default: () => "刪除" }
+                {
+                  trigger: () =>
+                    h(
+                      NButton,
+                      {
+                        type: "error",
+                        size: "small",
+                        secondary: true,
+                      },
+                      { default: () => "刪除" }
+                    ),
+                  default: () => "確定要刪除嗎？",
+                }
               )
             }
           })
