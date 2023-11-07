@@ -17,4 +17,4 @@ class AppEnv {
 }
 
 export const env = new AppEnv()
-export const ITEMS_PER_PAGE = 20
+export const ITEMS_PER_PAGE = 15
