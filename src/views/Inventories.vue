@@ -13,7 +13,7 @@ import {
   deleteInventory,
 } from "@/stores/MaterialRepo"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
-import { NTime } from "naive-ui"
+import { NTag, NTime } from "naive-ui"
 
 const fieldsOptions: FormModalFieldOption<SetInventoryCommand>[] = [
   {
@@ -72,16 +72,25 @@ const tableViewSetting: TableViewProps<
       key: "name",
     },
     {
-      title: "單位",
-      key: "unit",
-    },
-    {
       title: "數量",
       key: "amount",
+      render: (row) => h("span", {}, `${row.amount} ${row.unit}`),
     },
     {
       title: "供應商",
       key: "supplier",
+    },
+    {
+      title: "危險物標記",
+      key: "tags",
+      render: (row) =>
+        h(
+          "div",
+          {
+            class: "flex gap-2",
+          },
+          row.tags.map((tag) => h(NTag, {}, () => tag))
+        ),
     },
     {
       title: "資料更新時間",

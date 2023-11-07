@@ -23,7 +23,7 @@ const inventories: Inventory[] = Array.from(
       amount: 20,
       supplier: `供應商 ${i}`,
       description: `描述 ${i}`,
-      tags: [],
+      tags: ["aa", "bb"],
       update_time: new Date().toISOString(),
     }
 )
