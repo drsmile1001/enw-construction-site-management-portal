@@ -8,6 +8,7 @@ export type Inventory = {
   unit: string
   location: string
   tags: string[]
+  update_time: string
 }
 
 const inventories: Inventory[] = Array.from(
@@ -23,6 +24,7 @@ const inventories: Inventory[] = Array.from(
       supplier: `供應商 ${i}`,
       description: `描述 ${i}`,
       tags: [],
+      update_time: new Date().toISOString(),
     }
 )
 
@@ -40,16 +42,34 @@ export async function queryInventories(
   }
 }
 
-export async function createInventory(inventory: Inventory) {
-  inventories.push(JSON.parse(JSON.stringify(inventory)))
+export type SetInventoryCommand = Omit<
+  Inventory,
+  "site_id" | "id" | "update_time"
+>
+
+export async function createInventory(command: SetInventoryCommand) {
+  const inventory: Inventory = {
+    site_id: "SIDE_ID",
+    id: (inventories.length + 1).toString(),
+    update_time: new Date().toISOString(),
+    ...command,
+  }
+  inventories.push(inventory)
 }
 
-export async function updateInventory(id: string, inventory: Inventory) {
+export async function updateInventory(
+  id: string,
+  command: SetInventoryCommand
+) {
   const index = inventories.findIndex((item) => item.id === id)
   if (index === -1) {
     throw new Error("Not found")
   }
-  inventories[index] = JSON.parse(JSON.stringify(inventory))
+  inventories[index] = {
+    ...inventories[index],
+    ...command,
+    update_time: new Date().toISOString(),
+  }
 }
 
 export async function deleteInventory(id: string) {
@@ -113,18 +133,6 @@ export async function createPurchase(command: SetPurchaseCommand) {
     ...command,
   }
   purchases.push(purchase)
-}
-
-export async function updatePurchase(id: string, command: SetPurchaseCommand) {
-  const index = purchases.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  purchases[index] = {
-    ...purchases[index],
-    ...command,
-    update_time: new Date().toISOString(),
-  }
 }
 
 export async function deletePurchase(id: string) {

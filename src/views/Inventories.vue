@@ -6,14 +6,16 @@
 import TableView, { type TableViewProps } from "./templates/TableView.vue"
 import {
   type Inventory,
+  type SetInventoryCommand,
   queryInventories,
   createInventory,
   updateInventory,
   deleteInventory,
 } from "@/stores/MaterialRepo"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
+import { NTime } from "naive-ui"
 
-const fieldsOptions: FormModalFieldOption<Inventory>[] = [
+const fieldsOptions: FormModalFieldOption<SetInventoryCommand>[] = [
   {
     label: "位置",
     key: "location",
@@ -55,7 +57,11 @@ const fieldsOptions: FormModalFieldOption<Inventory>[] = [
   },
 ]
 
-const tableViewSetting: TableViewProps<Inventory, Inventory, Inventory> = {
+const tableViewSetting: TableViewProps<
+  Inventory,
+  SetInventoryCommand,
+  SetInventoryCommand
+> = {
   columns: [
     {
       title: "位置",
@@ -76,6 +82,11 @@ const tableViewSetting: TableViewProps<Inventory, Inventory, Inventory> = {
     {
       title: "供應商",
       key: "supplier",
+    },
+    {
+      title: "資料更新時間",
+      key: "update_time",
+      render: (row) => h(NTime, { time: new Date(row.update_time) }),
     },
   ],
   rowKey: (row) => row.id,
@@ -99,7 +110,7 @@ const tableViewSetting: TableViewProps<Inventory, Inventory, Inventory> = {
   editor: {
     fields: fieldsOptions,
     modelBuilder: async (item) => item,
-    method: (item) => updateInventory(item.id, item),
+    method: (model, item) => updateInventory(item.id, model),
   },
   deleteMethod: (item) => deleteInventory(item.id),
 }

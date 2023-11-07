@@ -8,11 +8,11 @@ import {
   type Purchase,
   queryPurchases,
   createPurchase,
-  updatePurchase,
   deletePurchase,
   type SetPurchaseCommand,
 } from "@/stores/MaterialRepo"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
+import { NTime } from "naive-ui"
 
 const fieldsOptions: FormModalFieldOption<SetPurchaseCommand>[] = [
   {
@@ -45,11 +45,7 @@ const fieldsOptions: FormModalFieldOption<SetPurchaseCommand>[] = [
   },
 ]
 
-const tableViewSetting: TableViewProps<
-  Purchase,
-  SetPurchaseCommand,
-  SetPurchaseCommand
-> = {
+const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, any> = {
   columns: [
     {
       title: "名稱",
@@ -74,11 +70,12 @@ const tableViewSetting: TableViewProps<
     {
       title: "資料更新時間",
       key: "update_time",
+      render: (row) => h(NTime, { time: new Date(row.update_time) }),
     },
   ],
   rowKey: (row) => row.id,
   queryItems: queryPurchases,
-  rowActions: [{ type: "editor" }, { type: "delete" }],
+  rowActions: [{ type: "delete" }],
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
@@ -92,11 +89,6 @@ const tableViewSetting: TableViewProps<
       accumulation: 0,
     }),
     method: createPurchase,
-  },
-  editor: {
-    fields: fieldsOptions,
-    modelBuilder: async (item) => item,
-    method: (command, item) => updatePurchase(item.id, command),
   },
   deleteMethod: (item) => deletePurchase(item.id),
 }
