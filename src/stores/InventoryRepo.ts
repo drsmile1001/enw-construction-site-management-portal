@@ -41,3 +41,11 @@ export async function queryInventory(
 export async function createInventory(inventory: Inventory) {
   data.push(JSON.parse(JSON.stringify(inventory)))
 }
+
+export async function updateInventory(id: string, inventory: Inventory) {
+  const index = data.findIndex((item) => item.id === id)
+  if (index === -1) {
+    throw new Error("Not found")
+  }
+  data[index] = JSON.parse(JSON.stringify(inventory))
+}

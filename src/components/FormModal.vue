@@ -9,6 +9,7 @@
       aria-modal="true"
     >
       <NForm
+        v-if="formModel"
         ref="formRef"
         label-placement="left"
         label-width="auto"
@@ -48,19 +49,18 @@
 
 <script setup lang="ts" generic="TItem extends Record<string, unknown>">
 import type { FormInst, FormItemRule, FormRules } from "naive-ui"
-import type { UnwrapRef } from "vue"
 
 export type FormModalProps<TItem> = {
   title: string
   show: boolean
   fields: FormModalFieldOption<TItem>[]
-  defaultModelBuilder: () => TItem
-  submitEntity: (item: TItem) => Promise<void>
+  submitModel: (item: TItem) => Promise<void>
+  modelLoader: () => Promise<TItem>
 }
 
 export type FormModalFieldOption<TItem> = {
   label: string
-  key: keyof TItem & keyof UnwrapRef<TItem>
+  key: keyof TItem
   type: "text" | "number"
   placeholder?: string
   rules?: FormRules | FormItemRule | FormItemRule[]
@@ -82,13 +82,19 @@ const emits = defineEmits<{
   submitted: []
 }>()
 
-const formModel = ref(props.defaultModelBuilder())
+const formModel = ref<TItem>()
 const formRef = ref<FormInst | null>(null)
 
+watchEffect(async () => {
+  if (!props.show) return
+  formRef.value?.restoreValidation()
+  formModel.value = await props.modelLoader()
+})
+
 async function submit() {
-  if (!formRef.value) return
+  if (!formModel.value || !formRef.value) return
   await formRef.value.validate()
-  await props.submitEntity(formModel.value as TItem)
+  await props.submitModel(formModel.value)
   emits("update:show", false)
   emits("submitted")
 }

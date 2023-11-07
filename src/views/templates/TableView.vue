@@ -45,8 +45,17 @@
     v-model:show="showCreator"
     title="新增"
     :fields="creator.fields"
-    :default-model-builder="creator.defaultModelBuilder"
-    :submit-entity="creator.method"
+    :model-loader="creator.modelBuilder"
+    :submit-model="creator.method"
+    @submitted="() => search()"
+  />
+  <FormModal
+    v-if="editor"
+    v-model:show="showEditor"
+    title="編輯"
+    :fields="editor.fields"
+    :model-loader="editorModelLoader"
+    :submit-model="editor.method"
     @submitted="() => search()"
   />
 </template>
@@ -83,12 +92,19 @@ export type TableViewProps<TItem> = {
     total: number
   }>
   creator?: CreatorOptions<TItem>
+  editor?: EditorOptions<TItem>
   rowActions?: RowActionOptions<TItem>[]
 }
 
 export type CreatorOptions<TItem> = {
   fields: FormModalFieldOption<TItem>[]
-  defaultModelBuilder: () => TItem
+  modelBuilder: () => Promise<TItem>
+  method: (item: TItem) => Promise<void>
+}
+
+export type EditorOptions<TItem> = {
+  fields: FormModalFieldOption<TItem>[]
+  modelBuilder: (item: TItem) => Promise<TItem>
   method: (item: TItem) => Promise<void>
 }
 
@@ -157,7 +173,8 @@ const columns = computed(() => {
                   size: "small",
                   secondary: true,
                   onClick: () => {
-                    console.log("edit")
+                    editorItem.value = row
+                    showEditor.value = true
                   },
                 },
                 { default: () => "編輯" }
@@ -187,4 +204,11 @@ const columns = computed(() => {
 })
 
 const showCreator = ref(false)
+const showEditor = ref(false)
+const editorItem = ref<TItem>()
+async function editorModelLoader() {
+  if (!editorItem.value || !props.editor)
+    throw new Error("editorItem or editor is not defined")
+  return await props.editor.modelBuilder(editorItem.value)
+}
 </script>
