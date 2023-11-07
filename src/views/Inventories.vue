@@ -51,9 +51,19 @@ const fieldsOptions: FormModalFieldOption<SetInventoryCommand>[] = [
     type: "text",
   },
   {
-    label: "標籤",
+    label: "危險物標記",
     key: "tags",
-    type: "text",
+    type: "select",
+    selectOptions: [
+      { label: "危險物", value: "危險物" },
+      { label: "易燃物", value: "易燃物" },
+      { label: "易爆物", value: "易爆物" },
+      { label: "腐蝕性物", value: "腐蝕性物" },
+      { label: "有毒物", value: "有毒物" },
+      { label: "放射性物", value: "放射性物" },
+      { label: "其他", value: "其他" },
+    ],
+    multiple: true,
   },
 ]
 

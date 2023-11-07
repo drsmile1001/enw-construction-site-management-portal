@@ -28,8 +28,14 @@
             v-model:value="(formModel[field.key] as string)"
           />
           <NInputNumber
-            v-else-if="field.type === 'number'"
+            v-if="field.type === 'number'"
             v-model:value="(formModel[field.key] as number)"
+          />
+          <NSelect
+            v-if="field.type === 'select'"
+            v-model:value="(formModel[field.key] as string)"
+            :options="field.selectOptions"
+            :multiple="field.multiple"
           />
         </NFormItem>
       </NForm>
@@ -49,6 +55,7 @@
 
 <script setup lang="ts" generic="TItem extends Record<string, unknown>">
 import type { FormInst, FormItemRule, FormRules } from "naive-ui"
+import type { SelectMixedOption } from "naive-ui/es/select/src/interface"
 
 export type FormModalProps<TItem> = {
   title: string
@@ -61,9 +68,11 @@ export type FormModalProps<TItem> = {
 export type FormModalFieldOption<TItem> = {
   label: string
   key: keyof TItem
-  type: "text" | "number"
+  type: "text" | "number" | "select"
   placeholder?: string
   rules?: FormRules | FormItemRule | FormItemRule[]
+  selectOptions?: SelectMixedOption[]
+  multiple?: boolean
 }
 
 const props = defineProps<FormModalProps<TItem>>()
