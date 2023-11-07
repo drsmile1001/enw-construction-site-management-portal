@@ -618,11 +618,7 @@ export const routeRecords: RouteRecordRaw[] = [
       {
         path: "purchases",
         name: "Purchases",
-        component: () => import("@/views/FakeTableView.vue"),
-        props: () => ({
-          actions: [{ label: "編輯", type: "modal" }],
-          itemName: "進場記錄",
-        }),
+        component: () => import("@/views/Purchases.vue"),
         meta: {
           mainGroup: "工地資材管理",
           title: "進場記錄",

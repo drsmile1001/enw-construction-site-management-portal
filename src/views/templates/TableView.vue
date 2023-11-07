@@ -55,7 +55,7 @@
     title="編輯"
     :fields="editor.fields"
     :model-loader="editorModelLoader"
-    :submit-model="editor.method"
+    :submit-model="editorModelSubmit"
     @submitted="() => search()"
   />
 </template>
@@ -63,11 +63,12 @@
 <script
   setup
   lang="ts"
-  generic="TItem extends RowData, TQuery extends QueryBase"
+  generic="TItem extends RowData, TQuery extends QueryBase, TCreatorModel extends Record<string, unknown>, TUpdaterModel extends Record<string, unknown>"
 >
 import type {
   CreateRowKey,
   RowData,
+  TableBaseColumn,
   TableColumns,
 } from "naive-ui/es/data-table/src/interface"
 import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
@@ -85,8 +86,8 @@ export interface QueryBase extends Record<string, string | number | undefined> {
   page?: number
 }
 
-export type TableViewProps<TItem> = {
-  columns: TableColumns<TItem>
+export type TableViewProps<TItem, TCreatorModel, TUpdaterModel> = {
+  columns: (TableBaseColumn<TItem> & { key: keyof TItem })[]
   rowKey: CreateRowKey<TItem>
   queryItems: (
     keyword: string,
@@ -96,22 +97,22 @@ export type TableViewProps<TItem> = {
     items: TItem[]
     total: number
   }>
-  creator?: CreatorOptions<TItem>
-  editor?: EditorOptions<TItem>
+  creator?: CreatorOptions<TCreatorModel>
+  editor?: EditorOptions<TItem, TUpdaterModel>
   rowActions?: RowActionOptions<TItem>[]
   deleteMethod?: (item: TItem) => Promise<void>
 }
 
-export type CreatorOptions<TItem> = {
-  fields: FormModalFieldOption<TItem>[]
-  modelBuilder: () => Promise<TItem>
-  method: (item: TItem) => Promise<void>
+export type CreatorOptions<TCreatorModel> = {
+  fields: FormModalFieldOption<TCreatorModel>[]
+  modelBuilder: () => Promise<TCreatorModel>
+  method: (item: TCreatorModel) => Promise<void>
 }
 
-export type EditorOptions<TItem> = {
-  fields: FormModalFieldOption<TItem>[]
-  modelBuilder: (item: TItem) => Promise<TItem>
-  method: (item: TItem) => Promise<void>
+export type EditorOptions<TItem, TUpdaterModel> = {
+  fields: FormModalFieldOption<TUpdaterModel>[]
+  modelBuilder: (item: TItem) => Promise<TUpdaterModel>
+  method: (model: TUpdaterModel, item: TItem) => Promise<void>
 }
 
 export type RowActionOptions<TItem> = {
@@ -120,7 +121,7 @@ export type RowActionOptions<TItem> = {
 
 const router = useRouter()
 const currentRoute = useRoute()
-const props = defineProps<TableViewProps<TItem>>()
+const props = defineProps<TableViewProps<TItem, TCreatorModel, TUpdaterModel>>()
 const searchText = ref<string>(
   (currentRoute.query.keyword as LocationQueryValue) ?? ""
 )
@@ -228,5 +229,10 @@ async function editorModelLoader() {
   if (!editorItem.value || !props.editor)
     throw new Error("editorItem or editor is not defined")
   return await props.editor.modelBuilder(editorItem.value)
+}
+async function editorModelSubmit(model: TUpdaterModel) {
+  if (!editorItem.value || !props.editor)
+    throw new Error("editorItem or editor is not defined")
+  await props.editor.method(model, editorItem.value)
 }
 </script>

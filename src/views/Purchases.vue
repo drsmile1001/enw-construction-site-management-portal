@@ -5,21 +5,16 @@
 <script setup lang="ts">
 import TableView, { type TableViewProps } from "./templates/TableView.vue"
 import {
-  type Inventory,
-  queryInventories,
-  createInventory,
-  updateInventory,
-  deleteInventory,
+  type Purchase,
+  queryPurchases,
+  createPurchase,
+  updatePurchase,
+  deletePurchase,
+  type SetPurchaseCommand,
 } from "@/stores/MaterialRepo"
 import type { FormModalFieldOption } from "@/components/FormModal.vue"
 
-const fieldsOptions: FormModalFieldOption<Inventory>[] = [
-  {
-    label: "位置",
-    key: "location",
-    type: "text",
-    rules: { required: true, trigger: "blur", message: "位置必填" },
-  },
+const fieldsOptions: FormModalFieldOption<SetPurchaseCommand>[] = [
   {
     label: "名稱",
     key: "name",
@@ -33,7 +28,7 @@ const fieldsOptions: FormModalFieldOption<Inventory>[] = [
     rules: { required: true, trigger: "blur", message: "單位必填" },
   },
   {
-    label: "數量",
+    label: "本次進場數量",
     key: "amount",
     type: "number",
     rules: { required: true },
@@ -48,59 +43,61 @@ const fieldsOptions: FormModalFieldOption<Inventory>[] = [
     key: "description",
     type: "text",
   },
-  {
-    label: "標籤",
-    key: "tags",
-    type: "text",
-  },
 ]
 
-const tableViewSetting: TableViewProps<Inventory, Inventory, Inventory> = {
+const tableViewSetting: TableViewProps<
+  Purchase,
+  SetPurchaseCommand,
+  SetPurchaseCommand
+> = {
   columns: [
-    {
-      title: "位置",
-      key: "location",
-    },
     {
       title: "名稱",
       key: "name",
+    },
+    {
+      title: "供應商",
+      key: "supplier",
     },
     {
       title: "單位",
       key: "unit",
     },
     {
-      title: "數量",
+      title: "本次進場數量",
       key: "amount",
     },
     {
-      title: "供應商",
-      key: "supplier",
+      title: "累積進場數量",
+      key: "accumulation",
+    },
+    {
+      title: "資料更新時間",
+      key: "update_time",
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: queryInventories,
+  queryItems: queryPurchases,
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
       site_id: "SITE_ID",
       id: "",
-      location: "",
       name: "",
-      unit: "",
-      amount: 0,
-      supplier: "",
       description: "",
-      tags: [],
+      supplier: "",
+      amount: 0,
+      unit: "",
+      accumulation: 0,
     }),
-    method: createInventory,
+    method: createPurchase,
   },
   editor: {
     fields: fieldsOptions,
     modelBuilder: async (item) => item,
-    method: (item) => updateInventory(item.id, item),
+    method: (command, item) => updatePurchase(item.id, command),
   },
-  deleteMethod: (item) => deleteInventory(item.id),
+  deleteMethod: (item) => deletePurchase(item.id),
 }
 </script>
