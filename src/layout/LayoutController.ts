@@ -7,27 +7,36 @@ export const useLayoutController = defineStore("layout", () => {
   const currentRoute = useRoute()
   const currentScope = computed(
     () =>
-      [...currentRoute.matched].reverse().find((o) => o.meta.backToRoute)?.meta
-        .backToRoute ?? "MAIN"
+      [...currentRoute.matched].reverse().find((o) => !!o.meta.scope)?.meta
+        .scope?.backToRouteName ?? "MAIN"
   )
-  const currentScopeNameGetter = computed(
-    () =>
-      [...currentRoute.matched].reverse().find((o) => o.meta.getScopeName)?.meta
-        .getScopeName
-  )
-  const scopeName = ref("工地管理")
+  const scopeNameMap = ref(new Map<string, string>([["MAIN", "工地管理"]]))
+  //TODO: 處理異動名稱後的問題
 
-  watch(
-    currentScopeNameGetter,
-    async (getter) => {
-      if (getter) {
-        scopeName.value = await getter(currentRoute.params)
-      } else {
-        scopeName.value = "工地管理"
-      }
-    },
-    { immediate: true }
+  const currentScopes = computed(() =>
+    [...currentRoute.matched]
+      .filter((o) => !!o.meta.scope)
+      .map((o) => o.meta.scope)
   )
+
+  const currentScopeName = computed(() => {
+    const name = ["工地管理"]
+    let key = "MAIN"
+    for (const scope of currentScopes.value) {
+      if (!scope) break
+      key = `${key}:${scope.backToRouteName}:${scope.id}:${
+        currentRoute.params[scope.id]
+      }`
+      if (scopeNameMap.value.has(key)) name.push(scopeNameMap.value.get(key)!)
+      else {
+        scope.nameGetter(currentRoute.params).then((name) => {
+          scopeNameMap.value.set(key, `${scope.prefix} ${name}`)
+        })
+        break
+      }
+    }
+    return name
+  })
 
   const scopedMenus = computed(() =>
     router.getRoutes().reduce((acc, route) => {
@@ -38,8 +47,8 @@ export const useLayoutController = defineStore("layout", () => {
       for (const matched of [...router.resolve(route.path).matched].reverse()) {
         mainGroup = mainGroup ?? matched.meta.mainGroup
         subGroup = subGroup ?? matched.meta.subGroup
-        if (matched.meta.backToRoute) {
-          scope = matched.meta.backToRoute as string
+        if (matched.meta.scope) {
+          scope = matched.meta.scope.backToRouteName
           break
         }
       }
@@ -117,6 +126,8 @@ export const useLayoutController = defineStore("layout", () => {
 
   return {
     currentMenu,
-    scopeName,
+    currentScopes,
+    scopeNameMap,
+    currentScopeName,
   }
 })

@@ -9,7 +9,6 @@ import {
   type CreateVenderCommand,
   queryVenders,
   createVender,
-  updateVender,
   deleteVender,
   type UpdateVenderCommand,
 } from "@/stores/VenderRepo"
@@ -48,7 +47,7 @@ const tableViewSetting: TableViewProps<
       type: "nav",
       navToBuilder: (item) => ({
         name: "SiteVendorBasicInfo",
-        params: { vendorId: item.tax_number },
+        params: { vendorId: item.id },
       }),
       title: "詳細",
     },
@@ -85,7 +84,6 @@ const tableViewSetting: TableViewProps<
       },
     ],
     modelBuilder: async () => ({
-      site_id: "SITE_ID",
       tax_number: "",
       name: "",
       principal: "",
@@ -94,6 +92,6 @@ const tableViewSetting: TableViewProps<
     }),
     method: createVender,
   },
-  deleteMethod: (item) => deleteVender(item.tax_number),
+  deleteMethod: (item) => deleteVender(item.id),
 }
 </script>

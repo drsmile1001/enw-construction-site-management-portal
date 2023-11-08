@@ -6,8 +6,12 @@ declare module "vue-router" {
     title?: string
     mainGroup?: string
     subGroup?: string
-    backToRoute?: string
-    getScopeName?: (routeParams: RouteParams) => Promise<string>
+    scope?: {
+      id: string
+      backToRouteName: string
+      prefix: string
+      nameGetter: (routeParams: RouteParams) => Promise<string>
+    }
     roles?: Role[]
   }
 }

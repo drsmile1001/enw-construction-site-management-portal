@@ -1,6 +1,7 @@
 import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import type { FakeTableViewProps } from "@/views/FakeTableView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
+import { getVender } from "@/stores/VenderRepo"
 
 export const routeRecords: RouteRecordRaw[] = [
   {
@@ -64,9 +65,11 @@ export const routeRecords: RouteRecordRaw[] = [
           {
             path: ":deviceId",
             meta: {
-              backToRoute: "SiteDevices",
-              getScopeName: async (p) => {
-                return `${p.deviceId} 設備`
+              scope: {
+                id: "deviceId",
+                backToRouteName: "SiteDevices",
+                prefix: "設備",
+                nameGetter: async (params) => params.deviceId as string,
               },
             },
             children: [
@@ -124,9 +127,14 @@ export const routeRecords: RouteRecordRaw[] = [
           {
             path: ":vendorId",
             meta: {
-              backToRoute: "Vendors",
-              getScopeName: async (p) => {
-                return `${p.vendorId} 廠商`
+              scope: {
+                id: "vendorId",
+                backToRouteName: "Vendors",
+                prefix: "廠商",
+                nameGetter: async (params) => {
+                  const vender = await getVender(params.vendorId as string)
+                  return vender.name
+                },
               },
             },
             children: [
@@ -143,34 +151,7 @@ export const routeRecords: RouteRecordRaw[] = [
                 component: () => import("@/views/VenderBasicInfo.vue"),
                 props: true,
                 meta: {
-                  mainGroup: "公司資料",
                   title: "基本資料",
-                },
-              },
-              {
-                path: "remittances",
-                name: "SiteVendorRemittances",
-                component: () => import("@/views/FakeTableView.vue"),
-                props: () => ({
-                  actions: [{ label: "編輯", type: "modal" }],
-                  itemName: "匯款資料",
-                }),
-                meta: {
-                  mainGroup: "公司資料",
-                  title: "匯款資料",
-                },
-              },
-              {
-                path: "documents",
-                name: "SiteVendorDocuments",
-                component: () => import("@/views/FakeTableView.vue"),
-                props: () => ({
-                  actions: [{ label: "編輯", type: "modal" }],
-                  itemName: "文件",
-                }),
-                meta: {
-                  mainGroup: "公司資料",
-                  title: "作證文件",
                 },
               },
               {
@@ -205,9 +186,13 @@ export const routeRecords: RouteRecordRaw[] = [
                   {
                     path: ":employeeId",
                     meta: {
-                      backToRoute: "VendorEmployees",
-                      getScopeName: async (p) => {
-                        return `${p.vendorId} 廠商： ${p.employeeId} 員工`
+                      scope: {
+                        id: "employeeId",
+                        backToRouteName: "VendorEmployees",
+                        prefix: "員工",
+                        nameGetter: async (params) => {
+                          return params.employeeId as string
+                        },
                       },
                     },
                     children: [

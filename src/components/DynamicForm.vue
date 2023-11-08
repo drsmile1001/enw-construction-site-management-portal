@@ -61,10 +61,8 @@ async function submit() {
 }
 
 async function reload() {
-  console.log("reload")
   formRef.value?.restoreValidation()
   formModel.value = await props.modelLoader()
-  console.log("reload!")
 }
 
 defineExpose({

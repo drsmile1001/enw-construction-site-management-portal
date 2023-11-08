@@ -1,6 +1,13 @@
 <template>
   <NLayoutHeader class="h-16 px-8 py-4 flex items-center" bordered>
-    <h1 class="text-2xl font-bold">{{ controller.scopeName }}</h1>
+    <NBreadcrumb>
+      <NBreadcrumbItem
+        :clickable="false"
+        v-for="scope in controller.currentScopeName"
+        :key="scope"
+        >{{ scope }}</NBreadcrumbItem
+      >
+    </NBreadcrumb>
   </NLayoutHeader>
 </template>
 <script setup lang="ts">

@@ -1,4 +1,5 @@
 export type Vender = {
+  id: string
   site_id: string
   tax_number: string
   name: string
@@ -11,6 +12,7 @@ const venders: Vender[] = Array.from(
   { length: 13 },
   (_, i) =>
     <Vender>{
+      id: i.toString(),
       site_id: "SIDE_ID",
       tax_number: `統一編號 ${i}`,
       name: `名稱 ${i}`,
@@ -32,15 +34,15 @@ export async function queryVenders(
   }
 }
 
-export async function getVender(tax_number: string) {
-  const index = venders.findIndex((item) => item.tax_number === tax_number)
+export async function getVender(id: string) {
+  const index = venders.findIndex((item) => item.id === id)
   if (index === -1) {
     throw new Error("Not found")
   }
   return venders[index]
 }
 
-export type CreateVenderCommand = Omit<Vender, "site_id">
+export type CreateVenderCommand = Omit<Vender, "site_id" | "id">
 
 export async function createVender(command: CreateVenderCommand) {
   const vender = <Vender>{
@@ -51,13 +53,10 @@ export async function createVender(command: CreateVenderCommand) {
   venders.push(vender)
 }
 
-export type UpdateVenderCommand = Omit<Vender, "site_id" | "tax_number">
+export type UpdateVenderCommand = Omit<Vender, "site_id" | "id">
 
-export async function updateVender(
-  tax_number: string,
-  command: UpdateVenderCommand
-) {
-  const index = venders.findIndex((item) => item.tax_number === tax_number)
+export async function updateVender(id: string, command: UpdateVenderCommand) {
+  const index = venders.findIndex((item) => item.id === id)
   if (index === -1) {
     throw new Error("Not found")
   }
@@ -67,8 +66,8 @@ export async function updateVender(
   }
 }
 
-export async function deleteVender(tax_number: string) {
-  const index = venders.findIndex((item) => item.tax_number === tax_number)
+export async function deleteVender(id: string) {
+  const index = venders.findIndex((item) => item.id === id)
   if (index === -1) {
     throw new Error("Not found")
   }

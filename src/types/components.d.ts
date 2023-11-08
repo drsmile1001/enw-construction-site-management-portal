@@ -11,6 +11,8 @@ declare module 'vue' {
     DynamicInput: typeof import('./../components/DynamicInput.vue')['default']
     FormModal: typeof import('./../components/FormModal.vue')['default']
     FormView: typeof import('./../components/FormView.vue')['default']
+    NBreadcrumb: typeof import('naive-ui')['NBreadcrumb']
+    NBreadcrumbItem: typeof import('naive-ui')['NBreadcrumbItem']
     NButton: typeof import('naive-ui')['NButton']
     NButtonGroup: typeof import('naive-ui')['NButtonGroup']
     NCard: typeof import('naive-ui')['NCard']
