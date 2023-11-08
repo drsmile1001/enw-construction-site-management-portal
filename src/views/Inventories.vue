@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import TableView, { type TableViewProps } from "./templates/TableView.vue"
+import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Inventory,
   type SetInventoryCommand,
@@ -12,58 +12,62 @@ import {
   updateInventory,
   deleteInventory,
 } from "@/stores/MaterialRepo"
-import type { FormModalFieldOption } from "@/components/FormModal.vue"
+import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
 
-const fieldsOptions: FormModalFieldOption<SetInventoryCommand>[] = [
+const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
   {
     label: "位置",
     key: "location",
-    type: "text",
+    inputProps: { type: "text" },
     rules: { required: true, trigger: "blur", message: "位置必填" },
   },
   {
     label: "名稱",
     key: "name",
-    type: "text",
+    inputProps: { type: "text" },
     rules: { required: true, trigger: "blur", message: "名稱必填" },
   },
   {
     label: "單位",
     key: "unit",
-    type: "text",
+    inputProps: { type: "text" },
     rules: { required: true, trigger: "blur", message: "單位必填" },
   },
   {
     label: "數量",
     key: "amount",
-    type: "number",
+    inputProps: { type: "number" },
     rules: { required: true },
   },
   {
     label: "供應商",
     key: "supplier",
-    type: "text",
+    inputProps: { type: "text" },
   },
   {
     label: "描述",
     key: "description",
-    type: "text",
+    inputProps: { type: "text" },
   },
   {
     label: "危險物標記",
     key: "tags",
-    type: "select",
-    selectOptions: [
-      { label: "危險物", value: "危險物" },
-      { label: "易燃物", value: "易燃物" },
-      { label: "易爆物", value: "易爆物" },
-      { label: "腐蝕性物", value: "腐蝕性物" },
-      { label: "有毒物", value: "有毒物" },
-      { label: "放射性物", value: "放射性物" },
-      { label: "其他", value: "其他" },
-    ],
-    multiple: true,
+    inputProps: {
+      type: "select",
+      selectProps: {
+        options: [
+          { label: "危險物", value: "危險物" },
+          { label: "易燃物", value: "易燃物" },
+          { label: "易爆物", value: "易爆物" },
+          { label: "腐蝕性物", value: "腐蝕性物" },
+          { label: "有毒物", value: "有毒物" },
+          { label: "放射性物", value: "放射性物" },
+          { label: "其他", value: "其他" },
+        ],
+        multiple: true,
+      },
+    },
   },
 ]
 

@@ -1,44 +1,47 @@
 <template>
-  <div class="mb-4 flex justify-between">
-    <div class="w-1/2">
-      <NInputGroup>
-        <NInput v-model:value="searchText" />
-        <NButton
-          type="primary"
-          ghost
-          @click="() => search({
+  <div class="flex flex-col gap-4">
+    <div class="flex justify-between">
+      <div class="w-1/2">
+        <NInputGroup>
+          <NInput v-model:value="searchText" />
+          <NButton
+            type="primary"
+            ghost
+            @click="() => search({
           keyword: searchText,
           page: 1,
         } as Partial<TQuery>)"
-        >
-          搜尋
-        </NButton>
-      </NInputGroup>
+          >
+            搜尋
+          </NButton>
+        </NInputGroup>
+      </div>
+      <div>
+        <NButtonGroup>
+          <NButton
+            v-if="creator"
+            type="primary"
+            @click="() => (showCreator = true)"
+          >
+            新增
+          </NButton>
+          <slot name="page-actions" :search="search"></slot>
+        </NButtonGroup>
+      </div>
     </div>
-    <div>
-      <NButtonGroup>
-        <NButton
-          v-if="creator"
-          type="primary"
-          @click="() => (showCreator = true)"
-        >
-          新增
-        </NButton>
-        <slot name="page-actions" :search="search"></slot>
-      </NButtonGroup>
-    </div>
-  </div>
-  <NDataTable
-    remote
-    size="small"
-    :columns="columns"
-    :row-key="rowKey"
-    :data="items"
-    :pagination="pagination"
-    @update:page="(p) => search({
+    <NDataTable
+      remote
+      size="small"
+      :columns="columns"
+      :row-key="rowKey"
+      :data="items"
+      :pagination="pagination"
+      @update:page="(p) => search({
       page: p
     } as Partial<TQuery>)"
-  />
+    />
+  </div>
+
   <slot name="modals" :search="search"></slot>
   <FormModal
     v-if="creator"
@@ -46,7 +49,7 @@
     title="新增"
     :fields="creator.fields"
     :model-loader="creator.modelBuilder"
-    :submit-model="creator.method"
+    :submit-method="creator.method"
     @submitted="() => search()"
   />
   <FormModal
@@ -55,7 +58,7 @@
     :title="editorTitle"
     :fields="editor.fields"
     :model-loader="editorModelLoader"
-    :submit-model="editorModelSubmit"
+    :submit-method="editorModelSubmit"
     @submitted="() => search()"
   />
 </template>
@@ -71,7 +74,12 @@ import type {
   TableBaseColumn,
   TableColumns,
 } from "naive-ui/es/data-table/src/interface"
-import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
+import {
+  useRoute,
+  useRouter,
+  type LocationQueryValue,
+  type RouteLocationRaw,
+} from "vue-router"
 import { ITEMS_PER_PAGE } from "@/environment"
 import {
   NButton,
@@ -79,7 +87,8 @@ import {
   NPopconfirm,
   type PaginationProps,
 } from "naive-ui"
-import type { FormModalFieldOption } from "@/components/FormModal.vue"
+import { RouterLink } from "vue-router"
+import type { DynamicFormItemOption } from "./DynamicForm.vue"
 
 export interface QueryBase extends Record<string, string | number | undefined> {
   keyword?: string
@@ -104,20 +113,22 @@ export type TableViewProps<TItem, TCreatorModel, TUpdaterModel> = {
 }
 
 export type CreatorOptions<TCreatorModel> = {
-  fields: FormModalFieldOption<TCreatorModel>[]
+  fields: DynamicFormItemOption<TCreatorModel>[]
   modelBuilder: () => Promise<TCreatorModel>
   method: (item: TCreatorModel) => Promise<void>
 }
 
 export type EditorOptions<TItem, TUpdaterModel> = {
-  fields: FormModalFieldOption<TUpdaterModel>[]
+  fields: DynamicFormItemOption<TUpdaterModel>[]
   modelBuilder: (item: TItem) => Promise<TUpdaterModel>
   method: (model: TUpdaterModel, item: TItem) => Promise<void>
   titleBuilder?: (item: TItem) => string
 }
 
 export type RowActionOptions<TItem> = {
-  type: "editor" | "delete"
+  type: "editor" | "delete" | "nav"
+  navToBuilder?: (item: TItem) => RouteLocationRaw
+  title?: string
 }
 
 const router = useRouter()
@@ -185,7 +196,7 @@ const columns = computed(() => {
                     showEditor.value = true
                   },
                 },
-                { default: () => "編輯" }
+                { default: () => action.title ?? "編輯" }
               )
             }
             if (action.type === "delete") {
@@ -208,9 +219,31 @@ const columns = computed(() => {
                         size: "small",
                         secondary: true,
                       },
-                      { default: () => "刪除" }
+                      { default: () => action.title ?? "刪除" }
                     ),
                   default: () => "確定要刪除嗎？",
+                }
+              )
+            }
+            if (action.type === "nav") {
+              if (!action.navToBuilder)
+                throw new Error("navToBuilder is not defined")
+              return h(
+                RouterLink,
+                {
+                  to: action.navToBuilder(row),
+                },
+                {
+                  default: () =>
+                    h(
+                      NButton,
+                      {
+                        type: "default",
+                        size: "small",
+                        secondary: true,
+                      },
+                      { default: () => action.title ?? "前往" }
+                    ),
                 }
               )
             }

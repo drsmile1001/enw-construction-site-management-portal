@@ -32,6 +32,14 @@ export async function queryVenders(
   }
 }
 
+export async function getVender(tax_number: string) {
+  const index = venders.findIndex((item) => item.tax_number === tax_number)
+  if (index === -1) {
+    throw new Error("Not found")
+  }
+  return venders[index]
+}
+
 export type CreateVenderCommand = Omit<Vender, "site_id">
 
 export async function createVender(command: CreateVenderCommand) {

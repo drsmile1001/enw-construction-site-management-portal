@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import TableView, { type TableViewProps } from "./templates/TableView.vue"
+import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
+import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Purchase,
   queryPurchases,
@@ -11,37 +12,36 @@ import {
   deletePurchase,
   type SetPurchaseCommand,
 } from "@/stores/MaterialRepo"
-import type { FormModalFieldOption } from "@/components/FormModal.vue"
 import { NTime } from "naive-ui"
 
-const fieldsOptions: FormModalFieldOption<SetPurchaseCommand>[] = [
+const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
   {
     label: "名稱",
     key: "name",
-    type: "text",
+    inputProps: { type: "text" },
     rules: { required: true, trigger: "blur", message: "名稱必填" },
   },
   {
     label: "單位",
     key: "unit",
-    type: "text",
+    inputProps: { type: "text" },
     rules: { required: true, trigger: "blur", message: "單位必填" },
   },
   {
     label: "本次進場數量",
     key: "amount",
-    type: "number",
+    inputProps: { type: "number" },
     rules: { required: true },
   },
   {
     label: "供應商",
     key: "supplier",
-    type: "text",
+    inputProps: { type: "text" },
   },
   {
     label: "描述",
     key: "description",
-    type: "text",
+    inputProps: { type: "text" },
   },
 ]
 

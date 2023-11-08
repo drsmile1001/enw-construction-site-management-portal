@@ -8,37 +8,7 @@
       role="dialog"
       aria-modal="true"
     >
-      <NForm
-        v-if="formModel"
-        ref="formRef"
-        label-placement="left"
-        label-width="auto"
-        size="medium"
-        :model="formModel"
-        :rules="rules"
-      >
-        <NFormItem
-          v-for="field in fields"
-          :key="field.label"
-          :label="field.label"
-          :path="(field.key as string)"
-        >
-          <NInput
-            v-if="field.type === 'text'"
-            v-model:value="(formModel[field.key] as string)"
-          />
-          <NInputNumber
-            v-if="field.type === 'number'"
-            v-model:value="(formModel[field.key] as number)"
-          />
-          <NSelect
-            v-if="field.type === 'select'"
-            v-model:value="(formModel[field.key] as string)"
-            :options="field.selectOptions"
-            :multiple="field.multiple"
-          />
-        </NFormItem>
-      </NForm>
+      <DynamicForm ref="formRef" :="props" />
       <template #footer>
         <div class="flex justify-end gap-2">
           <NButton type="primary" size="small" @click="() => submit()"
@@ -54,56 +24,31 @@
 </template>
 
 <script setup lang="ts" generic="TItem extends Record<string, unknown>">
-import type { FormInst, FormItemRule, FormRules } from "naive-ui"
-import type { SelectMixedOption } from "naive-ui/es/select/src/interface"
+import { type ComponentExposed } from "vue-component-type-helpers"
+import DynamicForm, { type DynamicFormProps } from "./DynamicForm.vue"
 
 export type FormModalProps<TItem> = {
   title: string
   show: boolean
-  fields: FormModalFieldOption<TItem>[]
-  submitModel: (item: TItem) => Promise<void>
-  modelLoader: () => Promise<TItem>
-}
-
-export type FormModalFieldOption<TItem> = {
-  label: string
-  key: keyof TItem
-  type: "text" | "number" | "select"
-  placeholder?: string
-  rules?: FormRules | FormItemRule | FormItemRule[]
-  selectOptions?: SelectMixedOption[]
-  multiple?: boolean
-}
+} & DynamicFormProps<TItem>
 
 const props = defineProps<FormModalProps<TItem>>()
-const rules = computed(() => {
-  const rules: FormRules = {}
-  props.fields.forEach((field) => {
-    if (field.rules) {
-      rules[field.key as string] = field.rules
-    }
-  })
-  return rules
-})
 
 const emits = defineEmits<{
   "update:show": [boolean]
   submitted: []
 }>()
 
-const formModel = ref<TItem>()
-const formRef = ref<FormInst | null>(null)
+const formRef = ref<null | ComponentExposed<typeof DynamicForm<TItem>>>(null)
 
 watchEffect(async () => {
   if (!props.show) return
-  formRef.value?.restoreValidation()
-  formModel.value = await props.modelLoader()
+  formRef.value?.reload()
 })
 
 async function submit() {
-  if (!formModel.value || !formRef.value) return
-  await formRef.value.validate()
-  await props.submitModel(formModel.value)
+  if (!formRef.value) return
+  await formRef.value?.submit()
   emits("update:show", false)
   emits("submitted")
 }

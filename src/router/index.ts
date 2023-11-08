@@ -140,25 +140,8 @@ export const routeRecords: RouteRecordRaw[] = [
               {
                 path: "basic-info",
                 name: "SiteVendorBasicInfo",
-                component: () => import("@/views/FakeDetailView.vue"),
-                props: () =>
-                  <FakeDetailViewProps>{
-                    fields: [
-                      "廠商統編",
-                      "廠商類別",
-                      "代表人姓名",
-                      "登記地址",
-                      "營業地址",
-                      "核准設立日期",
-                      "最後核准變更日期",
-                      "廠商電話",
-                      "廠商傳真(選填)",
-                      "廠商電子信箱",
-                      "業務聯絡人姓名",
-                      "聯絡人手機",
-                      "聯絡人電子信箱",
-                    ],
-                  },
+                component: () => import("@/views/VenderBasicInfo.vue"),
+                props: true,
                 meta: {
                   mainGroup: "公司資料",
                   title: "基本資料",
