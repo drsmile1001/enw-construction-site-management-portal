@@ -1,7 +1,7 @@
 import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import type { FakeTableViewProps } from "@/views/FakeTableView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
-import { getVender } from "@/stores/VenderRepo"
+import { getContractor } from "@/stores/ContractorRepo"
 
 export const routeRecords: RouteRecordRaw[] = [
   {
@@ -113,27 +113,29 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "vendors",
+        path: "contractors",
         children: [
           {
             path: "",
-            name: "Vendors",
-            component: () => import("@/views/Venders.vue"),
+            name: "Contractors",
+            component: () => import("@/views/Contractors.vue"),
             meta: {
               mainGroup: "管理設定",
               title: "廠商清冊",
             },
           },
           {
-            path: ":vendorId",
+            path: ":contractorId",
             meta: {
               scope: {
-                id: "vendorId",
-                backToRouteName: "Vendors",
+                id: "contractorId",
+                backToRouteName: "Contractors",
                 prefix: "廠商",
                 nameGetter: async (params) => {
-                  const vender = await getVender(params.vendorId as string)
-                  return vender.name
+                  const contractor = await getContractor(
+                    params.contractorId as string
+                  )
+                  return contractor.name
                 },
               },
             },
@@ -141,130 +143,30 @@ export const routeRecords: RouteRecordRaw[] = [
               {
                 path: "",
                 redirect: (to) => ({
-                  name: "SiteVendorBasicInfo",
+                  name: "SiteContractorBasicInfo",
                   params: to.params,
                 }),
               },
               {
                 path: "basic-info",
-                name: "SiteVendorBasicInfo",
-                component: () => import("@/views/VenderBasicInfo.vue"),
+                name: "SiteContractorBasicInfo",
+                component: () => import("@/views/ContractorBasicInfo.vue"),
                 props: true,
                 meta: {
                   title: "基本資料",
                 },
               },
               {
-                path: "employees",
+                path: "workers",
                 children: [
                   {
                     path: "",
-                    name: "VendorEmployees",
-                    component: () => import("@/views/FakeTableView.vue"),
-                    props: () =>
-                      <FakeTableViewProps>{
-                        actions: [
-                          {
-                            label: "詳細頁",
-                            type: "link",
-                            toRouteName: "VendorEmployeeBasicInfo",
-                            toRouteParamName: "employeeId",
-                          },
-                          {
-                            label: "刪除",
-                            type: "modal",
-                          },
-                        ],
-                        itemName: "員工",
-                        columns: ["工號", "姓名", "職稱", "照片"],
-                        topRightActions: [{ label: "新增", type: "modal" }],
-                      },
+                    name: "Workers",
+                    component: () => import("@/views/Workers.vue"),
+                    props: true,
                     meta: {
                       title: "員工清冊",
                     },
-                  },
-                  {
-                    path: ":employeeId",
-                    meta: {
-                      scope: {
-                        id: "employeeId",
-                        backToRouteName: "VendorEmployees",
-                        prefix: "員工",
-                        nameGetter: async (params) => {
-                          return params.employeeId as string
-                        },
-                      },
-                    },
-                    children: [
-                      {
-                        path: "",
-                        redirect: (to) => ({
-                          name: "VendorEmployeeBasicInfo",
-                          params: to.params,
-                        }),
-                      },
-                      {
-                        path: "basic-info",
-                        name: "VendorEmployeeBasicInfo",
-                        component: () => import("@/views/FakeDetailView.vue"),
-                        meta: {
-                          title: "個人資訊",
-                        },
-                        props: () =>
-                          <FakeDetailViewProps>{
-                            fields: [
-                              "姓名",
-                              "身份註記(無、原住民、外籍人士)",
-                              "身分證字號",
-                              "工號",
-                              "出生日期(西元)",
-                              "性別(選單)",
-                              "戶籍地址",
-                              "通訊地址(可同戶籍)",
-                              "行動電話",
-                              "電子信箱",
-                              "其它連絡電話",
-                              "最高學歷",
-                              "血型",
-                              "緊急聯絡人",
-                              "緊急連絡人電話",
-                              "投保公司",
-                              "勞(公)保證號",
-                              "投保日期(西元)",
-                              "最後異動紀錄",
-                            ],
-                          },
-                      },
-                      {
-                        path: "experience",
-                        name: "VendorEmployeeExperience",
-                        props: () =>
-                          <FakeTableViewProps>{
-                            actions: [
-                              { label: "編輯", type: "modal" },
-                              { label: "刪除" },
-                            ],
-                            itemName: "經歷",
-                            columns: ["工作經歷", "工作內容", "工作期間"],
-                          },
-                        component: () => import("@/views/FakeTableView.vue"),
-                        meta: {
-                          title: "經歷",
-                        },
-                      },
-                      {
-                        path: "certificate",
-                        name: "VendorEmployeeCertificate",
-                        props: () => ({
-                          actions: [{ label: "編輯", type: "modal" }],
-                          itemName: "證照",
-                        }),
-                        component: () => import("@/views/FakeTableView.vue"),
-                        meta: {
-                          title: "證照",
-                        },
-                      },
-                    ],
                   },
                 ],
               },
@@ -273,7 +175,7 @@ export const routeRecords: RouteRecordRaw[] = [
                 children: [
                   {
                     path: "",
-                    name: "VendorVehicles",
+                    name: "ContractorVehicles",
                     component: () => import("@/views/FakeTableView.vue"),
                     props: () =>
                       <FakeTableViewProps>{

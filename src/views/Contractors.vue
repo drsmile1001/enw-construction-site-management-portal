@@ -5,18 +5,18 @@
 <script setup lang="ts">
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
-  type Vender,
-  type CreateVenderCommand,
-  queryVenders,
-  createVender,
-  deleteVender,
-  type UpdateVenderCommand,
-} from "@/stores/VenderRepo"
+  type Contractor,
+  type CreateContractorCommand,
+  queryContractors,
+  createContractor,
+  deleteContractor,
+  type UpdateContractorCommand,
+} from "@/stores/ContractorRepo"
 
 const tableViewSetting: TableViewProps<
-  Vender,
-  CreateVenderCommand,
-  UpdateVenderCommand
+  Contractor,
+  CreateContractorCommand,
+  UpdateContractorCommand
 > = {
   columns: [
     {
@@ -40,14 +40,14 @@ const tableViewSetting: TableViewProps<
       key: "email",
     },
   ],
-  rowKey: (row) => row.tax_number,
-  queryItems: queryVenders,
+  rowKey: (row) => row.id,
+  queryItems: queryContractors,
   rowActions: [
     {
       type: "nav",
       navToBuilder: (item) => ({
-        name: "SiteVendorBasicInfo",
-        params: { vendorId: item.id },
+        name: "SiteContractorBasicInfo",
+        params: { contractorId: item.id },
       }),
       title: "詳細",
     },
@@ -90,8 +90,8 @@ const tableViewSetting: TableViewProps<
       phone: "",
       email: "",
     }),
-    method: createVender,
+    method: createContractor,
   },
-  deleteMethod: (item) => deleteVender(item.id),
+  deleteMethod: (item) => deleteContractor(item.id),
 }
 </script>
