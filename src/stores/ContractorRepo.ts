@@ -10,6 +10,8 @@ export type Contractor = {
   email: string
 }
 
+export type SetContractorCommand = Omit<Contractor, "site_id" | "id">
+
 export interface ContractorRepo
   extends Repo<
     Contractor,
@@ -17,8 +19,6 @@ export interface ContractorRepo
     SetContractorCommand,
     SetContractorCommand
   > {}
-
-export type SetContractorCommand = Omit<Contractor, "site_id" | "id">
 
 class FakeContractorRepo extends FakeRepo<
   Contractor,

@@ -14,21 +14,23 @@ export interface Repo<
   TEntity,
   TQuery extends QueryBase,
   TCreateCommand,
-  TUpdateCommand
+  TUpdateCommand,
+  TID = string
 > {
   query(query: TQuery): Promise<QueryResult<TEntity>>
-  get(id: string): Promise<TEntity>
+  get(id: TID): Promise<TEntity>
   create(command: TCreateCommand): Promise<void>
-  update(id: string, command: TUpdateCommand): Promise<void>
-  delete(id: string): Promise<void>
+  update(id: TID, command: TUpdateCommand): Promise<void>
+  delete(id: TID): Promise<void>
 }
 
 export abstract class FakeRepo<
   TEntity,
   TQuery extends QueryBase,
   TCreateCommand,
-  TUpdateCommand
-> implements Repo<TEntity, TQuery, TCreateCommand, TUpdateCommand>
+  TUpdateCommand,
+  TID = string
+> implements Repo<TEntity, TQuery, TCreateCommand, TUpdateCommand, TID>
 {
   private readonly items: TEntity[] = []
 
@@ -43,8 +45,8 @@ export abstract class FakeRepo<
     }
   }
 
-  abstract idPredicate(id: string): (item: TEntity) => boolean
-  async get(id: string): Promise<TEntity> {
+  abstract idPredicate(id: TID): (item: TEntity) => boolean
+  async get(id: TID): Promise<TEntity> {
     const item = this.items.find(this.idPredicate(id))
     if (!item) {
       throw new Error("Not found")
@@ -62,15 +64,19 @@ export abstract class FakeRepo<
   updateItem(item: NonNullable<TEntity>, command: TUpdateCommand) {
     Object.assign(item, command)
   }
-  async update(id: string, command: TUpdateCommand): Promise<void> {
+
+  async update(id: TID, command: TUpdateCommand): Promise<void> {
     const item = this.items.find(this.idPredicate(id))
     if (!item) {
       throw new Error("Not found")
     }
     this.updateItem(item, command)
+    const newItem = { ...item }
+    const index = this.items.findIndex(this.idPredicate(id))
+    this.items[index] = newItem
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: TID): Promise<void> {
     const index = this.items.findIndex(this.idPredicate(id))
     if (index === -1) {
       throw new Error("Not found")

@@ -57,7 +57,6 @@ let inventoryRepo: InventoryRepo | undefined
 export function useInventoryRepo() {
   if (inventoryRepo) return inventoryRepo
   inventoryRepo = new FakeInventoryRepo()
-  console.log(inventoryRepo)
   return inventoryRepo
 }
 
@@ -108,6 +107,5 @@ let purchaseRepo: PurchaseRepo | undefined
 export function usePurchaseRepo() {
   if (purchaseRepo) return purchaseRepo
   purchaseRepo = new FakePurchaseRepo()
-  console.log(purchaseRepo)
   return purchaseRepo
 }

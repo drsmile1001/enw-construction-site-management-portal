@@ -37,27 +37,12 @@ export const routeRecords: RouteRecordRaw[] = [
         },
       },
       {
-        path: "site-devices",
+        path: "devices",
         children: [
           {
             path: "",
-            name: "SiteDevices",
-            component: () => import("@/views/FakeTableView.vue"),
-            props: () =>
-              <FakeTableViewProps>{
-                actions: [
-                  { label: "編輯", type: "editor", editorFields: ["設備名稱"] },
-                  {
-                    label: "點位設定",
-                    type: "link",
-                    toRouteName: "SiteDevicePoints",
-                    toRouteParamName: "deviceId",
-                  },
-                  { label: "刪除", type: "confirm-delete" },
-                ],
-                itemName: "Iot 設備",
-                topRightActions: [{ label: "新增", type: "modal" }],
-              },
+            name: "Devices",
+            component: () => import("@/views/Devices.vue"),
             meta: {
               mainGroup: "管理設定",
               title: "Iot 設備清冊",
@@ -68,7 +53,7 @@ export const routeRecords: RouteRecordRaw[] = [
             meta: {
               scope: {
                 id: "deviceId",
-                backToRouteName: "SiteDevices",
+                backToRouteName: "Devices",
                 prefix: "設備",
                 nameGetter: async (params) => params.deviceId as string,
               },
@@ -77,34 +62,15 @@ export const routeRecords: RouteRecordRaw[] = [
               {
                 path: "",
                 redirect: (to) => ({
-                  name: "SiteDevicePoints",
+                  name: "DevicePoints",
                   params: to.params,
                 }),
               },
               {
                 path: "points",
-                name: "SiteDevicePoints",
-                component: () => import("@/views/FakeTableView.vue"),
-                props: () =>
-                  <FakeTableViewProps>{
-                    actions: [
-                      {
-                        label: "編輯",
-                        type: "editor",
-                        editorFields: ["觸發條件", "模組名稱"],
-                      },
-                      { label: "刪除" },
-                    ],
-                    columns: ["ID", "觸發條件"],
-                    itemName: "點位",
-                    topRightActions: [
-                      {
-                        label: "新增",
-                        type: "editor",
-                        editorFields: ["ID", "觸發條件"],
-                      },
-                    ],
-                  },
+                name: "DevicePoints",
+                component: () => import("@/views/DevicePoints.vue"),
+                props: true,
                 meta: {
                   title: "點位設定",
                 },
