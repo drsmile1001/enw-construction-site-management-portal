@@ -81,7 +81,7 @@ const tableViewSetting: TableViewProps<
       take,
       contractor_id: props.contractorId,
     }),
-  rowActions: [{ type: "delete" }],
+  rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,
     modelBuilder: async () => ({

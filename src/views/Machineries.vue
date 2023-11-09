@@ -13,6 +13,7 @@ import {
   getMachinery,
   updateMachinery,
   deleteMachinery,
+  machineryTypes,
 } from "@/stores/MachineryRepo"
 
 export type MachineriesProps = {
@@ -37,7 +38,17 @@ const fields: DynamicFormItemOption<SetMachineryCommand>[] = [
   {
     label: "機具類型",
     key: "machine_type",
-    inputProps: { type: "text" },
+    inputProps: {
+      type: "select",
+      selectProps: {
+        options: machineryTypes.map((type) => ({
+          label: type,
+          value: type,
+        })),
+        filterable: true,
+        tag: true,
+      },
+    },
   },
   {
     label: "操作人員",
@@ -86,7 +97,7 @@ const tableViewSetting: TableViewProps<
       take,
       contractor_id: props.contractorId,
     }),
-  rowActions: [{ type: "delete" }],
+  rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,
     modelBuilder: async () => ({
