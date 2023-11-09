@@ -19,17 +19,18 @@
   </NForm>
 </template>
 
-<script setup lang="ts" generic="TModel extends Record<string, unknown>">
+<script setup lang="ts" generic="TModel extends DynamicFormModel">
 import type { FormInst, FormItemRule, FormRules } from "naive-ui"
 import { type DynamicInputProps } from "./DynamicInput.vue"
 
-export type DynamicFormProps<TModel> = {
+export type DynamicFormModel = Record<string, unknown>
+export type DynamicFormProps<TModel extends DynamicFormModel = any> = {
   fields: DynamicFormItemOption<TModel>[]
   submitMethod: (item: TModel) => Promise<void>
   modelLoader: () => Promise<TModel>
 }
 
-export type DynamicFormItemOption<TModel> = {
+export type DynamicFormItemOption<TModel extends DynamicFormModel> = {
   label: string
   key: keyof TModel & string
   rules?: FormRules | FormItemRule | FormItemRule[]

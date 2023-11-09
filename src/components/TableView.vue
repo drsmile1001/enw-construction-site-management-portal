@@ -66,7 +66,7 @@
 <script
   setup
   lang="ts"
-  generic="TItem extends RowData, TQuery extends QueryBase, TCreatorModel extends Record<string, unknown>, TUpdaterModel extends Record<string, unknown>"
+  generic="TItem extends RowData, TQuery extends QueryBase, TCreatorModel extends DynamicFormModel, TEditorModel extends DynamicFormModel"
 >
 import type {
   CreateRowKey,
@@ -88,14 +88,18 @@ import {
   type PaginationProps,
 } from "naive-ui"
 import { RouterLink } from "vue-router"
-import type { DynamicFormItemOption } from "./DynamicForm.vue"
+import type { DynamicFormItemOption, DynamicFormModel } from "./DynamicForm.vue"
 
 export interface QueryBase extends Record<string, string | number | undefined> {
   keyword?: string
   page?: number
 }
 
-export type TableViewProps<TItem, TCreatorModel, TUpdaterModel> = {
+export type TableViewProps<
+  TItem,
+  TCreatorModel extends DynamicFormModel,
+  TEditorModel extends DynamicFormModel
+> = {
   columns: (TableBaseColumn<TItem> & { key: keyof TItem })[]
   rowKey: CreateRowKey<TItem>
   queryItems: (
@@ -107,18 +111,18 @@ export type TableViewProps<TItem, TCreatorModel, TUpdaterModel> = {
     total: number
   }>
   creator?: CreatorOptions<TCreatorModel>
-  editor?: EditorOptions<TItem, TUpdaterModel>
+  editor?: EditorOptions<TItem, TEditorModel>
   rowActions?: RowActionOptions<TItem>[]
   deleteMethod?: (item: TItem) => Promise<void>
 }
 
-export type CreatorOptions<TCreatorModel> = {
+export type CreatorOptions<TCreatorModel extends DynamicFormModel> = {
   fields: DynamicFormItemOption<TCreatorModel>[]
   modelBuilder: () => Promise<TCreatorModel>
   method: (item: TCreatorModel) => Promise<void>
 }
 
-export type EditorOptions<TItem, TUpdaterModel> = {
+export type EditorOptions<TItem, TUpdaterModel extends DynamicFormModel> = {
   fields: DynamicFormItemOption<TUpdaterModel>[]
   modelBuilder: (item: TItem) => Promise<TUpdaterModel>
   method: (model: TUpdaterModel, item: TItem) => Promise<void>
@@ -133,7 +137,7 @@ export type RowActionOptions<TItem> = {
 
 const router = useRouter()
 const currentRoute = useRoute()
-const props = defineProps<TableViewProps<TItem, TCreatorModel, TUpdaterModel>>()
+const props = defineProps<TableViewProps<TItem, TCreatorModel, TEditorModel>>()
 const searchText = ref<string>(
   (currentRoute.query.keyword as LocationQueryValue) ?? ""
 )
@@ -269,7 +273,7 @@ async function editorModelLoader() {
     throw new Error("editorItem or editor is not defined")
   return await props.editor.modelBuilder(editorItem.value)
 }
-async function editorModelSubmit(model: TUpdaterModel) {
+async function editorModelSubmit(model: TEditorModel) {
   if (!editorItem.value || !props.editor)
     throw new Error("editorItem or editor is not defined")
   await props.editor.method(model, editorItem.value)

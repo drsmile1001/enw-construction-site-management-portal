@@ -3,7 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import TableView, {
+  type CreatorOptions,
+  type TableViewProps,
+} from "@/components/TableView.vue"
 import {
   type Inventory,
   type SetInventoryCommand,

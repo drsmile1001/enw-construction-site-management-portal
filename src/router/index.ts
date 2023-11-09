@@ -171,60 +171,13 @@ export const routeRecords: RouteRecordRaw[] = [
                 ],
               },
               {
-                path: "vehicles",
+                path: "machineries",
                 children: [
                   {
                     path: "",
-                    name: "ContractorVehicles",
-                    component: () => import("@/views/FakeTableView.vue"),
-                    props: () =>
-                      <FakeTableViewProps>{
-                        actions: [
-                          {
-                            label: "編輯",
-                            type: "editor",
-                            editorFields: [
-                              "機具類型",
-                              "機具名稱",
-                              "車牌號碼",
-                              "出廠年",
-                              "操作人員",
-                              "操作人員聯絡電話",
-                              "機具供應廠商",
-                              "機具供應廠商聯絡人",
-                              "機具供應廠商聯絡電話",
-                              "機具規格",
-                            ],
-                          },
-                          { label: "刪除", type: "confirm-delete" },
-                        ],
-                        itemName: "車輛",
-                        columns: [
-                          "機具類型",
-                          "機具名稱",
-                          "車牌號碼",
-                          "操作人員姓名",
-                          "操作人員聯絡電話",
-                        ],
-                        topRightActions: [
-                          {
-                            label: "新增",
-                            type: "editor",
-                            editorFields: [
-                              "機具類型",
-                              "機具名稱",
-                              "車牌號碼",
-                              "出廠年",
-                              "操作人員",
-                              "操作人員聯絡電話",
-                              "機具供應廠商",
-                              "機具供應廠商聯絡人",
-                              "機具供應廠商聯絡電話",
-                              "機具規格",
-                            ],
-                          },
-                        ],
-                      },
+                    name: "Machineries",
+                    component: () => import("@/views/Machineries.vue"),
+                    props: true,
                     meta: {
                       title: "車輛清冊",
                     },

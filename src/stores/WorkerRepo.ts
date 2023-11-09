@@ -11,20 +11,7 @@ export type Worker = {
   picture_file: string
 }
 
-const workers: Worker[] = Array.from(
-  { length: 13 },
-  (_, i) =>
-    <Worker>{
-      id: i.toString(),
-      site_id: "SIDE_ID",
-      worker_no: `工號 ${i}`,
-      contractor_id: `廠商 ${i}`,
-      name: `姓名 ${i}`,
-      personal_id: `身分證 ${i}`,
-      job_title: `職稱 ${i}`,
-      picture_file: `照片 ${i}`,
-    }
-)
+const workers: Worker[] = []
 
 export async function queryWorkers(
   query: QueryBase & { contractor_id?: string }

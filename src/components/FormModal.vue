@@ -23,23 +23,26 @@
   </NModal>
 </template>
 
-<script setup lang="ts" generic="TItem extends Record<string, unknown>">
+<script setup lang="ts" generic="TModel extends DynamicFormModel">
 import { type ComponentExposed } from "vue-component-type-helpers"
-import DynamicForm, { type DynamicFormProps } from "./DynamicForm.vue"
+import DynamicForm, {
+  type DynamicFormModel,
+  type DynamicFormProps,
+} from "./DynamicForm.vue"
 
-export type FormModalProps<TItem> = {
+export type FormModalProps<TModel extends DynamicFormModel = any> = {
   title: string
   show: boolean
-} & DynamicFormProps<TItem>
+} & DynamicFormProps<TModel>
 
-const props = defineProps<FormModalProps<TItem>>()
+const props = defineProps<FormModalProps<TModel>>()
 
 const emits = defineEmits<{
   "update:show": [boolean]
   submitted: []
 }>()
 
-const formRef = ref<null | ComponentExposed<typeof DynamicForm<TItem>>>(null)
+const formRef = ref<null | ComponentExposed<typeof DynamicForm<TModel>>>(null)
 
 watchEffect(async () => {
   if (!props.show) return

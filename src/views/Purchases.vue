@@ -45,7 +45,7 @@ const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
   },
 ]
 
-const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, any> = {
+const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, {}> = {
   columns: [
     {
       title: "名稱",
