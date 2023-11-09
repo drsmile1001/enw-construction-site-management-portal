@@ -1,3 +1,5 @@
+import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
+
 export type Contractor = {
   id: string
   site_id: string
@@ -8,71 +10,41 @@ export type Contractor = {
   email: string
 }
 
-const contractors: Contractor[] = Array.from(
-  { length: 13 },
-  (_, i) =>
-    <Contractor>{
-      id: i.toString(),
-      site_id: "SIDE_ID",
-      tax_number: `統一編號 ${i}`,
-      name: `名稱 ${i}`,
-      principal: `負責人 ${i}`,
-      phone: `0987654321`,
-      email: `單位 ${i}`,
+export interface ContractorRepo
+  extends Repo<
+    Contractor,
+    QueryBase,
+    SetContractorCommand,
+    SetContractorCommand
+  > {}
+
+export type SetContractorCommand = Omit<Contractor, "site_id" | "id">
+
+class FakeContractorRepo extends FakeRepo<
+  Contractor,
+  QueryBase,
+  SetContractorCommand,
+  SetContractorCommand
+> {
+  queryPredicate(query: QueryBase): (item: Contractor) => boolean {
+    return (item) => !query.keyword || item.name.includes(query.keyword)
+  }
+  idPredicate(id: string): (item: Contractor) => boolean {
+    return (item) => item.id === id
+  }
+  createItem(command: SetContractorCommand): Contractor {
+    return {
+      id: Math.random().toString(),
+      site_id: "1",
+      ...command,
     }
-)
-
-export async function queryContractors(
-  keyword: string,
-  skip: number,
-  take: number
-) {
-  const filtered = contractors.filter((item) => item.name.includes(keyword))
-  return {
-    items: filtered.slice(skip, skip + take),
-    total: filtered.length,
   }
 }
 
-export async function getContractor(id: string) {
-  const index = contractors.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  return contractors[index]
-}
+let contractorRepo: ContractorRepo | undefined
 
-export type CreateContractorCommand = Omit<Contractor, "site_id" | "id">
-
-export async function createContractor(command: CreateContractorCommand) {
-  const contractor = <Contractor>{
-    site_id: "SIDE_ID",
-    id: (contractors.length + 1).toString(),
-    ...command,
-  }
-  contractors.push(contractor)
-}
-
-export type UpdateContractorCommand = Omit<Contractor, "site_id" | "id">
-
-export async function updateContractor(
-  id: string,
-  command: UpdateContractorCommand
-) {
-  const index = contractors.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  contractors[index] = {
-    ...contractors[index],
-    ...command,
-  }
-}
-
-export async function deleteContractor(id: string) {
-  const index = contractors.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  contractors.splice(index, 1)
+export function useContractorRepo() {
+  if (contractorRepo) return contractorRepo
+  contractorRepo = new FakeContractorRepo()
+  return contractorRepo
 }

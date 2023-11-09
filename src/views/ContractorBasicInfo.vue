@@ -5,18 +5,18 @@
 <script setup lang="ts">
 import type { FormViewProps } from "@/components/FormView.vue"
 import {
-  getContractor,
-  type UpdateContractorCommand,
-  updateContractor,
+  type SetContractorCommand,
+  useContractorRepo,
 } from "@/stores/ContractorRepo"
 
 export type ContractorBasicInfoProps = {
   contractorId: string
 }
 
+const repo = useContractorRepo()
 const props = defineProps<ContractorBasicInfoProps>()
 
-const formViewProps: FormViewProps<UpdateContractorCommand> = {
+const formViewProps: FormViewProps<SetContractorCommand> = {
   fields: [
     {
       label: "名稱",
@@ -40,7 +40,7 @@ const formViewProps: FormViewProps<UpdateContractorCommand> = {
       inputProps: { type: "text" },
     },
   ],
-  modelLoader: () => getContractor(props.contractorId),
-  submitMethod: (command) => updateContractor(props.contractorId, command),
+  modelLoader: () => repo.get(props.contractorId),
+  submitMethod: (command) => repo.update(props.contractorId, command),
 }
 </script>

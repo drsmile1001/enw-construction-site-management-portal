@@ -119,7 +119,7 @@ export type TableViewProps<
 export type CreatorOptions<TCreatorModel extends DynamicFormModel> = {
   fields: DynamicFormItemOption<TCreatorModel>[]
   modelBuilder: () => Promise<TCreatorModel>
-  method: (item: TCreatorModel) => Promise<void>
+  method: (model: TCreatorModel) => Promise<void>
 }
 
 export type EditorOptions<TItem, TUpdaterModel extends DynamicFormModel> = {

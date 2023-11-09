@@ -5,18 +5,16 @@
 <script setup lang="ts">
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
+  useContractorRepo,
   type Contractor,
-  type CreateContractorCommand,
-  queryContractors,
-  createContractor,
-  deleteContractor,
-  type UpdateContractorCommand,
+  type SetContractorCommand,
 } from "@/stores/ContractorRepo"
 
+const repo = useContractorRepo()
 const tableViewSetting: TableViewProps<
   Contractor,
-  CreateContractorCommand,
-  UpdateContractorCommand
+  SetContractorCommand,
+  SetContractorCommand
 > = {
   columns: [
     {
@@ -41,7 +39,12 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: queryContractors,
+  queryItems: (keyword, skip, take) =>
+    repo.query({
+      keyword,
+      skip,
+      take,
+    }),
   rowActions: [
     {
       type: "nav",
@@ -90,8 +93,8 @@ const tableViewSetting: TableViewProps<
       phone: "",
       email: "",
     }),
-    method: createContractor,
+    method: (model) => repo.create(model),
   },
-  deleteMethod: (item) => deleteContractor(item.id),
+  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>

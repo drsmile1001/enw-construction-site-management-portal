@@ -7,13 +7,12 @@ import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Purchase,
-  queryPurchases,
-  createPurchase,
-  deletePurchase,
   type SetPurchaseCommand,
+  usePurchaseRepo,
 } from "@/stores/MaterialRepo"
 import { NTime } from "naive-ui"
 
+const repo = usePurchaseRepo()
 const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
   {
     label: "名稱",
@@ -74,7 +73,12 @@ const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, {}> = {
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: queryPurchases,
+  queryItems: (keyword, skip, take) =>
+    repo.query({
+      keyword,
+      skip,
+      take,
+    }),
   rowActions: [{ type: "delete" }],
   creator: {
     fields: fieldsOptions,
@@ -88,8 +92,8 @@ const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, {}> = {
       unit: "",
       accumulation: 0,
     }),
-    method: createPurchase,
+    method: (model) => repo.create(model),
   },
-  deleteMethod: (item) => deletePurchase(item.id),
+  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>

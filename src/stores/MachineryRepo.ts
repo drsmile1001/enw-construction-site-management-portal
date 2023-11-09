@@ -1,4 +1,4 @@
-import type { QueryBase } from "@/utilities/repo"
+import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
 
 export type Machinery = {
   site_id: string
@@ -11,64 +11,46 @@ export type Machinery = {
   driver_phone: string
 }
 
-const machineries: Machinery[] = []
-
-export async function queryMachineries(
-  query: QueryBase & { contractor_id?: string }
-) {
-  const filtered = machineries.filter(
-    (item) =>
-      (query.contractor_id === undefined ||
-        item.contractor_id === query.contractor_id) &&
-      (query.keyword === undefined ||
-        item.name.includes(query.keyword) ||
-        item.license_no.includes(query.keyword))
-  )
-  return {
-    items: filtered.slice(query.skip, (query.skip ?? 0) + (query.take ?? 10)),
-    total: filtered.length,
-  }
-}
-
-export async function getMachinery(id: string) {
-  const machinery = machineries.find((item) => item.id === id)
-  if (machinery === undefined) {
-    throw new Error("Not found")
-  }
-  return machinery
-}
-
+export type MachineryQuery = QueryBase & { contractor_id?: string }
 export type SetMachineryCommand = Omit<Machinery, "site_id" | "id">
 
-export async function createMachinery(command: SetMachineryCommand) {
-  machineries.push({
-    ...command,
-    id: Math.random().toString(),
-    site_id: "SIDE_ID",
-  })
+export interface MachineryRepo
+  extends Repo<
+    Machinery,
+    MachineryQuery,
+    SetMachineryCommand,
+    SetMachineryCommand
+  > {}
+
+class FakeMachineryRepo extends FakeRepo<
+  Machinery,
+  MachineryQuery,
+  SetMachineryCommand,
+  SetMachineryCommand
+> {
+  queryPredicate(query: MachineryQuery): (item: Machinery) => boolean {
+    return (item) =>
+      (!query.keyword || item.name.includes(query.keyword)) &&
+      (!query.contractor_id || item.contractor_id === query.contractor_id)
+  }
+  idPredicate(id: string): (item: Machinery) => boolean {
+    return (item) => item.id === id
+  }
+  createItem(command: SetMachineryCommand): Machinery {
+    return {
+      site_id: "1",
+      id: Math.random().toString(),
+      ...command,
+    }
+  }
 }
 
-export async function updateMachinery(
-  id: string,
-  command: SetMachineryCommand
-) {
-  const index = machineries.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  machineries[index] = {
-    ...command,
-    id,
-    site_id: "SIDE_ID",
-  }
-}
+let machineryRepo: MachineryRepo | undefined
 
-export async function deleteMachinery(id: string) {
-  const index = machineries.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  machineries.splice(index, 1)
+export function useMachineryRepo() {
+  if (machineryRepo) return machineryRepo
+  machineryRepo = new FakeMachineryRepo()
+  return machineryRepo
 }
 
 export const machineryTypes = [

@@ -8,11 +8,7 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Machinery,
   type SetMachineryCommand,
-  queryMachineries,
-  createMachinery,
-  getMachinery,
-  updateMachinery,
-  deleteMachinery,
+  useMachineryRepo,
   machineryTypes,
 } from "@/stores/MachineryRepo"
 
@@ -20,8 +16,8 @@ export type MachineriesProps = {
   contractorId: string
 }
 
+const repo = useMachineryRepo()
 const props = defineProps<MachineriesProps>()
-
 const fields: DynamicFormItemOption<SetMachineryCommand>[] = [
   {
     label: "車牌號碼",
@@ -91,7 +87,7 @@ const tableViewSetting: TableViewProps<
   ],
   rowKey: (row) => row.id,
   queryItems: (keyword, skip, take) =>
-    queryMachineries({
+    repo.query({
       keyword,
       skip,
       take,
@@ -108,13 +104,13 @@ const tableViewSetting: TableViewProps<
       driver: "",
       driver_phone: "",
     }),
-    method: createMachinery,
+    method: (model) => repo.create(model),
   },
   editor: {
     fields: fields,
-    modelBuilder: async (item) => getMachinery(item.id),
-    method: (command, item) => updateMachinery(item.id, command),
+    modelBuilder: async (item) => repo.get(item.id),
+    method: (command, item) => repo.update(item.id, command),
   },
-  deleteMethod: (item) => deleteMachinery(item.id),
+  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>

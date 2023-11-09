@@ -1,4 +1,4 @@
-import type { QueryBase } from "@/utilities/repo"
+import { type QueryBase, FakeRepo, type Repo } from "@/utilities/repo"
 
 export type Worker = {
   id: string
@@ -11,59 +11,42 @@ export type Worker = {
   picture_file: string
 }
 
-const workers: Worker[] = []
-
-export async function queryWorkers(
-  query: QueryBase & { contractor_id?: string }
-) {
-  const filtered = workers.filter(
-    (item) =>
-      (query.contractor_id === undefined ||
-        item.contractor_id === query.contractor_id) &&
-      (query.keyword === undefined ||
-        item.name.includes(query.keyword) ||
-        item.personal_id.includes(query.keyword))
-  )
-  return {
-    items: filtered.slice(query.skip, (query.skip ?? 0) + (query.take ?? 10)),
-    total: filtered.length,
-  }
-}
-
-export async function getWorker(id: string) {
-  const worker = workers.find((item) => item.id === id)
-  if (worker === undefined) {
-    throw new Error("Not found")
-  }
-  return worker
-}
-
+export type WorkerQuery = QueryBase & { contractor_id?: string }
 export type SetWorkerCommand = Omit<Worker, "site_id" | "id">
 
-export async function createWorker(command: SetWorkerCommand) {
-  workers.push({
-    ...command,
-    id: Math.random().toString(),
-    site_id: "SIDE_ID",
-  })
+export interface WorkerRepo
+  extends Repo<Worker, WorkerQuery, SetWorkerCommand, SetWorkerCommand> {}
+
+class FakeWorkerRepo extends FakeRepo<
+  Worker,
+  WorkerQuery,
+  SetWorkerCommand,
+  SetWorkerCommand
+> {
+  queryPredicate(query: WorkerQuery): (item: Worker) => boolean {
+    return (item) =>
+      (!query.keyword ||
+        item.name.includes(query.keyword) ||
+        item.personal_id.includes(query.keyword)) &&
+      (!query.contractor_id || item.contractor_id === query.contractor_id)
+  }
+  idPredicate(id: string): (item: Worker) => boolean {
+    return (item) => item.id === id
+  }
+  createItem(command: SetWorkerCommand): Worker {
+    return {
+      site_id: "1",
+      id: Math.random().toString(),
+      ...command,
+    }
+  }
 }
 
-export async function updateWorker(id: string, command: SetWorkerCommand) {
-  const index = workers.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  workers[index] = {
-    ...command,
-    id,
-    site_id: "SIDE_ID",
-  }
-}
+let workerRepo: WorkerRepo | undefined
 
-export async function deleteWorker(id: string) {
-  const index = workers.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
+export function useWorkerRepo(): WorkerRepo {
+  if (!workerRepo) {
+    workerRepo = new FakeWorkerRepo()
   }
-  workers.splice(index, 1)
+  return workerRepo
 }

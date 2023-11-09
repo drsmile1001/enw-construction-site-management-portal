@@ -8,16 +8,13 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Worker,
   type SetWorkerCommand,
-  queryWorkers,
-  createWorker,
-  updateWorker,
-  getWorker,
-  deleteWorker,
+  useWorkerRepo,
 } from "@/stores/WorkerRepo"
 export type WorkersProps = {
   contractorId: string
 }
 
+const repo = useWorkerRepo()
 const props = defineProps<WorkersProps>()
 
 const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
@@ -75,12 +72,7 @@ const tableViewSetting: TableViewProps<
   ],
   rowKey: (row) => row.id,
   queryItems: (keyword, skip, take) =>
-    queryWorkers({
-      keyword,
-      skip,
-      take,
-      contractor_id: props.contractorId,
-    }),
+    repo.query({ contractor_id: props.contractorId, keyword, skip, take }),
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,
@@ -92,13 +84,13 @@ const tableViewSetting: TableViewProps<
       picture_file: "",
       personal_id: "",
     }),
-    method: createWorker,
+    method: (model) => repo.create(model),
   },
   editor: {
     fields: fields,
-    modelBuilder: async (item) => getWorker(item.id),
-    method: (command, item) => updateWorker(item.id, command),
+    modelBuilder: async (item) => repo.get(item.id),
+    method: (command, item) => repo.update(item.id, command),
   },
-  deleteMethod: (item) => deleteWorker(item.id),
+  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>

@@ -3,21 +3,16 @@
 </template>
 
 <script setup lang="ts">
-import TableView, {
-  type CreatorOptions,
-  type TableViewProps,
-} from "@/components/TableView.vue"
+import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Inventory,
   type SetInventoryCommand,
-  queryInventories,
-  createInventory,
-  updateInventory,
-  deleteInventory,
+  useInventoryRepo,
 } from "@/stores/MaterialRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
 
+const repo = useInventoryRepo()
 const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
   {
     label: "位置",
@@ -116,7 +111,12 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: queryInventories,
+  queryItems: (keyword, skip, take) =>
+    repo.query({
+      keyword,
+      skip,
+      take,
+    }),
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fieldsOptions,
@@ -131,13 +131,13 @@ const tableViewSetting: TableViewProps<
       description: "",
       tags: [],
     }),
-    method: createInventory,
+    method: (model) => repo.create(model),
   },
   editor: {
     fields: fieldsOptions,
     modelBuilder: async (item) => item,
-    method: (model, item) => updateInventory(item.id, model),
+    method: (model, item) => repo.update(item.id, model),
   },
-  deleteMethod: (item) => deleteInventory(item.id),
+  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>

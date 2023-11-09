@@ -1,3 +1,5 @@
+import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
+
 export type Inventory = {
   site_id: string
   id: string
@@ -11,73 +13,52 @@ export type Inventory = {
   update_time: string
 }
 
-const inventories: Inventory[] = Array.from(
-  { length: 13 },
-  (_, i) =>
-    <Inventory>{
-      site_id: "SIDE_ID",
-      id: i.toString(),
-      location: `位置 ${i}`,
-      name: `名稱 ${i}`,
-      unit: `單位 ${i}`,
-      amount: 20,
-      supplier: `供應商 ${i}`,
-      description: `描述 ${i}`,
-      tags: ["aa", "bb"],
-      update_time: new Date().toISOString(),
-    }
-)
-
-export async function queryInventories(
-  keyword: string,
-  skip: number,
-  take: number
-) {
-  const filtered = inventories.filter(
-    (item) => item.name.includes(keyword) || item.location.includes(keyword)
-  )
-  return {
-    items: filtered.slice(skip, skip + take),
-    total: filtered.length,
-  }
-}
-
 export type SetInventoryCommand = Omit<
   Inventory,
   "site_id" | "id" | "update_time"
 >
 
-export async function createInventory(command: SetInventoryCommand) {
-  const inventory: Inventory = {
-    site_id: "SIDE_ID",
-    id: (inventories.length + 1).toString(),
-    update_time: new Date().toISOString(),
-    ...command,
+export interface InventoryRepo
+  extends Repo<
+    Inventory,
+    QueryBase,
+    SetInventoryCommand,
+    SetInventoryCommand
+  > {}
+
+class FakeInventoryRepo extends FakeRepo<
+  Inventory,
+  QueryBase,
+  SetInventoryCommand,
+  SetInventoryCommand
+> {
+  queryPredicate(query: QueryBase): (item: Inventory) => boolean {
+    return (item) => !query.keyword || item.name.includes(query.keyword)
   }
-  inventories.push(inventory)
+  idPredicate(id: string): (item: Inventory) => boolean {
+    return (item) => item.id === id
+  }
+  createItem(command: SetInventoryCommand): Inventory {
+    return {
+      site_id: "1",
+      id: Math.random().toString(),
+      update_time: new Date().toISOString(),
+      ...command,
+    }
+  }
+  updateItem(item: Inventory, command: SetInventoryCommand): void {
+    Object.assign(item, command)
+    item.update_time = new Date().toISOString()
+  }
 }
 
-export async function updateInventory(
-  id: string,
-  command: SetInventoryCommand
-) {
-  const index = inventories.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  inventories[index] = {
-    ...inventories[index],
-    ...command,
-    update_time: new Date().toISOString(),
-  }
-}
+let inventoryRepo: InventoryRepo | undefined
 
-export async function deleteInventory(id: string) {
-  const index = inventories.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  inventories.splice(index, 1)
+export function useInventoryRepo() {
+  if (inventoryRepo) return inventoryRepo
+  inventoryRepo = new FakeInventoryRepo()
+  console.log(inventoryRepo)
+  return inventoryRepo
 }
 
 export type Purchase = {
@@ -92,53 +73,41 @@ export type Purchase = {
   update_time: string
 }
 
-const purchases: Purchase[] = Array.from(
-  { length: 13 },
-  (_, i) =>
-    <Purchase>{
-      site_id: "SIDE_ID",
-      id: i.toString(),
-      name: `名稱 ${i}`,
-      description: `描述 ${i}`,
-      supplier: `供應商 ${i}`,
-      amount: 20,
-      unit: `單位 ${i}`,
-      accumulation: 20,
-      update_time: new Date().toISOString(),
-    }
-)
-
-export async function queryPurchases(
-  keyword: string,
-  skip: number,
-  take: number
-) {
-  const filtered = purchases.filter((item) => item.name.includes(keyword))
-  return {
-    items: filtered.slice(skip, skip + take),
-    total: filtered.length,
-  }
-}
-
 export type SetPurchaseCommand = Omit<
   Purchase,
   "site_id" | "id" | "update_time"
 >
 
-export async function createPurchase(command: SetPurchaseCommand) {
-  const purchase = <Purchase>{
-    site_id: "SIDE_ID",
-    id: (purchases.length + 1).toString(),
-    update_time: new Date().toISOString(),
-    ...command,
+export interface PurchaseRepo
+  extends Repo<Purchase, QueryBase, SetPurchaseCommand, void> {}
+
+class FakePurchaseRepo extends FakeRepo<
+  Purchase,
+  QueryBase,
+  SetPurchaseCommand,
+  void
+> {
+  queryPredicate(query: QueryBase): (item: Purchase) => boolean {
+    return (item) => !query.keyword || item.name.includes(query.keyword)
   }
-  purchases.push(purchase)
+  idPredicate(id: string): (item: Purchase) => boolean {
+    return (item) => item.id === id
+  }
+  createItem(command: SetPurchaseCommand): Purchase {
+    return {
+      site_id: "1",
+      id: Math.random().toString(),
+      update_time: new Date().toISOString(),
+      ...command,
+    }
+  }
 }
 
-export async function deletePurchase(id: string) {
-  const index = purchases.findIndex((item) => item.id === id)
-  if (index === -1) {
-    throw new Error("Not found")
-  }
-  purchases.splice(index, 1)
+let purchaseRepo: PurchaseRepo | undefined
+
+export function usePurchaseRepo() {
+  if (purchaseRepo) return purchaseRepo
+  purchaseRepo = new FakePurchaseRepo()
+  console.log(purchaseRepo)
+  return purchaseRepo
 }
