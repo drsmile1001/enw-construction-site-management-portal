@@ -33,6 +33,21 @@ export abstract class FakeRepo<
 > implements Repo<TEntity, TQuery, TCreateCommand, TUpdateCommand, TID>
 {
   private readonly items: TEntity[] = []
+  private getRepoName() {
+    return this.constructor.name
+  }
+
+  constructor() {
+    JSON.parse(localStorage.getItem(this.getRepoName()) ?? "[]").forEach(
+      (item: TEntity) => {
+        this.items.push(item)
+      }
+    )
+  }
+
+  private save() {
+    localStorage.setItem(this.getRepoName(), JSON.stringify(this.items))
+  }
 
   abstract queryPredicate(query: TQuery): (item: TEntity) => boolean
   async query(query: TQuery): Promise<QueryResult<TEntity>> {
@@ -59,6 +74,7 @@ export abstract class FakeRepo<
   async create(command: TCreateCommand): Promise<void> {
     const item = this.createItem(command)
     this.items.push(item)
+    this.save()
   }
 
   updateItem(item: NonNullable<TEntity>, command: TUpdateCommand) {
@@ -74,6 +90,7 @@ export abstract class FakeRepo<
     const newItem = { ...item }
     const index = this.items.findIndex(this.idPredicate(id))
     this.items[index] = newItem
+    this.save()
   }
 
   async delete(id: TID): Promise<void> {
@@ -82,5 +99,6 @@ export abstract class FakeRepo<
       throw new Error("Not found")
     }
     this.items.splice(index, 1)
+    this.save()
   }
 }

@@ -5,17 +5,22 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import { NImage } from "naive-ui"
 import {
   type Worker,
   type SetWorkerCommand,
   useWorkerRepo,
 } from "@/stores/WorkerRepo"
+import { useFileRepo } from "@/stores/FileRepo"
 export type WorkersProps = {
   contractorId: string
 }
 
 const repo = useWorkerRepo()
 const props = defineProps<WorkersProps>()
+const fileRepo = useFileRepo()
+
+const workerPictureCollection = `contractor_${props.contractorId}_workers`
 
 const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
   {
@@ -38,7 +43,17 @@ const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
   {
     label: "照片",
     key: "picture_file",
-    inputProps: { type: "text" },
+    inputProps: {
+      type: "file",
+      fileProps: {
+        collection: workerPictureCollection,
+        uploadProps: {
+          max: 1,
+          multiple: false,
+          listType: "image-card",
+        },
+      },
+    },
   },
   {
     label: "身份證字號",
@@ -68,6 +83,17 @@ const tableViewSetting: TableViewProps<
     {
       title: "照片",
       key: "picture_file",
+      render: (row) =>
+        row.picture_file
+          ? h(NImage, {
+              width: 100,
+              src: fileRepo.buildFileUrl(
+                workerPictureCollection,
+                row.picture_file
+              ),
+              objectFit: "cover",
+            })
+          : h("div"),
     },
   ],
   rowKey: (row) => row.id,
@@ -81,7 +107,7 @@ const tableViewSetting: TableViewProps<
       contractor_id: props.contractorId,
       name: "",
       job_title: "",
-      picture_file: "",
+      picture_file: null,
       personal_id: "",
     }),
     method: (model) => repo.create(model),

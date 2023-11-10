@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AppUploader: typeof import('./../components/AppUploader.vue')['default']
     DynamicForm: typeof import('./../components/DynamicForm.vue')['default']
     DynamicInput: typeof import('./../components/DynamicInput.vue')['default']
     FormModal: typeof import('./../components/FormModal.vue')['default']
@@ -32,6 +33,7 @@ declare module 'vue' {
     NModal: typeof import('naive-ui')['NModal']
     NSelect: typeof import('naive-ui')['NSelect']
     NTable: typeof import('naive-ui')['NTable']
+    NUpload: typeof import('naive-ui')['NUpload']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TableView: typeof import('./../components/TableView.vue')['default']

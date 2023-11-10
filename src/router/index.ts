@@ -1,9 +1,7 @@
-import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
-import type { FakeTableViewProps } from "@/views/FakeTableView.vue"
-import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 import { useContractorRepo } from "@/stores/ContractorRepo"
+import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
+import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
-const contractorRepo = useContractorRepo()
 export const routeRecords: RouteRecordRaw[] = [
   {
     path: "/",
@@ -99,6 +97,7 @@ export const routeRecords: RouteRecordRaw[] = [
                 backToRouteName: "Contractors",
                 prefix: "廠商",
                 nameGetter: async (params) => {
+                  const contractorRepo = useContractorRepo()
                   const contractor = await contractorRepo.get(
                     params.contractorId as string
                   )

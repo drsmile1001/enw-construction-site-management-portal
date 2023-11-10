@@ -8,7 +8,7 @@ export type Worker = {
   name: string
   personal_id: string
   job_title: string
-  picture_file: string
+  picture_file: string | null
 }
 
 export type WorkerQuery = QueryBase & { contractor_id?: string }

@@ -17,6 +17,12 @@
     :value="value"
     @update:value="($event) => emits('update:value', $event)"
   />
+  <AppUploader
+    v-if="type === 'file'"
+    :="fileProps!"
+    :value="value"
+    @update:value="($event) => emits('update:value', $event)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -25,12 +31,14 @@ import {
   type InputProps,
   type InputNumberProps,
 } from "naive-ui"
+import { type AppUploaderProps } from "./AppUploader.vue"
 
 export type DynamicInputProps = {
-  type: "text" | "number" | "select"
-  inputProps?: Exclude<InputProps, "value">
-  inputNumberProps?: Exclude<InputNumberProps, "value">
-  selectProps?: Exclude<SelectProps, "value">
+  type: "text" | "number" | "select" | "file"
+  inputProps?: Omit<InputProps, "value">
+  inputNumberProps?: Omit<InputNumberProps, "value">
+  selectProps?: Omit<SelectProps, "value">
+  fileProps?: Omit<AppUploaderProps, "value">
 }
 
 defineProps<
@@ -40,6 +48,6 @@ defineProps<
 >()
 
 const emits = defineEmits<{
-  "update:value": [string | number | null]
+  "update:value": [any]
 }>()
 </script>
