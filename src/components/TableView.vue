@@ -2,19 +2,11 @@
   <div class="flex flex-col gap-4">
     <div class="flex justify-between">
       <div class="w-1/2">
-        <NInputGroup>
-          <NInput v-model:value="searchText" />
-          <NButton
-            type="primary"
-            ghost
-            @click="() => search({
-          keyword: searchText,
-          page: 1,
-        } as Partial<TQuery>)"
-          >
-            搜尋
-          </NButton>
-        </NInputGroup>
+        <SearchBar
+          :query="query"
+          :fields="queryFields"
+          @update:query="(q) => search(q, 1)"
+        />
       </div>
       <div>
         <NButtonGroup>
@@ -36,9 +28,7 @@
       :row-key="rowKey"
       :data="items"
       :pagination="pagination"
-      @update:page="(p) => search({
-      page: p
-    } as Partial<TQuery>)"
+      @update:page="(p) => search(undefined, p)"
     />
   </div>
 
@@ -66,7 +56,7 @@
 <script
   setup
   lang="ts"
-  generic="TItem extends RowData, TQuery extends QueryBase, TCreatorModel extends DynamicFormModel, TEditorModel extends DynamicFormModel"
+  generic="TItem extends RowData, TQuery extends Record<string,unknown>, TCreatorModel extends DynamicFormModel, TEditorModel extends DynamicFormModel"
 >
 import type {
   CreateRowKey,
@@ -77,8 +67,8 @@ import type {
 import {
   useRoute,
   useRouter,
-  type LocationQueryValue,
   type RouteLocationRaw,
+  type LocationQuery,
 } from "vue-router"
 import { ITEMS_PER_PAGE } from "@/environment"
 import {
@@ -89,27 +79,24 @@ import {
 } from "naive-ui"
 import { RouterLink } from "vue-router"
 import type { DynamicFormItemOption, DynamicFormModel } from "./DynamicForm.vue"
-
-export interface QueryBase extends Record<string, string | number | undefined> {
-  keyword?: string
-  page?: number
-}
+import type { SearchBarAdvancedFieldOption } from "./SearchBar.vue"
 
 export type TableViewProps<
   TItem,
   TCreatorModel extends DynamicFormModel,
-  TEditorModel extends DynamicFormModel
+  TEditorModel extends DynamicFormModel,
+  TQuery
 > = {
   columns: (TableBaseColumn<TItem> & { key: keyof TItem })[]
   rowKey: CreateRowKey<TItem>
   queryItems: (
-    keyword: string,
-    skip: number,
-    take: number
+    query: TQuery,
+    page: number
   ) => Promise<{
     items: TItem[]
     total: number
   }>
+  queryFields: SearchBarAdvancedFieldOption<TQuery>[]
   creator?: CreatorOptions<TCreatorModel>
   editor?: EditorOptions<TItem, TEditorModel>
   rowActions?: RowActionOptions<TItem>[]
@@ -137,16 +124,21 @@ export type RowActionOptions<TItem> = {
 
 const router = useRouter()
 const currentRoute = useRoute()
-const props = defineProps<TableViewProps<TItem, TCreatorModel, TEditorModel>>()
-const searchText = ref<string>(
-  (currentRoute.query.keyword as LocationQueryValue) ?? ""
-)
-const keyword = computed(
-  () => (currentRoute.query.keyword as LocationQueryValue) ?? ""
-)
+const props =
+  defineProps<TableViewProps<TItem, TCreatorModel, TEditorModel, TQuery>>()
+
 const page = computed(() =>
-  !!currentRoute.query.page ? Number(currentRoute.query.page) : 1
+  currentRoute.query.page ? Number(currentRoute.query.page) : 1
 )
+const query = computed(() => {
+  const query: TQuery = {} as TQuery
+  for (const field of props.queryFields) {
+    if (currentRoute.query[field.key]) {
+      query[field.key] = field.parser(currentRoute.query[field.key] as string)
+    }
+  }
+  return query
+})
 const items = ref([]) as Ref<TItem[]>
 const total = ref<number>(0)
 const pagination = computed<PaginationProps>(() => ({
@@ -155,20 +147,30 @@ const pagination = computed<PaginationProps>(() => ({
   pageCount: Math.ceil(total.value / ITEMS_PER_PAGE),
 }))
 
-async function search(query?: Partial<TQuery>) {
-  if (query) {
+async function search(changeQuery?: TQuery, changePage?: number) {
+  const newQuery = {
+    ...query.value,
+    ...(changeQuery ?? {}),
+  } as TQuery
+
+  if (changeQuery || changePage) {
+    const urlQuery: LocationQuery = {}
+    for (const field of props.queryFields) {
+      const value = field.stringify(newQuery[field.key])
+      if (!value) continue
+      urlQuery[field.key] = value
+    }
+    urlQuery.page = (changePage ?? page.value).toString()
     await router.push({
-      query: {
-        ...currentRoute.query,
-        ...query,
-      },
+      query: urlQuery,
     })
   }
+
   const { items: queried, total: t } = await props.queryItems(
-    keyword.value,
-    (page.value - 1) * ITEMS_PER_PAGE,
-    ITEMS_PER_PAGE
+    newQuery,
+    page.value
   )
+
   items.value = queried
   total.value = t
 }

@@ -5,8 +5,10 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import { ITEMS_PER_PAGE } from "@/environment"
 import {
   type Purchase,
+  type PurchaseQuery,
   type SetPurchaseCommand,
   usePurchaseRepo,
 } from "@/stores/MaterialRepo"
@@ -44,7 +46,15 @@ const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
   },
 ]
 
-const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, {}> = {
+const tableViewSetting: TableViewProps<
+  Purchase,
+  SetPurchaseCommand,
+  {},
+  {
+    keyword?: string
+    supplier?: string
+  }
+> = {
   columns: [
     {
       title: "名稱",
@@ -73,12 +83,29 @@ const tableViewSetting: TableViewProps<Purchase, SetPurchaseCommand, {}> = {
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
+  queryItems: (query, page) =>
     repo.query({
-      keyword,
-      skip,
-      take,
+      keyword: query.keyword,
+      supplier: query.supplier,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     }),
+  queryFields: [
+    {
+      key: "keyword",
+      parser: (value) => value,
+      stringify: (value) => value,
+      label: "關鍵字",
+      inputProps: { type: "text" },
+    },
+    {
+      key: "supplier",
+      parser: (value) => value,
+      stringify: (value) => value,
+      label: "供應商",
+      inputProps: { type: "text" },
+    },
+  ],
   rowActions: [{ type: "delete" }],
   creator: {
     fields: fieldsOptions,

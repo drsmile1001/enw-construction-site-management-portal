@@ -78,16 +78,22 @@ export type SetPurchaseCommand = Omit<
 >
 
 export interface PurchaseRepo
-  extends Repo<Purchase, QueryBase, SetPurchaseCommand, void> {}
+  extends Repo<Purchase, PurchaseQuery, SetPurchaseCommand, void> {}
+
+export type PurchaseQuery = QueryBase & {
+  supplier?: string
+}
 
 class FakePurchaseRepo extends FakeRepo<
   Purchase,
-  QueryBase,
+  PurchaseQuery,
   SetPurchaseCommand,
   void
 > {
-  queryPredicate(query: QueryBase): (item: Purchase) => boolean {
-    return (item) => !query.keyword || item.name.includes(query.keyword)
+  queryPredicate(query: PurchaseQuery): (item: Purchase) => boolean {
+    return (item) =>
+      (!query.keyword || item.name.includes(query.keyword)) &&
+      (!query.supplier || item.supplier.includes(query.supplier))
   }
   idPredicate(id: string): (item: Purchase) => boolean {
     return (item) => item.id === id
