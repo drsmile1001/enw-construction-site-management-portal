@@ -12,6 +12,7 @@ import {
   useWorkerRepo,
 } from "@/stores/WorkerRepo"
 import { useFileRepo } from "@/stores/FileRepo"
+import { ITEMS_PER_PAGE } from "@/environment"
 export type WorkersProps = {
   contractorId: string
 }
@@ -65,7 +66,11 @@ const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
 const tableViewSetting: TableViewProps<
   Worker,
   SetWorkerCommand,
-  SetWorkerCommand
+  SetWorkerCommand,
+  {
+    keyword?: string
+    job_title?: string
+  }
 > = {
   columns: [
     {
@@ -97,8 +102,30 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
-    repo.query({ contractor_id: props.contractorId, keyword, skip, take }),
+  queryItems: (query, page) =>
+    repo.query({
+      contractor_id: props.contractorId,
+      keyword: query.keyword,
+      job_title: query.job_title,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
+    }),
+  queryFields: [
+    {
+      key: "keyword",
+      label: "關鍵字",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+    {
+      key: "job_title",
+      label: "職稱",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+  ],
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,

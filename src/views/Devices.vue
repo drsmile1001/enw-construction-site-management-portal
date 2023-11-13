@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import { ITEMS_PER_PAGE } from "@/environment"
 import {
   useDeviceRepo,
   type Device,
@@ -24,7 +25,10 @@ const setFormFields: DynamicFormItemOption<SetDeviceCommand>[] = [
 const tableViewSetting: TableViewProps<
   Device,
   SetDeviceCommand,
-  SetDeviceCommand
+  SetDeviceCommand,
+  {
+    keyword?: string
+  }
 > = {
   columns: [
     {
@@ -37,11 +41,11 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
+  queryItems: (query, page) =>
     repo.query({
-      keyword,
-      skip,
-      take,
+      keyword: query.keyword,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     }),
   rowActions: [
     {

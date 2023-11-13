@@ -11,7 +11,10 @@ export type Machinery = {
   driver_phone: string
 }
 
-export type MachineryQuery = QueryBase & { contractor_id?: string }
+export type MachineryQuery = QueryBase & {
+  contractor_id?: string
+  machine_type?: string
+}
 export type SetMachineryCommand = Omit<Machinery, "site_id" | "id">
 
 export interface MachineryRepo
@@ -31,7 +34,8 @@ class FakeMachineryRepo extends FakeRepo<
   queryPredicate(query: MachineryQuery): (item: Machinery) => boolean {
     return (item) =>
       (!query.keyword || item.name.includes(query.keyword)) &&
-      (!query.contractor_id || item.contractor_id === query.contractor_id)
+      (!query.contractor_id || item.contractor_id === query.contractor_id) &&
+      (!query.machine_type || item.machine_type === query.machine_type)
   }
   idPredicate(id: string): (item: Machinery) => boolean {
     return (item) => item.id === id

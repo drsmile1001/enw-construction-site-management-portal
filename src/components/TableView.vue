@@ -96,7 +96,7 @@ export type TableViewProps<
     items: TItem[]
     total: number
   }>
-  queryFields: SearchBarAdvancedFieldOption<TQuery>[]
+  queryFields?: SearchBarAdvancedFieldOption<TQuery>[]
   creator?: CreatorOptions<TCreatorModel>
   editor?: EditorOptions<TItem, TEditorModel>
   rowActions?: RowActionOptions<TItem>[]
@@ -132,11 +132,16 @@ const page = computed(() =>
 )
 const query = computed(() => {
   const query: TQuery = {} as TQuery
-  for (const field of props.queryFields) {
-    if (currentRoute.query[field.key]) {
-      query[field.key] = field.parser(currentRoute.query[field.key] as string)
+  if (props.queryFields) {
+    for (const field of props.queryFields) {
+      if (currentRoute.query[field.key]) {
+        query[field.key] = field.parser(currentRoute.query[field.key] as string)
+      }
     }
+  } else {
+    ;(query as any).keyword = currentRoute.query.keyword as string
   }
+
   return query
 })
 const items = ref([]) as Ref<TItem[]>
@@ -155,10 +160,16 @@ async function search(changeQuery?: TQuery, changePage?: number) {
 
   if (changeQuery || changePage) {
     const urlQuery: LocationQuery = {}
-    for (const field of props.queryFields) {
-      const value = field.stringify(newQuery[field.key])
-      if (!value) continue
-      urlQuery[field.key] = value
+    if (props.queryFields) {
+      for (const field of props.queryFields) {
+        const value = field.stringify(newQuery[field.key])
+        if (!value) continue
+        urlQuery[field.key] = value
+      }
+    } else {
+      if (newQuery.keyword) {
+        urlQuery.keyword = newQuery.keyword as string
+      }
     }
     urlQuery.page = (changePage ?? page.value).toString()
     await router.push({

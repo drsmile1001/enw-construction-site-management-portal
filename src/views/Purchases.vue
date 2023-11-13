@@ -8,7 +8,6 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import { ITEMS_PER_PAGE } from "@/environment"
 import {
   type Purchase,
-  type PurchaseQuery,
   type SetPurchaseCommand,
   usePurchaseRepo,
 } from "@/stores/MaterialRepo"
@@ -93,17 +92,17 @@ const tableViewSetting: TableViewProps<
   queryFields: [
     {
       key: "keyword",
-      parser: (value) => value,
-      stringify: (value) => value,
       label: "關鍵字",
       inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
     },
     {
       key: "supplier",
-      parser: (value) => value,
-      stringify: (value) => value,
       label: "供應商",
       inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
     },
   ],
   rowActions: [{ type: "delete" }],

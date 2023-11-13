@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import { ITEMS_PER_PAGE } from "@/environment"
 import {
   useContractorRepo,
   type Contractor,
@@ -14,7 +15,10 @@ const repo = useContractorRepo()
 const tableViewSetting: TableViewProps<
   Contractor,
   SetContractorCommand,
-  SetContractorCommand
+  SetContractorCommand,
+  {
+    keyword?: string
+  }
 > = {
   columns: [
     {
@@ -39,11 +43,11 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
+  queryItems: (query, page) =>
     repo.query({
-      keyword,
-      skip,
-      take,
+      keyword: query.keyword,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     }),
   rowActions: [
     {

@@ -11,22 +11,23 @@ export type Contractor = {
 }
 
 export type SetContractorCommand = Omit<Contractor, "site_id" | "id">
+export type ContractorQuery = QueryBase
 
 export interface ContractorRepo
   extends Repo<
     Contractor,
-    QueryBase,
+    ContractorQuery,
     SetContractorCommand,
     SetContractorCommand
   > {}
 
 class FakeContractorRepo extends FakeRepo<
   Contractor,
-  QueryBase,
+  ContractorQuery,
   SetContractorCommand,
   SetContractorCommand
 > {
-  queryPredicate(query: QueryBase): (item: Contractor) => boolean {
+  queryPredicate(query: ContractorQuery): (item: Contractor) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
   }
   idPredicate(id: string): (item: Contractor) => boolean {

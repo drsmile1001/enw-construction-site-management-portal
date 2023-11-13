@@ -1,11 +1,13 @@
 <template>
   <NInputGroup>
     <NInput
+      ref="mainInputRef"
       v-model:value="mainInput"
       @update:value="onMainInputUpdated"
+      @keyup.enter="search"
       type="text"
     />
-    <NPopover trigger="click" v-model:show="showAdvence">
+    <NPopover v-if="fields" trigger="click" v-model:show="showAdvence">
       <template #trigger>
         <NButton>進階</NButton>
       </template>
@@ -33,10 +35,11 @@
   </NInputGroup>
 </template>
 <script setup lang="ts" generic="TQuery extends Record<string,unknown>">
+import { type InputInst } from "naive-ui"
 import type { DynamicInputProps } from "./DynamicInput.vue"
 
 export type SearchBarProps<TQuery> = {
-  fields: SearchBarAdvancedFieldOption<TQuery>[]
+  fields?: SearchBarAdvancedFieldOption<TQuery>[]
   query: TQuery
 }
 
@@ -56,6 +59,7 @@ const emits = defineEmits<{
 const showAdvence = ref(false)
 
 const mainInput = ref("")
+const mainInputRef = ref<InputInst | null>(null)
 
 function onMainInputUpdated() {
   const sections = mainInput.value.split(" ").reduce((acc, cur) => {
@@ -73,10 +77,14 @@ function onMainInputUpdated() {
   }, new Map<string, string>())
   const query: TQuery = {} as TQuery
 
-  for (const field of props.fields) {
-    const value = sections.get(field.key)
-    if (!value) query[field.key] = field.parser("")
-    else query[field.key] = field.parser(value)
+  if (props.fields) {
+    for (const field of props.fields) {
+      const value = sections.get(field.key)
+      if (!value) query[field.key] = field.parser("")
+      else query[field.key] = field.parser(value)
+    }
+  } else {
+    ;(query as any).keyword = sections.get("keyword") ?? ""
   }
 
   innerQuery.value = query as TQuery
@@ -84,16 +92,20 @@ function onMainInputUpdated() {
 
 function onDynamicInputUpdated() {
   const sections: string[] = []
-  for (const [key, value] of Object.entries(innerQuery.value)) {
-    const field = props.fields.find((f) => f.key === key)
-    if (!field) continue
-    const stringifiedValue = field.stringify(value)
-    if (!stringifiedValue) continue
-    if (key === "keyword") {
-      sections.push(stringifiedValue)
-    } else {
-      sections.push(`${key}:${stringifiedValue}`)
+  if (props.fields) {
+    for (const [key, value] of Object.entries(innerQuery.value)) {
+      const field = props.fields.find((f) => f.key === key)
+      if (!field) continue
+      const stringifiedValue = field.stringify(value)
+      if (!stringifiedValue) continue
+      if (key === "keyword") {
+        sections.push(stringifiedValue)
+      } else {
+        sections.push(`${key}:${stringifiedValue}`)
+      }
     }
+  } else {
+    sections.push(innerQuery.value.keyword as string)
   }
   mainInput.value = sections.join(" ")
 }
@@ -110,4 +122,10 @@ function search() {
   showAdvence.value = false
   emits("update:query", innerQuery.value)
 }
+
+onMounted(() => {
+  //TODO: 這裡假設了整個網頁只有一個 searchBar，且需要被 focus
+  //在目前的設計中，重新搜尋會導致頁面重新渲染，因此 searchBar 會被重新掛載。
+  mainInputRef.value?.focus()
+})
 </script>

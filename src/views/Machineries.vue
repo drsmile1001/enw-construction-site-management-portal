@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
+import { ITEMS_PER_PAGE } from "@/environment"
 import {
   type Machinery,
   type SetMachineryCommand,
@@ -61,7 +62,11 @@ const fields: DynamicFormItemOption<SetMachineryCommand>[] = [
 const tableViewSetting: TableViewProps<
   Machinery,
   SetMachineryCommand,
-  SetMachineryCommand
+  SetMachineryCommand,
+  {
+    keyword?: string
+    machine_type?: string
+  }
 > = {
   columns: [
     {
@@ -86,13 +91,41 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
+  queryItems: (query, page) =>
     repo.query({
-      keyword,
-      skip,
-      take,
+      keyword: query.keyword,
+      machine_type: query.machine_type,
       contractor_id: props.contractorId,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     }),
+  queryFields: [
+    {
+      key: "keyword",
+      label: "關鍵字",
+      inputProps: { type: "text" },
+      parser: (value: string) => value,
+      stringify: (value: string) => value,
+    },
+    {
+      key: "machine_type",
+      label: "機具類型",
+      inputProps: {
+        type: "select",
+        selectProps: {
+          options: machineryTypes.map((type) => ({
+            label: type,
+            value: type,
+          })),
+          filterable: true,
+          tag: true,
+          clearable: true,
+        },
+      },
+      parser: (value: string) => value,
+      stringify: (value: string) => value,
+    },
+  ],
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,

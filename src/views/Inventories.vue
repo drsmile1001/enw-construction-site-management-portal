@@ -11,6 +11,7 @@ import {
 } from "@/stores/MaterialRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
+import { ITEMS_PER_PAGE } from "@/environment"
 
 const repo = useInventoryRepo()
 const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
@@ -72,7 +73,10 @@ const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
 const tableViewSetting: TableViewProps<
   Inventory,
   SetInventoryCommand,
-  SetInventoryCommand
+  SetInventoryCommand,
+  {
+    keyword?: string
+  }
 > = {
   columns: [
     {
@@ -111,11 +115,11 @@ const tableViewSetting: TableViewProps<
     },
   ],
   rowKey: (row) => row.id,
-  queryItems: (keyword, skip, take) =>
+  queryItems: (query, page) =>
     repo.query({
-      keyword,
-      skip,
-      take,
+      keyword: query.keyword,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     }),
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {

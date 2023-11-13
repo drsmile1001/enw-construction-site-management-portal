@@ -11,7 +11,10 @@ export type Worker = {
   picture_file: string | null
 }
 
-export type WorkerQuery = QueryBase & { contractor_id?: string }
+export type WorkerQuery = QueryBase & {
+  contractor_id?: string
+  job_title?: string
+}
 export type SetWorkerCommand = Omit<Worker, "site_id" | "id">
 
 export interface WorkerRepo
@@ -28,7 +31,8 @@ class FakeWorkerRepo extends FakeRepo<
       (!query.keyword ||
         item.name.includes(query.keyword) ||
         item.personal_id.includes(query.keyword)) &&
-      (!query.contractor_id || item.contractor_id === query.contractor_id)
+      (!query.contractor_id || item.contractor_id === query.contractor_id) &&
+      (!query.job_title || item.job_title.includes(query.job_title))
   }
   idPredicate(id: string): (item: Worker) => boolean {
     return (item) => item.id === id
