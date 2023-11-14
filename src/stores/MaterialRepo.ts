@@ -1,3 +1,4 @@
+import { env } from "@/environment"
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
 
 export type Inventory = {
@@ -40,7 +41,7 @@ class FakeInventoryRepo extends FakeRepo<
   }
   createItem(command: SetInventoryCommand): Inventory {
     return {
-      site_id: "1",
+      site_id: env.SITE_ID,
       id: Math.random().toString(),
       update_time: new Date().toISOString(),
       ...command,
@@ -100,7 +101,7 @@ class FakePurchaseRepo extends FakeRepo<
   }
   createItem(command: SetPurchaseCommand): Purchase {
     return {
-      site_id: "1",
+      site_id: env.SITE_ID,
       id: Math.random().toString(),
       update_time: new Date().toISOString(),
       ...command,

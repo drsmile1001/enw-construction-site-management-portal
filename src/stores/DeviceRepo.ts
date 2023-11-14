@@ -1,3 +1,4 @@
+import { env } from "@/environment"
 import { FakeRepo, type QueryBase, type Repo } from "@/utilities/repo"
 
 export type Device = {
@@ -26,7 +27,7 @@ class FakeDeviceRepo extends FakeRepo<
   createItem(command: SetDeviceCommand): Device {
     return {
       id: Math.random().toString(),
-      site_id: "1",
+      site_id: env.SITE_ID,
       ...command,
     }
   }
@@ -85,7 +86,7 @@ class FakeDevicePointRepo extends FakeRepo<
   }
   createItem(command: CreateDevicePointCommand): DevicePoint {
     return {
-      site_id: "1",
+      site_id: env.SITE_ID,
       ...command,
     }
   }

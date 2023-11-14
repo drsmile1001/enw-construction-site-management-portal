@@ -8,7 +8,8 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import { NImage } from "naive-ui"
 import {
   type Worker,
-  type SetWorkerCommand,
+  type CreateWorkerCommand,
+  type UpdateWorkerCommand,
   useWorkerRepo,
 } from "@/stores/WorkerRepo"
 import { useFileRepo } from "@/stores/FileRepo"
@@ -22,8 +23,7 @@ const props = defineProps<WorkersProps>()
 const fileRepo = useFileRepo()
 
 const workerPictureCollection = `contractor_${props.contractorId}_workers`
-
-const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
+const commonFields: DynamicFormItemOption<UpdateWorkerCommand>[] = [
   {
     label: "工號",
     key: "worker_no",
@@ -41,32 +41,12 @@ const fields: DynamicFormItemOption<SetWorkerCommand>[] = [
     key: "job_title",
     inputProps: { type: "text" },
   },
-  {
-    label: "照片",
-    key: "picture_file",
-    inputProps: {
-      type: "file",
-      fileProps: {
-        collection: workerPictureCollection,
-        uploadProps: {
-          max: 1,
-          multiple: false,
-          listType: "image-card",
-        },
-      },
-    },
-  },
-  {
-    label: "身份證字號",
-    key: "personal_id",
-    inputProps: { type: "text" },
-  },
 ]
 
 const tableViewSetting: TableViewProps<
   Worker,
-  SetWorkerCommand,
-  SetWorkerCommand,
+  CreateWorkerCommand,
+  UpdateWorkerCommand,
   {
     keyword?: string
     job_title?: string
@@ -89,12 +69,12 @@ const tableViewSetting: TableViewProps<
       title: "照片",
       key: "picture_file",
       render: (row) =>
-        row.picture_file
+        row.picture_file.value
           ? h(NImage, {
               width: 100,
               src: fileRepo.buildFileUrl(
                 workerPictureCollection,
-                row.picture_file
+                row.picture_file.value as string
               ),
               objectFit: "cover",
             })
@@ -128,19 +108,44 @@ const tableViewSetting: TableViewProps<
   ],
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
-    fields: fields,
-    modelBuilder: async () => ({
-      worker_no: "",
-      contractor_id: props.contractorId,
-      name: "",
-      job_title: "",
-      picture_file: null,
-      personal_id: "",
-    }),
+    fields: [
+      ...commonFields,
+      {
+        label: "照片",
+        key: "picture_file",
+        inputProps: {
+          type: "file",
+          fileProps: {
+            collection: workerPictureCollection,
+            uploadProps: {
+              max: 1,
+              multiple: false,
+              listType: "image-card",
+            },
+          },
+        },
+      },
+      {
+        label: "身份證字號",
+        key: "personal_id",
+        inputProps: { type: "text" },
+      },
+    ],
+    modelBuilder: async () =>
+      <CreateWorkerCommand>{
+        worker_no: "",
+        contractor_id: props.contractorId,
+        name: "",
+        job_title: "",
+        picture_file: {
+          value: null,
+        },
+        personal_id: "",
+      },
     method: (model) => repo.create(model),
   },
   editor: {
-    fields: fields,
+    fields: commonFields,
     modelBuilder: async (item) => repo.get(item.id),
     method: (command, item) => repo.update(item.id, command),
   },

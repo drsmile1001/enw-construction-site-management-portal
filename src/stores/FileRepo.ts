@@ -13,6 +13,10 @@ export type FileInfo = {
   url: string
 }
 
+export type Uploadable = {
+  value: string | string[] | null
+}
+
 class FakeFileRepo implements FileRepo {
   private total = 0
   private pathIdMap = new Map<string, number>([])

@@ -11,7 +11,7 @@ import {
 } from "@/stores/MaterialRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
-import { ITEMS_PER_PAGE } from "@/environment"
+import { ITEMS_PER_PAGE, env } from "@/environment"
 
 const repo = useInventoryRepo()
 const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
@@ -125,7 +125,7 @@ const tableViewSetting: TableViewProps<
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
-      site_id: "SITE_ID",
+      site_id: env.SITE_ID,
       id: "",
       location: "",
       name: "",

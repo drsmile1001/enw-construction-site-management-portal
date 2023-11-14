@@ -1,3 +1,4 @@
+import { env } from "@/environment"
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
 
 export type Contractor = {
@@ -36,7 +37,7 @@ class FakeContractorRepo extends FakeRepo<
   createItem(command: SetContractorCommand): Contractor {
     return {
       id: Math.random().toString(),
-      site_id: "1",
+      site_id: env.SITE_ID,
       ...command,
     }
   }

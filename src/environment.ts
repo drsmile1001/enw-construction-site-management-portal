@@ -2,6 +2,9 @@ class AppEnv {
   HOST = "http://localhost:5804/"
   API_HOST = ""
   FILE_SERVICE = ""
+  SITE_ID = "SITE_ID"
+  DOORMAN_URL = "http://192.168.171.174:8005/"
+  WORKER_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {

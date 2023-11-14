@@ -1,4 +1,4 @@
-import { ITEMS_PER_PAGE } from "@/environment"
+import { ITEMS_PER_PAGE, env } from "@/environment"
 import { type Worker, useWorkerRepo } from "@/stores/WorkerRepo"
 import type { QueryResult } from "@/utilities/repo"
 
@@ -28,7 +28,7 @@ class FakeAttendanceRepo implements AttendanceRepo {
     const total = workers.items.map(
       (w) =>
         <Attendance>{
-          site_id: "1",
+          site_id: env.SITE_ID,
           type: "worker",
           content: {},
           is_attendance: true,

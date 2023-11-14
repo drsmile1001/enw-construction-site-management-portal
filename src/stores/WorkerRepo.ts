@@ -1,4 +1,13 @@
-import { type QueryBase, FakeRepo, type Repo } from "@/utilities/repo"
+import { env } from "@/environment"
+import { buildParms } from "@/utilities/ky"
+import {
+  type QueryBase,
+  FakeRepo,
+  type Repo,
+  type QueryResult,
+} from "@/utilities/repo"
+import ky from "ky"
+import type { Uploadable } from "./FileRepo"
 
 export type Worker = {
   id: string
@@ -8,23 +17,65 @@ export type Worker = {
   name: string
   personal_id: string
   job_title: string
-  picture_file: string | null
+  picture_file: Uploadable
 }
 
 export type WorkerQuery = QueryBase & {
+  worker_no?: string
   contractor_id?: string
+  name?: string
   job_title?: string
 }
-export type SetWorkerCommand = Omit<Worker, "site_id" | "id">
+export type CreateWorkerCommand = Omit<Worker, "site_id" | "id">
+export type UpdateWorkerCommand = Pick<
+  Worker,
+  "worker_no" | "name" | "job_title"
+>
 
 export interface WorkerRepo
-  extends Repo<Worker, WorkerQuery, SetWorkerCommand, SetWorkerCommand> {}
+  extends Repo<Worker, WorkerQuery, CreateWorkerCommand, UpdateWorkerCommand> {}
+
+class HttpWorkerRepo implements WorkerRepo {
+  api = ky.create({
+    prefixUrl: `${env.DOORMAN_URL}api/construction-site/${env.SITE_ID}/worker/`,
+  })
+  query(query: WorkerQuery): Promise<QueryResult<Worker>> {
+    return this.api
+      .get("", {
+        searchParams: buildParms(query),
+      })
+      .json()
+  }
+  async get(id: string): Promise<Worker> {
+    const result = await this.query({ ids: [id] })
+    return result.items[0]
+  }
+  async create(command: CreateWorkerCommand): Promise<void> {
+    await this.api.post("", {
+      json: {
+        items: [command],
+        recorder: "",
+      },
+    })
+  }
+  async update(id: string, command: UpdateWorkerCommand): Promise<void> {
+    await this.api.patch(id, {
+      json: command,
+      searchParams: {
+        editor: "",
+      },
+    })
+  }
+  async delete(id: string): Promise<void> {
+    await this.api.delete(id)
+  }
+}
 
 class FakeWorkerRepo extends FakeRepo<
   Worker,
   WorkerQuery,
-  SetWorkerCommand,
-  SetWorkerCommand
+  CreateWorkerCommand,
+  UpdateWorkerCommand
 > {
   queryPredicate(query: WorkerQuery): (item: Worker) => boolean {
     return (item) =>
@@ -37,9 +88,9 @@ class FakeWorkerRepo extends FakeRepo<
   idPredicate(id: string): (item: Worker) => boolean {
     return (item) => item.id === id
   }
-  createItem(command: SetWorkerCommand): Worker {
+  createItem(command: CreateWorkerCommand): Worker {
     return {
-      site_id: "1",
+      site_id: env.SITE_ID,
       id: Math.random().toString(),
       ...command,
     }
@@ -50,7 +101,8 @@ let workerRepo: WorkerRepo | undefined
 
 export function useWorkerRepo(): WorkerRepo {
   if (!workerRepo) {
-    workerRepo = new FakeWorkerRepo()
+    workerRepo =
+      env.WORKER_REPO === "HTTP" ? new HttpWorkerRepo() : new FakeWorkerRepo()
   }
   return workerRepo
 }

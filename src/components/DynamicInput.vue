@@ -20,8 +20,13 @@
   <AppUploader
     v-if="type === 'file'"
     :="fileProps!"
-    :value="value"
-    @update:value="($event) => emits('update:value', $event)"
+    :value="value.value"
+    @update:value="
+      ($event) =>
+        emits('update:value', {
+          value: $event,
+        })
+    "
   />
 </template>
 

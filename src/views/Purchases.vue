@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
-import { ITEMS_PER_PAGE } from "@/environment"
+import { ITEMS_PER_PAGE, env } from "@/environment"
 import {
   type Purchase,
   type SetPurchaseCommand,
@@ -109,7 +109,7 @@ const tableViewSetting: TableViewProps<
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
-      site_id: "SITE_ID",
+      site_id: env.SITE_ID,
       id: "",
       name: "",
       description: "",
