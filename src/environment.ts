@@ -5,6 +5,7 @@ class AppEnv {
   SITE_ID = "SITE_ID"
   DOORMAN_URL = "http://192.168.171.174:8005/"
   WORKER_REPO = "HTTP"
+  MACHINERY_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {

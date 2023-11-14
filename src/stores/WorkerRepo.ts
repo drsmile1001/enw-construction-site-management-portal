@@ -67,7 +67,11 @@ class HttpWorkerRepo implements WorkerRepo {
     })
   }
   async delete(id: string): Promise<void> {
-    await this.api.delete(id)
+    await this.api.delete(id, {
+      searchParams: {
+        editor: "",
+      },
+    })
   }
 }
 

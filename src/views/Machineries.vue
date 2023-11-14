@@ -8,9 +8,10 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import { ITEMS_PER_PAGE } from "@/environment"
 import {
   type Machinery,
-  type SetMachineryCommand,
+  type CreateMachineryCommand,
   useMachineryRepo,
   machineryTypes,
+  type UpdateMachineryCommand,
 } from "@/stores/MachineryRepo"
 
 export type MachineriesProps = {
@@ -19,7 +20,7 @@ export type MachineriesProps = {
 
 const repo = useMachineryRepo()
 const props = defineProps<MachineriesProps>()
-const fields: DynamicFormItemOption<SetMachineryCommand>[] = [
+const fields: DynamicFormItemOption<UpdateMachineryCommand>[] = [
   {
     label: "車牌號碼",
     key: "license_no",
@@ -61,8 +62,8 @@ const fields: DynamicFormItemOption<SetMachineryCommand>[] = [
 
 const tableViewSetting: TableViewProps<
   Machinery,
-  SetMachineryCommand,
-  SetMachineryCommand,
+  CreateMachineryCommand,
+  UpdateMachineryCommand,
   {
     keyword?: string
     machine_type?: string

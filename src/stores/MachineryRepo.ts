@@ -1,11 +1,18 @@
 import { env } from "@/environment"
-import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
+import { buildParms } from "@/utilities/ky"
+import {
+  type Repo,
+  type QueryBase,
+  FakeRepo,
+  type QueryResult,
+} from "@/utilities/repo"
+import ky from "ky"
 
 export type Machinery = {
   site_id: string
   id: string
-  license_no: string
   contractor_id: string
+  license_no: string
   name: string
   machine_type: string
   driver: string
@@ -13,24 +20,72 @@ export type Machinery = {
 }
 
 export type MachineryQuery = QueryBase & {
+  license_no?: string
   contractor_id?: string
+  name?: string
   machine_type?: string
+  driver?: string
 }
-export type SetMachineryCommand = Omit<Machinery, "site_id" | "id">
+
+export type CreateMachineryCommand = Omit<Machinery, "site_id" | "id">
+export type UpdateMachineryCommand = Omit<
+  CreateMachineryCommand,
+  "contractor_id"
+>
 
 export interface MachineryRepo
   extends Repo<
     Machinery,
     MachineryQuery,
-    SetMachineryCommand,
-    SetMachineryCommand
+    CreateMachineryCommand,
+    UpdateMachineryCommand
   > {}
+
+class HttpMachineryRepo implements MachineryRepo {
+  api = ky.create({
+    prefixUrl: `${env.DOORMAN_URL}api/construction-site/${env.SITE_ID}/machinery/`,
+  })
+  async query(query: MachineryQuery): Promise<QueryResult<Machinery>> {
+    return this.api
+      .get("", {
+        searchParams: buildParms(query),
+      })
+      .json()
+  }
+  async get(id: string): Promise<Machinery> {
+    const result = await this.query({ ids: [id] })
+    return result.items[0]
+  }
+  async create(command: CreateMachineryCommand): Promise<void> {
+    await this.api.post("", {
+      json: {
+        items: [command],
+        recorder: "",
+      },
+    })
+  }
+  async update(id: string, command: UpdateMachineryCommand): Promise<void> {
+    await this.api.patch(id, {
+      json: command,
+      searchParams: {
+        editor: "",
+      },
+    })
+  }
+  async delete(id: string): Promise<void> {
+    await this.api.delete(id, {
+      searchParams: {
+        editor: "",
+      },
+    })
+  }
+}
 
 class FakeMachineryRepo extends FakeRepo<
   Machinery,
   MachineryQuery,
-  SetMachineryCommand,
-  SetMachineryCommand
+  CreateMachineryCommand,
+  UpdateMachineryCommand
 > {
   queryPredicate(query: MachineryQuery): (item: Machinery) => boolean {
     return (item) =>
@@ -41,7 +96,7 @@ class FakeMachineryRepo extends FakeRepo<
   idPredicate(id: string): (item: Machinery) => boolean {
     return (item) => item.id === id
   }
-  createItem(command: SetMachineryCommand): Machinery {
+  createItem(command: CreateMachineryCommand): Machinery {
     return {
       site_id: env.SITE_ID,
       id: Math.random().toString(),
@@ -54,7 +109,10 @@ let machineryRepo: MachineryRepo | undefined
 
 export function useMachineryRepo() {
   if (machineryRepo) return machineryRepo
-  machineryRepo = new FakeMachineryRepo()
+  machineryRepo =
+    env.MACHINERY_REPO === "HTTP"
+      ? new HttpMachineryRepo()
+      : new FakeMachineryRepo()
   return machineryRepo
 }
 
