@@ -155,15 +155,15 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "person-attendance",
+        path: "worker-attendance",
         children: [
           {
             path: "",
-            redirect: { name: "PersonAttendanceDashboard" },
+            redirect: { name: "WorkerAttendanceDashboard" },
           },
           {
             path: "dashboard",
-            name: "PersonAttendanceDashboard",
+            name: "WorkerAttendanceDashboard",
             component: () => import("@/views/FakeDetailView.vue"),
             meta: {
               mainGroup: "工地進出管理",
@@ -173,12 +173,8 @@ export const routeRecords: RouteRecordRaw[] = [
           },
           {
             path: "logs",
-            name: "PersonAttendanceLogs",
-            component: () => import("@/views/FakeTableView.vue"),
-            props: () => ({
-              actions: [{ label: "詳細", type: "modal" }],
-              itemName: "人員進出記錄",
-            }),
+            name: "WorkerAttendanceLogs",
+            component: () => import("@/views/WorkerAttendance.vue"),
             meta: {
               mainGroup: "工地進出管理",
               subGroup: "人員進出",
@@ -331,6 +327,14 @@ export const routeRecords: RouteRecordRaw[] = [
         meta: {
           mainGroup: "工地資材管理",
           title: "進場記錄",
+        },
+      },
+      {
+        path: "lab",
+        name: "Lab",
+        component: () => import("@/views/Lab.vue"),
+        meta: {
+          title: "實驗室",
         },
       },
     ],

@@ -1,4 +1,6 @@
+import { ITEMS_PER_PAGE } from "@/environment"
 import { type Worker, useWorkerRepo } from "@/stores/WorkerRepo"
+import type { QueryResult } from "@/utilities/repo"
 
 export type Attendance = {
   site_id: string
@@ -16,14 +18,14 @@ export type AttendanceQuery = {
 }
 
 export interface AttendanceRepo {
-  get(date: Date): Promise<Attendance[]>
+  query(date: Date, page: number): Promise<QueryResult<Attendance>>
 }
 
 class FakeAttendanceRepo implements AttendanceRepo {
-  async get(date: Date): Promise<Attendance[]> {
+  async query(date: Date, page: number): Promise<QueryResult<Attendance>> {
     const workerRepo = useWorkerRepo()
     const workers = await workerRepo.query({})
-    return workers.items.map(
+    const total = workers.items.map(
       (w) =>
         <Attendance>{
           site_id: "1",
@@ -36,6 +38,10 @@ class FakeAttendanceRepo implements AttendanceRepo {
           worker: w,
         }
     )
+    return {
+      total: total.length,
+      items: total.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE),
+    }
   }
 }
 
