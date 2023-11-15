@@ -1,5 +1,6 @@
 import { env } from "@/environment"
 import { FakeRepo, type QueryBase, type Repo } from "@/utilities/repo"
+import { useEntityNameCache } from "./EntityNameCache"
 
 export type Device = {
   id: string
@@ -31,6 +32,11 @@ class FakeDeviceRepo extends FakeRepo<
       ...command,
     }
   }
+  updateItem(item: Device, command: SetDeviceCommand): void {
+    Object.assign(item, command)
+    const nameCache = useEntityNameCache()
+    nameCache.set(`Device:${item.id}`, item.name)
+  }
 }
 
 let deviceRepo: DeviceRepo | undefined
@@ -39,6 +45,16 @@ export function useDeviceRepo() {
   if (deviceRepo) return deviceRepo
   deviceRepo = new FakeDeviceRepo()
   return deviceRepo
+}
+
+export function ensureDeviceNameCached(id: string): string {
+  const nameCache = useEntityNameCache()
+  const key = `Device:${id}`
+  if (nameCache.get(key)) return key
+  useDeviceRepo()
+    .get(id)
+    .then((o) => nameCache.set(key, o.name))
+  return key
 }
 
 export type DevicePoint = {

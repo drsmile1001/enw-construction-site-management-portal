@@ -1,5 +1,6 @@
 import { env } from "@/environment"
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
+import { useEntityNameCache } from "@/stores/EntityNameCache"
 
 export type Contractor = {
   id: string
@@ -41,6 +42,11 @@ class FakeContractorRepo extends FakeRepo<
       ...command,
     }
   }
+  updateItem(item: Contractor, command: SetContractorCommand): void {
+    Object.assign(item, command)
+    const nameCache = useEntityNameCache()
+    nameCache.set(`Contractor:${item.id}`, item.name)
+  }
 }
 
 let contractorRepo: ContractorRepo | undefined
@@ -49,4 +55,14 @@ export function useContractorRepo() {
   if (contractorRepo) return contractorRepo
   contractorRepo = new FakeContractorRepo()
   return contractorRepo
+}
+
+export function ensureContractorNameCached(id: string): string {
+  const nameCache = useEntityNameCache()
+  const key = `Contractor:${id}`
+  if (nameCache.get(key)) return key
+  useContractorRepo()
+    .get(id)
+    .then((o) => nameCache.set(key, o.name))
+  return key
 }

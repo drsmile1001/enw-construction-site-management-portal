@@ -4,6 +4,12 @@ import { RouterLink, useRoute } from "vue-router"
 import { routeRecords } from "@/router"
 import type { RouteRecordRaw } from "vue-router"
 
+export type BreadcrumbItem = {
+  label: string
+  toRouteName: string
+  entityNameKey?: string
+}
+
 export const useLayoutController = defineStore("layout", () => {
   const currentRoute = useRoute()
   const currentScope = computed(
@@ -11,33 +17,22 @@ export const useLayoutController = defineStore("layout", () => {
       [...currentRoute.matched].reverse().find((o) => !!o.meta.scope)?.meta
         .scope?.backToRouteName ?? "MAIN"
   )
-  const scopeNameMap = ref(new Map<string, string>([["MAIN", "工地管理"]]))
-  //TODO: 處理異動名稱後的問題
-
-  const currentScopes = computed(() =>
-    [...currentRoute.matched]
-      .filter((o) => !!o.meta.scope)
-      .map((o) => o.meta.scope)
-  )
-
-  const currentScopeName = computed(() => {
-    const name = ["工地管理"]
-    let key = "MAIN"
-    for (const scope of currentScopes.value) {
-      if (!scope) break
-      key = `${key}:${scope.backToRouteName}:${scope.id}:${
-        currentRoute.params[scope.id]
-      }`
-      if (scopeNameMap.value.has(key)) name.push(scopeNameMap.value.get(key)!)
-      else {
-        scope.nameGetter(currentRoute.params).then((name) => {
-          scopeNameMap.value.set(key, `${scope.prefix} ${name}`)
-        })
-        break
-      }
-    }
-    return name
-  })
+  const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    {
+      label: "工地管理",
+      toRouteName: "SiteBasicInfo",
+    },
+    ...[...currentRoute.matched]
+      .filter((o) => o.meta.scope)
+      .map(
+        (o) =>
+          <BreadcrumbItem>{
+            label: o.meta.scope!.prefix,
+            toRouteName: o.meta.scope!.breadcrumbToRouteName,
+            entityNameKey: o.meta.scope!.entityNameKey(currentRoute.params),
+          }
+      ),
+  ])
 
   const backToListLabel = (scope: string) => () =>
     h(
@@ -141,8 +136,6 @@ export const useLayoutController = defineStore("layout", () => {
 
   return {
     currentMenu,
-    currentScopes,
-    scopeNameMap,
-    currentScopeName,
+    breadcrumbItems,
   }
 })

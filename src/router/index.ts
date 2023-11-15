@@ -1,4 +1,5 @@
-import { useContractorRepo } from "@/stores/ContractorRepo"
+import { ensureContractorNameCached } from "@/stores/ContractorRepo"
+import { ensureDeviceNameCached } from "@/stores/DeviceRepo"
 import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
@@ -53,7 +54,9 @@ export const routeRecords: RouteRecordRaw[] = [
                 id: "deviceId",
                 backToRouteName: "Devices",
                 prefix: "設備",
-                nameGetter: async (params) => params.deviceId as string,
+                entityNameKey: (params) =>
+                  ensureDeviceNameCached(params.deviceId as string),
+                breadcrumbToRouteName: "DevicePoints",
               },
             },
             children: [
@@ -96,13 +99,9 @@ export const routeRecords: RouteRecordRaw[] = [
                 id: "contractorId",
                 backToRouteName: "Contractors",
                 prefix: "廠商",
-                nameGetter: async (params) => {
-                  const contractorRepo = useContractorRepo()
-                  const contractor = await contractorRepo.get(
-                    params.contractorId as string
-                  )
-                  return contractor.name
-                },
+                entityNameKey: (params) =>
+                  ensureContractorNameCached(params.contractorId as string),
+                breadcrumbToRouteName: "SiteContractorBasicInfo",
               },
             },
             children: [

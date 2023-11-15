@@ -10,7 +10,8 @@ declare module "vue-router" {
       id: string
       backToRouteName: string
       prefix: string
-      nameGetter: (routeParams: RouteParams) => Promise<string>
+      entityNameKey: (routeParams: RouteParams) => string
+      breadcrumbToRouteName: string
     }
     roles?: Role[]
   }
