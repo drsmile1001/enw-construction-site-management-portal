@@ -80,6 +80,7 @@ const tableViewSetting: TableViewProps<
     keyword?: string
     location?: string
     supplier?: string
+    tags?: string[]
   }
 > = {
   columns: [
@@ -124,6 +125,7 @@ const tableViewSetting: TableViewProps<
       keyword: query.keyword,
       location: query.location,
       supplier: query.supplier,
+      tags: query.tags,
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
@@ -148,6 +150,27 @@ const tableViewSetting: TableViewProps<
       inputProps: { type: "text" },
       parser: (value) => value,
       stringify: (value) => value,
+    },
+    {
+      label: "危險物標記",
+      key: "tags",
+      inputProps: {
+        type: "select",
+        selectProps: {
+          options: [
+            { label: "危險物", value: "危險物" },
+            { label: "易燃物", value: "易燃物" },
+            { label: "易爆物", value: "易爆物" },
+            { label: "腐蝕性物", value: "腐蝕性物" },
+            { label: "有毒物", value: "有毒物" },
+            { label: "放射性物", value: "放射性物" },
+            { label: "其他", value: "其他" },
+          ],
+          multiple: true,
+        },
+      },
+      parser: (value) => (value ? value.split(",") : null),
+      stringify: (value: string[] | null) => (value ? value.join(",") : ""),
     },
   ],
   rowActions: [{ type: "editor" }],

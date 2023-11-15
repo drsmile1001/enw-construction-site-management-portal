@@ -24,6 +24,7 @@ export type Inventory = {
 export type InventoryQuery = QueryBase & {
   location?: string
   supplier?: string
+  tags?: string[]
 }
 
 export type CreateInventoryCommand = Omit<
