@@ -3,15 +3,15 @@
     <template #search-bar="{ search, query }">
       <NInputGroup>
         <NDatePicker
-          :value="queryDate ?? query.date ?? defaultQueryDate"
-          @update:value="(v) => (queryDate = v)"
+          :value="queryDate(query.date)"
+          @update:value="(v) => (newQueryDate = v)"
         />
         <NButton
           type="primary"
           @click="
             () =>
               search({
-                date: queryDate,
+                date: queryDate(query.date),
               })
           "
           >搜尋</NButton
@@ -30,7 +30,10 @@ import { startOfDay, parseISO } from "date-fns"
 const repo = useAttendanceRepo()
 
 const defaultQueryDate = startOfDay(new Date()).valueOf()
-const queryDate = ref<number>()
+const newQueryDate = ref<number>()
+function queryDate(parsedQueryDate: number | undefined) {
+  return newQueryDate.value ?? parsedQueryDate ?? defaultQueryDate
+}
 
 const tableViewSetting: TableViewProps<
   Attendance,
