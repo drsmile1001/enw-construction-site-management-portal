@@ -1,9 +1,10 @@
 import type { MenuOption } from "naive-ui"
 import { defineStore } from "pinia"
-import { RouterLink, useRoute, useRouter } from "vue-router"
+import { RouterLink, useRoute } from "vue-router"
+import { routeRecords } from "@/router"
+import type { RouteRecordRaw } from "vue-router"
 
 export const useLayoutController = defineStore("layout", () => {
-  const router = useRouter()
   const currentRoute = useRoute()
   const currentScope = computed(
     () =>
@@ -38,59 +39,72 @@ export const useLayoutController = defineStore("layout", () => {
     return name
   })
 
-  const scopedMenus = computed(() =>
-    router.getRoutes().reduce((acc, route) => {
-      if (!route.meta.title) return acc
-      let scope = "MAIN"
-      let mainGroup: string | undefined = undefined
-      let subGroup: string | undefined = undefined
-      for (const matched of [...router.resolve(route.path).matched].reverse()) {
-        mainGroup = mainGroup ?? matched.meta.mainGroup
-        subGroup = subGroup ?? matched.meta.subGroup
-        if (matched.meta.scope) {
-          scope = matched.meta.scope.backToRouteName
-          break
-        }
+  const backToListLabel = (scope: string) => () =>
+    h(
+      RouterLink,
+      {
+        to: {
+          name: scope,
+          params: currentRoute.params,
+        },
+      },
+      { default: () => "📄 回到列表" }
+    )
+
+  const menus: Array<{ key: string; menu: MenuOption[] }> = [
+    {
+      key: "MAIN",
+      menu: [],
+    },
+  ]
+
+  function buildMenu(records: RouteRecordRaw[], scope: string) {
+    let menu = menus.find((o) => o.key === scope)?.menu
+    if (!menu) {
+      menu = [
+        {
+          label: backToListLabel(scope),
+          key: scope,
+        },
+      ]
+      menus.push({
+        key: scope,
+        menu,
+      })
+    }
+
+    for (const record of records) {
+      if (record.meta?.scope && record.children) {
+        buildMenu(record.children, record.meta.scope.backToRouteName)
+        continue
+      }
+      if (record.children) {
+        buildMenu(record.children, scope)
+        continue
       }
 
-      let scopeMenus = acc.get(scope)
+      if (!record.meta?.title) continue
 
-      if (scopeMenus === undefined) {
-        scopeMenus = []
-        if (scope !== "MAIN") {
-          scopeMenus.push({
-            label: () =>
-              h(
-                RouterLink,
-                {
-                  to: {
-                    name: scope,
-                    params: currentRoute.params,
-                  },
-                },
-                { default: () => "📄 回到列表" }
-              ),
-            key: scope,
-          })
-        }
-      }
+      const { title, mainGroup, subGroup } = record.meta
+      let linkContainer = menu
 
-      let menuContainer = scopeMenus
       if (mainGroup) {
-        let mainGroupMenu = menuContainer.find((o) => o.key === mainGroup)
-        if (!mainGroupMenu) {
-          mainGroupMenu = {
+        let mainGroupLinkContainer = linkContainer.find(
+          (o) => o.key === mainGroup
+        )
+        if (!mainGroupLinkContainer) {
+          mainGroupLinkContainer = {
             label: mainGroup,
             key: mainGroup,
             children: [] as MenuOption[],
           }
-          scopeMenus.push(mainGroupMenu)
+          linkContainer.push(mainGroupLinkContainer)
         }
-        menuContainer = mainGroupMenu.children as MenuOption[]
+        linkContainer = mainGroupLinkContainer.children as MenuOption[]
       }
 
       if (subGroup) {
-        let subGroupMenu = menuContainer.find((o) => o.key === subGroup)
+        let subGroupMenu = linkContainer.find((o) => o.key === subGroup)
         if (!subGroupMenu) {
           subGroupMenu = {
             type: "group",
@@ -98,30 +112,31 @@ export const useLayoutController = defineStore("layout", () => {
             key: subGroup,
             children: [] as MenuOption[],
           }
-          menuContainer.push(subGroupMenu)
+          linkContainer.push(subGroupMenu)
         }
-        menuContainer = subGroupMenu.children as MenuOption[]
+        linkContainer = subGroupMenu.children as MenuOption[]
       }
 
-      menuContainer.push({
+      linkContainer.push({
         label: () =>
           h(
             RouterLink,
             {
               to: {
-                name: route.name,
+                name: record.name as string,
               },
             },
-            { default: () => route.meta.title }
+            { default: () => title }
           ),
-        key: route.name as string,
+        key: record.name as string,
       })
-      acc.set(scope, scopeMenus)
-      return acc
-    }, new Map<string, MenuOption[]>())
-  )
+    }
+  }
+
+  buildMenu(routeRecords, "MAIN")
+
   const currentMenu = computed(
-    () => scopedMenus.value.get(currentScope.value) ?? []
+    () => menus.find(({ key }) => key === currentScope.value)?.menu ?? []
   )
 
   return {
