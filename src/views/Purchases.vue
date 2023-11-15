@@ -8,13 +8,14 @@ import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import { ITEMS_PER_PAGE, env } from "@/environment"
 import {
   type Purchase,
-  type SetPurchaseCommand,
+  type CreatePurchaseCommand,
   usePurchaseRepo,
 } from "@/stores/MaterialRepo"
 import { NTime } from "naive-ui"
+import { parseISO } from "date-fns"
 
 const repo = usePurchaseRepo()
-const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
+const fieldsOptions: DynamicFormItemOption<CreatePurchaseCommand>[] = [
   {
     label: "名稱",
     key: "name",
@@ -47,7 +48,7 @@ const fieldsOptions: DynamicFormItemOption<SetPurchaseCommand>[] = [
 
 const tableViewSetting: TableViewProps<
   Purchase,
-  SetPurchaseCommand,
+  CreatePurchaseCommand,
   {},
   {
     keyword?: string
@@ -78,7 +79,7 @@ const tableViewSetting: TableViewProps<
     {
       title: "資料更新時間",
       key: "update_time",
-      render: (row) => h(NTime, { time: new Date(row.update_time) }),
+      render: (row) => h(NTime, { time: parseISO(row.update_time) }),
     },
   ],
   rowKey: (row) => row.id,

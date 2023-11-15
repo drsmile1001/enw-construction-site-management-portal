@@ -2,11 +2,13 @@
   <div class="flex flex-col gap-4">
     <div class="flex justify-between">
       <div class="w-1/2">
-        <SearchBar
-          :query="query"
-          :fields="queryFields"
-          @update:query="(q) => search(q, 1)"
-        />
+        <slot name="search-bar" :search="search" :query="query">
+          <SearchBar
+            :query="query"
+            :fields="queryFields"
+            @update:query="(q) => search(q, 1)"
+          />
+        </slot>
       </div>
       <div>
         <NButtonGroup>

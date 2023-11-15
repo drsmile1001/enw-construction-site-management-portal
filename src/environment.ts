@@ -6,6 +6,10 @@ class AppEnv {
   DOORMAN_URL = "http://192.168.171.174:8005/"
   WORKER_REPO = "HTTP"
   MACHINERY_REPO = "HTTP"
+  ATTENDANCE_REPO = "HTTP"
+  INVENTORY_MANAGER_URL = "http://192.168.171.174:8006/"
+  PURCHASE_REPO = "HTTP"
+  INVENTORY_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {

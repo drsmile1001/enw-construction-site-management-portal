@@ -1,26 +1,38 @@
 import { HTTPError, type NormalizedOptions } from "ky"
+import { formatISO } from "date-fns"
 
 export function buildParms(query: {
   [key: string]:
     | string
     | number
     | boolean
+    | Date
     | null
     | undefined
-    | (string | number | boolean)[]
+    | (string | number | boolean | Date)[]
 }) {
   const params = new URLSearchParams()
-  Object.keys(query).map((key) => {
-    const value = query[key]
+
+  function append(
+    key: string,
+    value: string | number | boolean | Date | null | undefined
+  ) {
     if (value === "" || value === null || value === undefined) return
-    if (typeof value === "object") {
-      value.forEach((element) => {
-        params.append(key, element.toString())
-      })
-    } else {
-      params.append(key, value.toString())
+    if (value instanceof Date) params.append(key, formatISO(value))
+    else params.append(key, value.toString())
+  }
+
+  for (const key in query) {
+    const value = query[key]
+    if (Array.isArray(value)) {
+      for (const element of value) {
+        append(key, element)
+      }
+      continue
     }
-  })
+    append(key, value)
+  }
+
   return params
 }
 

@@ -6,15 +6,17 @@
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Inventory,
-  type SetInventoryCommand,
+  type CreateInventoryCommand,
   useInventoryRepo,
+  type UpdateInventoryCommand,
 } from "@/stores/MaterialRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
 import { ITEMS_PER_PAGE, env } from "@/environment"
+import { parseISO } from "date-fns"
 
 const repo = useInventoryRepo()
-const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
+const fieldsOptions: DynamicFormItemOption<CreateInventoryCommand>[] = [
   {
     label: "位置",
     key: "location",
@@ -72,8 +74,8 @@ const fieldsOptions: DynamicFormItemOption<SetInventoryCommand>[] = [
 
 const tableViewSetting: TableViewProps<
   Inventory,
-  SetInventoryCommand,
-  SetInventoryCommand,
+  CreateInventoryCommand,
+  UpdateInventoryCommand,
   {
     keyword?: string
   }
@@ -111,7 +113,7 @@ const tableViewSetting: TableViewProps<
     {
       title: "資料更新時間",
       key: "update_time",
-      render: (row) => h(NTime, { time: new Date(row.update_time) }),
+      render: (row) => h(NTime, { time: parseISO(row.update_time) }),
     },
   ],
   rowKey: (row) => row.id,
@@ -121,7 +123,7 @@ const tableViewSetting: TableViewProps<
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
-  rowActions: [{ type: "editor" }, { type: "delete" }],
+  rowActions: [{ type: "editor" }],
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
@@ -138,10 +140,11 @@ const tableViewSetting: TableViewProps<
     method: (model) => repo.create(model),
   },
   editor: {
-    fields: fieldsOptions,
-    modelBuilder: async (item) => item,
+    fields: fieldsOptions.filter(
+      (item) => item.key !== "unit"
+    ) as DynamicFormItemOption<UpdateInventoryCommand>[],
+    modelBuilder: async (item) => repo.get(item.id),
     method: (model, item) => repo.update(item.id, model),
   },
-  deleteMethod: (item) => repo.delete(item.id),
 }
 </script>
