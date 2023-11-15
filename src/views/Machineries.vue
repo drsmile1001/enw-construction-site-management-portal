@@ -66,7 +66,10 @@ const tableViewSetting: TableViewProps<
   UpdateMachineryCommand,
   {
     keyword?: string
+    license_no?: string
+    name?: string
     machine_type?: string
+    driver?: string
   }
 > = {
   columns: [
@@ -104,6 +107,20 @@ const tableViewSetting: TableViewProps<
     {
       key: "keyword",
       label: "關鍵字",
+      inputProps: { type: "text" },
+      parser: (value: string) => value,
+      stringify: (value: string) => value,
+    },
+    {
+      key: "license_no",
+      label: "車牌號碼",
+      inputProps: { type: "text" },
+      parser: (value: string) => value,
+      stringify: (value: string) => value,
+    },
+    {
+      key: "driver",
+      label: "操作人員",
       inputProps: { type: "text" },
       parser: (value: string) => value,
       stringify: (value: string) => value,

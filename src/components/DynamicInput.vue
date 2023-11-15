@@ -28,6 +28,12 @@
         })
     "
   />
+  <NDatePicker
+    v-if="type === 'date'"
+    :="dateProps"
+    :value="value"
+    @update:value="($event) => emits('update:value', $event)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -35,15 +41,17 @@ import {
   type SelectProps,
   type InputProps,
   type InputNumberProps,
+  type DatePickerProps,
 } from "naive-ui"
 import { type AppUploaderProps } from "./AppUploader.vue"
 
 export type DynamicInputProps = {
-  type: "text" | "number" | "select" | "file"
+  type: "text" | "number" | "select" | "file" | "date"
   inputProps?: Omit<InputProps, "value">
   inputNumberProps?: Omit<InputNumberProps, "value">
   selectProps?: Omit<SelectProps, "value">
   fileProps?: Omit<AppUploaderProps, "value">
+  dateProps?: Omit<DatePickerProps, "value">
 }
 
 defineProps<

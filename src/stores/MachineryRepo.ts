@@ -59,7 +59,12 @@ class HttpMachineryRepo implements MachineryRepo {
   async create(command: CreateMachineryCommand): Promise<void> {
     await this.api.post("", {
       json: {
-        items: [command],
+        items: [
+          {
+            ...command,
+            job_title: "", //TODO: 待後端修正後移除
+          },
+        ],
         recorder: "",
       },
     })

@@ -12,7 +12,7 @@ import {
   usePurchaseRepo,
 } from "@/stores/MaterialRepo"
 import { NTime } from "naive-ui"
-import { parseISO } from "date-fns"
+import { parseISO, parse, format } from "date-fns"
 
 const repo = usePurchaseRepo()
 const fieldsOptions: DynamicFormItemOption<CreatePurchaseCommand>[] = [
@@ -51,8 +51,9 @@ const tableViewSetting: TableViewProps<
   CreatePurchaseCommand,
   {},
   {
-    keyword?: string
+    range?: [number, number] | null
     supplier?: string
+    keyword?: string
   }
 > = {
   columns: [
@@ -87,6 +88,8 @@ const tableViewSetting: TableViewProps<
     repo.query({
       keyword: query.keyword,
       supplier: query.supplier,
+      since: query.range?.[0] ? new Date(query.range[0]) : undefined,
+      until: query.range?.[1] ? new Date(query.range[1]) : undefined,
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
@@ -104,6 +107,31 @@ const tableViewSetting: TableViewProps<
       inputProps: { type: "text" },
       parser: (value) => value,
       stringify: (value) => value,
+    },
+    {
+      key: "range",
+      label: "起訖",
+      inputProps: {
+        type: "date",
+        dateProps: {
+          type: "daterange",
+          clearable: true,
+        },
+      },
+      parser: (value) => {
+        if (!value) return null
+        value
+        const result = value
+          .split("~")
+          .map((p) => parse(p, "yyyy-MM-dd", new Date()).valueOf())
+        if (result.length !== 2) throw new Error("日期格式錯誤")
+        if (result.some((r) => isNaN(r))) throw new Error("日期格式錯誤")
+        return result
+      },
+      stringify: (value: [number, number] | null) =>
+        value
+          ? value.map((v) => format(new Date(v), "yyyy-MM-dd")).join("~")
+          : "",
     },
   ],
   rowActions: [{ type: "delete" }],

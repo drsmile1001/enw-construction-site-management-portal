@@ -3,16 +3,18 @@ import { type Worker, useWorkerRepo } from "@/stores/WorkerRepo"
 import { buildParms } from "@/utilities/ky"
 import type { QueryResult } from "@/utilities/repo"
 import ky from "ky"
+import type { Machinery } from "./MachineryRepo"
 
 export type Attendance = {
   site_id: string
-  type: "worker"
+  type: "worker" | "machinery"
   content: {} //TODO: 確認出席記錄中內文的型別
   is_attendance: boolean
   resource_id: string
   date: string
   picture_file: {} //TODO: 確認出席記錄中圖片的型別
-  worker: Worker
+  worker?: Worker
+  machinery?: Machinery
 }
 
 export type AttendanceQuery = {

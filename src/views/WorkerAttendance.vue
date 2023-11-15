@@ -57,12 +57,12 @@ const tableViewSetting: TableViewProps<
     {
       title: "人員",
       key: "worker",
-      render: (row) => row.worker.name,
+      render: (row) => row.worker!.name,
     },
     {
       title: "照片",
       key: "picture_file",
-      render: (_row) => "TODO",
+      render: (_row) => "[x]", //TODO: 實作人員辨識記錄的照片呈現
     },
   ],
   rowKey: (row) => row.date.valueOf(),

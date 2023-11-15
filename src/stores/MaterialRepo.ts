@@ -135,8 +135,10 @@ export interface PurchaseRepo
   extends Repo<Purchase, PurchaseQuery, CreatePurchaseCommand, void> {}
 
 export type PurchaseQuery = QueryBase & {
-  supplier?: string
   since?: Date
+  until?: Date
+  supplier?: string
+  keyword?: string
 }
 
 class HttpPurchaseRepo implements PurchaseRepo {

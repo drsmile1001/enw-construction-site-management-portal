@@ -78,6 +78,8 @@ const tableViewSetting: TableViewProps<
   UpdateInventoryCommand,
   {
     keyword?: string
+    location?: string
+    supplier?: string
   }
 > = {
   columns: [
@@ -120,9 +122,34 @@ const tableViewSetting: TableViewProps<
   queryItems: (query, page) =>
     repo.query({
       keyword: query.keyword,
+      location: query.location,
+      supplier: query.supplier,
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
+  queryFields: [
+    {
+      key: "keyword",
+      label: "關鍵字",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+    {
+      key: "supplier",
+      label: "供應商",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+    {
+      key: "location",
+      label: "位置",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+  ],
   rowActions: [{ type: "editor" }],
   creator: {
     fields: fieldsOptions,

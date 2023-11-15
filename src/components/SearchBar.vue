@@ -2,6 +2,8 @@
   <NInputGroup>
     <NInput
       ref="mainInputRef"
+      :status="mainInputStatus"
+      clearable
       v-model:value="mainInput"
       @update:value="onMainInputUpdated"
       @keyup.enter="search"
@@ -37,6 +39,7 @@
 <script setup lang="ts" generic="TQuery extends Record<string,unknown>">
 import { type InputInst } from "naive-ui"
 import type { DynamicInputProps } from "./DynamicInput.vue"
+import type { FormValidationStatus } from "naive-ui/es/form/src/interface"
 
 export type SearchBarProps<TQuery> = {
   fields?: SearchBarAdvancedFieldOption<TQuery>[]
@@ -60,6 +63,7 @@ const showAdvence = ref(false)
 
 const mainInput = ref("")
 const mainInputRef = ref<InputInst | null>(null)
+const mainInputStatus = ref<FormValidationStatus>("success")
 
 function onMainInputUpdated() {
   const sections = mainInput.value.split(" ").reduce((acc, cur) => {
@@ -76,16 +80,21 @@ function onMainInputUpdated() {
     return acc
   }, new Map<string, string>())
   const query: TQuery = {} as TQuery
-
+  let warning = false
   if (props.fields) {
     for (const field of props.fields) {
       const value = sections.get(field.key)
-      if (!value) query[field.key] = field.parser("")
-      else query[field.key] = field.parser(value)
+      try {
+        if (!value) query[field.key] = field.parser("")
+        else query[field.key] = field.parser(value)
+      } catch (error) {
+        warning = true
+      }
     }
   } else {
     ;(query as any).keyword = sections.get("keyword") ?? ""
   }
+  mainInputStatus.value = warning ? "warning" : "success"
 
   innerQuery.value = query as TQuery
 }
@@ -108,6 +117,7 @@ function onDynamicInputUpdated() {
     sections.push(innerQuery.value.keyword as string)
   }
   mainInput.value = sections.join(" ")
+  mainInputStatus.value = "success"
 }
 
 const innerQuery = ref(props.query) as Ref<TQuery>
