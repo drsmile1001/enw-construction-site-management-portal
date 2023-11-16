@@ -1,5 +1,4 @@
 import "vue-router"
-import { Role } from "@/stores/user"
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -14,7 +13,6 @@ declare module "vue-router" {
       breadcrumbToRouteName: string
     }
     guard?: (routeParams: RouteParams) => Promise<Accessable>
-    roles?: Role[]
   }
 }
 

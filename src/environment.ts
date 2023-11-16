@@ -1,4 +1,6 @@
 class AppEnv {
+  AUTHORITY = "https://www.drsmile.work/keycloak/realms/dev/"
+  CLIENT_ID = "construction-site-management-portal-dev"
   HOST = "http://localhost:5804/"
   API_HOST = ""
   FILE_SERVICE = ""

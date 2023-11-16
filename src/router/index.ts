@@ -3,6 +3,7 @@ import {
   ensureContractorNameCached,
 } from "@/stores/ContractorRepo"
 import { ensureDeviceNameCached } from "@/stores/DeviceRepo"
+import { useUserStore } from "@/stores/User"
 import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
@@ -332,6 +333,20 @@ export const routeRecords: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes: routeRecords,
+})
+
+router.beforeEach(async (to, _from) => {
+  const userStore = useUserStore()
+  const user = await userStore.loadUser()
+
+  //功能性路由不需要檢查權限
+  if (to.name === "Forbidden" || to.name === "NotFound") return
+
+  // 未登入就不繼續路由
+  if (!user) {
+    userStore.signIn(to.fullPath)
+    return false
+  }
 })
 
 router.beforeEach(async (to, _from, next) => {

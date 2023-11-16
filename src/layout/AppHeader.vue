@@ -18,12 +18,15 @@
         </RouterLink>
       </NBreadcrumbItem>
     </NBreadcrumb>
+    <NButton @click="() => userStore.signOut()">登出</NButton>
   </NLayoutHeader>
 </template>
 <script setup lang="ts">
 import { useEntityNameCache } from "@/stores/EntityNameCache"
 import { useLayoutController } from "./LayoutController"
+import { useUserStore } from "@/stores/User"
 
 const controller = useLayoutController()
 const entityNameCache = useEntityNameCache()
+const userStore = useUserStore()
 </script>
