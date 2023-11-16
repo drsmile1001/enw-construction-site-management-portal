@@ -1,4 +1,7 @@
-import { ensureContractorNameCached } from "@/stores/ContractorRepo"
+import {
+  checkContractorAccessable,
+  ensureContractorNameCached,
+} from "@/stores/ContractorRepo"
 import { ensureDeviceNameCached } from "@/stores/DeviceRepo"
 import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
@@ -103,6 +106,8 @@ export const routeRecords: RouteRecordRaw[] = [
                   ensureContractorNameCached(params.contractorId as string),
                 breadcrumbToRouteName: "SiteContractorBasicInfo",
               },
+              guard: (params) =>
+                checkContractorAccessable(params.contractorId as string),
             },
             children: [
               {
@@ -331,7 +336,14 @@ export const routeRecords: RouteRecordRaw[] = [
       {
         path: "/:pathMatch(.*)*",
         name: "NotFound",
-        component: () => import("@/views/NotFound.vue"),
+        props: (r) => ({ path: r.query.path, status: "404" }),
+        component: () => import("@/views/ResultView.vue"),
+      },
+      {
+        path: "/forbidden",
+        name: "Forbidden",
+        props: (r) => ({ path: r.query.path, status: "403" }),
+        component: () => import("@/views/ResultView.vue"),
       },
     ],
   },
@@ -340,6 +352,22 @@ export const routeRecords: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes: routeRecords,
+})
+
+router.beforeEach(async (to, _from, next) => {
+  for (const matched of to.matched) {
+    if (!matched.meta.guard) continue
+    const result = await matched.meta.guard(to.params)
+    if (result === "NOT_FOUND") {
+      next({ name: "NotFound", query: { path: to.path } })
+      return
+    }
+    if (result === "FORBIDDEN") {
+      next(false)
+      return
+    }
+  }
+  next()
 })
 
 export default router

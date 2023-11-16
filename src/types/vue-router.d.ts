@@ -13,6 +13,9 @@ declare module "vue-router" {
       entityNameKey: (routeParams: RouteParams) => string
       breadcrumbToRouteName: string
     }
+    guard?: (routeParams: RouteParams) => Promise<Accessable>
     roles?: Role[]
   }
 }
+
+export type Accessable = "NOT_FOUND" | "FORBIDDEN" | "OK"

@@ -1,6 +1,7 @@
 import { env } from "@/environment"
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
 import { useEntityNameCache } from "@/stores/EntityNameCache"
+import type { Accessable } from "@/types/vue-router"
 
 export type Contractor = {
   id: string
@@ -65,4 +66,17 @@ export function ensureContractorNameCached(id: string): string {
     .get(id)
     .then((o) => nameCache.set(key, o.name))
   return key
+}
+
+export async function checkContractorAccessable(
+  id: string
+): Promise<Accessable> {
+  const repo = useContractorRepo()
+  try {
+    const item = await repo.get(id)
+    if (item.site_id !== env.SITE_ID) return "FORBIDDEN"
+    return "OK"
+  } catch (error) {
+    return "NOT_FOUND"
+  }
 }
