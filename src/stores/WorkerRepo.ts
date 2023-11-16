@@ -62,14 +62,14 @@ class HttpWorkerRepo implements WorkerRepo {
     await this.api.patch(id, {
       json: command,
       searchParams: {
-        editor: "",
+        editor: "editor",
       },
     })
   }
   async delete(id: string): Promise<void> {
     await this.api.delete(id, {
       searchParams: {
-        editor: "",
+        editor: "editor",
       },
     })
   }

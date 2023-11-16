@@ -10,6 +10,8 @@ class AppEnv {
   INVENTORY_MANAGER_URL = "http://192.168.171.174:8006/"
   PURCHASE_REPO = "HTTP"
   INVENTORY_REPO = "HTTP"
+  FILE_STORAGE_URL = "http://localhost:8080/api/v1/files/"
+  FILE_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {

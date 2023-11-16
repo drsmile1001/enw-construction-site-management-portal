@@ -1,3 +1,5 @@
+import { env } from "@/environment"
+import { uploadFile } from "@/utilities/xhr"
 export interface FileRepo {
   buildFileUrl(path: string, fileName: string): string
   put(
@@ -15,6 +17,24 @@ export type FileInfo = {
 
 export type Uploadable = {
   value: string | string[] | null
+}
+
+class HttpFileRepo implements FileRepo {
+  buildFileUrl(path: string, fileName: string): string {
+    return `${env.FILE_STORAGE_URL}${path}/${fileName}`
+  }
+  async put(
+    path: string,
+    file: File,
+    onProgress?: ((percent: number) => any) | undefined
+  ): Promise<FileInfo> {
+    await uploadFile(file, `${env.FILE_STORAGE_URL}${path}`, onProgress)
+    return {
+      path,
+      filename: file.name,
+      url: this.buildFileUrl(path, file.name),
+    }
+  }
 }
 
 class FakeFileRepo implements FileRepo {
@@ -74,7 +94,8 @@ let fileRepo: FileRepo | undefined
 
 export function useFileRepo(): FileRepo {
   if (!fileRepo) {
-    fileRepo = new FakeFileRepo()
+    fileRepo =
+      env.FILE_REPO === "HTTP" ? new HttpFileRepo() : new FakeFileRepo()
   }
   return fileRepo
 }

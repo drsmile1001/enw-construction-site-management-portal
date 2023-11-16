@@ -1,6 +1,6 @@
 export function uploadFile(
   file: File,
-  action: string,
+  url: string,
   onProgress?: (progress: number) => any
 ): Promise<XMLHttpRequest> {
   return new Promise<XMLHttpRequest>(async (resolve, reject) => {
@@ -28,7 +28,7 @@ export function uploadFile(
     xhr.upload.addEventListener("abort", () => {
       reject(xhr)
     })
-    xhr.open("POST", action, true)
+    xhr.open("POST", url, true)
     const token = "TOKEN" //TODO: implement token
     xhr.setRequestHeader("Authorization", `Bearer ${token}`)
     xhr.send(formData)
