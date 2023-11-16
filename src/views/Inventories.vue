@@ -9,7 +9,7 @@ import {
   type CreateInventoryCommand,
   useInventoryRepo,
   type UpdateInventoryCommand,
-} from "@/stores/MaterialRepo"
+} from "@/stores/InventoryRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
 import { ITEMS_PER_PAGE, env } from "@/environment"

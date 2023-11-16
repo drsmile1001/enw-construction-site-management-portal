@@ -10,7 +10,7 @@ import {
   type Purchase,
   type CreatePurchaseCommand,
   usePurchaseRepo,
-} from "@/stores/MaterialRepo"
+} from "@/stores/PurchaseRepo"
 import { NTime } from "naive-ui"
 import { parseISO, parse, format } from "date-fns"
 
