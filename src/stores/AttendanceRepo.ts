@@ -7,7 +7,7 @@ import type { Machinery } from "./MachineryRepo"
 
 export type Attendance = {
   site_id: string
-  type: "worker" | "machinery"
+  type: AttendanceType
   content: {} //TODO: 確認出席記錄中內文的型別
   is_attendance: boolean
   resource_id: string
@@ -17,27 +17,31 @@ export type Attendance = {
   machinery?: Machinery
 }
 
+export type AttendanceType = "worker" | "machinery"
+
 export type AttendanceQuery = {
   date: Date
 }
 
 export interface AttendanceRepo {
-  queryWorkerAttendance(
+  query(
     date: Date,
-    page: number
+    page: number,
+    type: AttendanceType
   ): Promise<QueryResult<Attendance>>
 }
 
 class HttpAttendanceRepo implements AttendanceRepo {
   api = ky.create({
-    prefixUrl: `${env.DOORMAN_URL}api/construction-site/`,
+    prefixUrl: `${env.DOORMAN_URL}api/construction-site/${env.SITE_ID}/`,
   })
-  async queryWorkerAttendance(
+  async query(
     date: Date,
-    page: number
+    page: number,
+    type: AttendanceType
   ): Promise<QueryResult<Attendance>> {
     const records = await this.api
-      .get(`${env.SITE_ID}/worker/attendance/`, {
+      .get(`${type}/attendance/`, {
         searchParams: buildParms({
           date,
         }),
@@ -51,10 +55,7 @@ class HttpAttendanceRepo implements AttendanceRepo {
 }
 
 class FakeAttendanceRepo implements AttendanceRepo {
-  async queryWorkerAttendance(
-    date: Date,
-    page: number
-  ): Promise<QueryResult<Attendance>> {
+  async query(date: Date, page: number): Promise<QueryResult<Attendance>> {
     const workerRepo = useWorkerRepo()
     const workers = await workerRepo.query({})
     const total = workers.items.map(

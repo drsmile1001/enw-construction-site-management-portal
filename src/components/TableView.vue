@@ -83,13 +83,17 @@ import { RouterLink } from "vue-router"
 import type { DynamicFormItemOption, DynamicFormModel } from "./DynamicForm.vue"
 import type { SearchBarAdvancedFieldOption } from "./SearchBar.vue"
 
+export type TableViewColumn<TItem> = TableBaseColumn<TItem> & {
+  key: keyof TItem
+}
+
 export type TableViewProps<
   TItem,
   TCreatorModel extends DynamicFormModel,
   TEditorModel extends DynamicFormModel,
   TQuery
 > = {
-  columns: (TableBaseColumn<TItem> & { key: keyof TItem })[]
+  columns: TableViewColumn<TItem>[]
   rowKey: CreateRowKey<TItem>
   queryItems: (
     query: TQuery,

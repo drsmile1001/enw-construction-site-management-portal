@@ -159,63 +159,43 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
-        path: "worker-attendance",
+        path: "doorman",
         children: [
           {
             path: "",
-            redirect: { name: "WorkerAttendanceDashboard" },
+            redirect: { name: "DoormanDashboard" },
           },
           {
             path: "dashboard",
-            name: "WorkerAttendanceDashboard",
+            name: "DoormanDashboard",
             component: () => import("@/views/FakeDetailView.vue"),
             meta: {
               mainGroup: "工地進出管理",
-              subGroup: "人員進出",
               title: "今日進出狀況",
             },
           },
           {
-            path: "logs",
-            name: "WorkerAttendanceLogs",
-            component: () => import("@/views/WorkerAttendance.vue"),
-            meta: {
-              mainGroup: "工地進出管理",
-              subGroup: "人員進出",
-              title: "歷史辨識紀錄",
-            },
-          },
-        ],
-      },
-      {
-        path: "vehicle-attendance",
-        children: [
-          {
-            path: "",
-            redirect: { name: "VehicleAttendanceDashboard" },
-          },
-          {
-            path: "dashboard",
-            name: "VehicleAttendanceDashboard",
-            component: () => import("@/views/FakeDetailView.vue"),
-            meta: {
-              mainGroup: "工地進出管理",
-              subGroup: "車輛進出",
-              title: "今日進出狀況",
-            },
-          },
-          {
-            path: "logs",
-            name: "VehicleAttendanceLogs",
-            component: () => import("@/views/FakeTableView.vue"),
+            path: "worker-attendances",
+            name: "DoormanWorkerAttendances",
+            component: () => import("@/views/Attendances.vue"),
             props: () => ({
-              actions: [{ label: "詳細", type: "modal" }],
-              itemName: "車輛進出記錄",
+              type: "worker",
             }),
             meta: {
               mainGroup: "工地進出管理",
-              subGroup: "車輛進出",
-              title: "歷史辨識紀錄",
+              title: "人員辨識紀錄",
+            },
+          },
+          {
+            path: "machinery-attendances",
+            name: "DoormanMachineryAttendances",
+            component: () => import("@/views/Attendances.vue"),
+            props: () => ({
+              type: "machinery",
+            }),
+            meta: {
+              mainGroup: "工地進出管理",
+              title: "車輛辨識紀錄",
             },
           },
         ],
