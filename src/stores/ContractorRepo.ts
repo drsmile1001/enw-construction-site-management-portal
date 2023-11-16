@@ -61,10 +61,11 @@ export function useContractorRepo() {
 export function ensureContractorNameCached(id: string): string {
   const nameCache = useEntityNameCache()
   const key = `Contractor:${id}`
-  if (nameCache.get(key)) return key
-  useContractorRepo()
-    .get(id)
-    .then((o) => nameCache.set(key, o.name))
+  nameCache.ensureCached(key, async () => {
+    const repo = useContractorRepo()
+    const item = await repo.get(id)
+    return item.name
+  })
   return key
 }
 

@@ -33,12 +33,16 @@ import {
 } from "@/stores/AttendanceRepo"
 import { NTime } from "naive-ui"
 import { startOfDay, parseISO } from "date-fns"
+import { useEntityNameCache } from "@/stores/EntityNameCache"
+import { ensureContractorNameCached } from "@/stores/ContractorRepo"
 
 const props = defineProps<{
   type: AttendanceType
 }>()
 
 const repo = useAttendanceRepo()
+const nameCache = useEntityNameCache()
+
 const defaultQueryDate = startOfDay(new Date()).valueOf()
 const newQueryDate = ref<number>()
 function queryDate(parsedQueryDate: number | undefined) {
@@ -74,7 +78,9 @@ const workerColumns: TableViewColumn<Attendance>[] = [
   {
     title: "所屬單位",
     key: "worker_contractor_id" as keyof Attendance,
-    render: (row) => row.worker!.contractor_id,
+    render: (row) =>
+      nameCache.get(ensureContractorNameCached(row.worker!.contractor_id)) ??
+      "-",
   },
 ]
 
@@ -102,7 +108,9 @@ const machineryColumns: TableViewColumn<Attendance>[] = [
   {
     title: "所屬單位",
     key: "machinery_contractor_id" as keyof Attendance,
-    render: (row) => row.machinery!.contractor_id,
+    render: (row) =>
+      nameCache.get(ensureContractorNameCached(row.machinery!.contractor_id)) ??
+      "-",
   },
 ]
 

@@ -50,10 +50,11 @@ export function useDeviceRepo() {
 export function ensureDeviceNameCached(id: string): string {
   const nameCache = useEntityNameCache()
   const key = `Device:${id}`
-  if (nameCache.get(key)) return key
-  useDeviceRepo()
-    .get(id)
-    .then((o) => nameCache.set(key, o.name))
+  nameCache.ensureCached(key, async () => {
+    const repo = useDeviceRepo()
+    const item = await repo.get(id)
+    return item.name
+  })
   return key
 }
 
