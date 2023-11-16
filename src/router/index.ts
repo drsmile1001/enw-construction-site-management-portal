@@ -328,6 +328,11 @@ export const routeRecords: RouteRecordRaw[] = [
           title: "進場記錄",
         },
       },
+      {
+        path: "/:pathMatch(.*)*",
+        name: "NotFound",
+        component: () => import("@/views/NotFound.vue"),
+      },
     ],
   },
 ]
