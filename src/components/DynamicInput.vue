@@ -31,6 +31,7 @@
   <NDatePicker
     v-if="type === 'date'"
     :="dateProps"
+    :first-day-of-week="6"
     :value="value"
     @update:value="($event) => emits('update:value', $event)"
   />

@@ -19,7 +19,7 @@
           >
             新增
           </NButton>
-          <slot name="page-actions" :search="search"></slot>
+          <slot name="page-actions" :search="search" :query="query"></slot>
         </NButtonGroup>
       </div>
     </div>

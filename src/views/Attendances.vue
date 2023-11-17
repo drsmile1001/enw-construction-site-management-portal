@@ -4,6 +4,7 @@
       <NInputGroup>
         <NDatePicker
           :value="queryDate(query.date)"
+          :first-day-of-week="6"
           @update:value="(v) => (newQueryDate = v)"
         />
         <NButton
@@ -17,6 +18,9 @@
           >搜尋</NButton
         >
       </NInputGroup>
+    </template>
+    <template #page-actions="{ query }">
+      <NButton @click="() => exportList(query)">列表下載</NButton>
     </template>
   </TableView>
 </template>
@@ -35,6 +39,7 @@ import { NTime } from "naive-ui"
 import { startOfDay, parseISO } from "date-fns"
 import { useNameCache } from "@/stores/NameCache"
 import { ensureContractorNameCached } from "@/stores/ContractorRepo"
+import { buildFetcher, exportXlsx } from "@/utilities/sheet"
 
 const props = defineProps<{
   type: AttendanceType
@@ -141,5 +146,45 @@ const tableViewSetting: TableViewProps<
       stringify: (value) => (value as number).toString(),
     },
   ],
+}
+
+async function exportList(query: { date?: number }) {
+  console.log(query)
+
+  const fetcher = buildFetcher((page) =>
+    repo.query(
+      new Date(query.date ? query.date : defaultQueryDate),
+      page,
+      props.type
+    )
+  )
+
+  await exportXlsx({
+    sheet: "出席記錄",
+    outputFileName: "出席記錄.xlsx",
+    fetcher: fetcher,
+    columnOptions: [
+      {
+        name: "時間",
+        selector: (a) => parseISO(a.date),
+      },
+      {
+        name: "進出",
+        selector: (a) => (a.is_attendance ? "進" : "出"),
+      },
+      {
+        name: "工種",
+        selector: (a) => a.worker?.job_title,
+      },
+      {
+        name: "姓名",
+        selector: (a) => a.worker?.name,
+      },
+      {
+        name: "所屬單位",
+        selector: (a) => a.worker?.contractor_id,
+      },
+    ],
+  })
 }
 </script>
