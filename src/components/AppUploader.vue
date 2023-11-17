@@ -5,6 +5,9 @@
     :custom-request="customRequest"
     @change="onChange"
   >
+    <NButton v-if="uploadProps?.listType !== 'image-card'" size="small"
+      >上傳</NButton
+    >
   </NUpload>
 </template>
 
@@ -63,7 +66,7 @@ watchEffect(() => {
     })
     return
   }
-  if (props.value === null) {
+  if (!props.value) {
     fileList.value = []
     return
   }
@@ -79,6 +82,7 @@ watchEffect(() => {
   }
 })
 
+//TODO: 需要處理上傳時發生重複的問題
 const customRequest: CustomRequest = ({
   file,
   onFinish,

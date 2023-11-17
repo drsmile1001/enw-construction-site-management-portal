@@ -14,7 +14,16 @@
       :label="field.label"
       :path="field.key"
     >
-      <DynamicInput :="field.inputProps" v-model:value="formModel[field.key]" />
+      <DynamicInput
+        :="field.inputProps"
+        :value="(field.mapper ?? defaultFormItemValueMapper).parser(formModel[field.key as string])"
+        @update:value="
+          (value) =>
+            (formModel![field.key] = (
+              field.mapper ?? defaultFormItemValueMapper
+            ).formatter(value))
+        "
+      />
     </NFormItem>
   </NForm>
 </template>
@@ -30,11 +39,22 @@ export type DynamicFormProps<TModel extends DynamicFormModel = any> = {
   modelLoader: () => Promise<TModel>
 }
 
+export type FormItemValueMapper = {
+  parser: (value: any) => any
+  formatter: (value: any) => any
+}
+
 export type DynamicFormItemOption<TModel extends DynamicFormModel> = {
   label: string
   key: keyof TModel & string
   rules?: FormRules | FormItemRule | FormItemRule[]
   inputProps: DynamicInputProps
+  mapper?: FormItemValueMapper
+}
+
+const defaultFormItemValueMapper: FormItemValueMapper = {
+  parser: (value: any) => value,
+  formatter: (value: any) => value,
 }
 
 const props = defineProps<DynamicFormProps<TModel>>()

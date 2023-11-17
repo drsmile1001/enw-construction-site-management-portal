@@ -4,7 +4,6 @@ import {
 } from "@/stores/ContractorRepo"
 import { ensureDeviceNameCached } from "@/stores/DeviceRepo"
 import { useUserStore } from "@/stores/User"
-import type { FakeDetailViewProps } from "@/views/FakeDetailView.vue"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
 export const routeRecords: RouteRecordRaw[] = [
@@ -19,21 +18,7 @@ export const routeRecords: RouteRecordRaw[] = [
       {
         path: "site-basic-info",
         name: "SiteBasicInfo",
-        component: () => import("@/views/FakeDetailView.vue"),
-        props: () =>
-          <FakeDetailViewProps>{
-            fields: [
-              "工地名稱",
-              "工地地址",
-              "工地負責人",
-              "施工期間",
-              "工務室電話",
-              "監造單位",
-              "施工單位",
-              "主辦機關",
-              "工地平面圖",
-            ],
-          },
+        component: () => import("@/views/SiteBasicInfo.vue"),
         meta: {
           mainGroup: "管理設定",
           title: "基本資料",

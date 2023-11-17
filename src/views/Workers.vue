@@ -22,7 +22,7 @@ const repo = useWorkerRepo()
 const props = defineProps<WorkersProps>()
 const fileRepo = useFileRepo()
 
-const workerPictureCollection = `contractor_${props.contractorId}_workers`
+const workerPictureCollection = `contractor_${props.contractorId}_workers` //TODO: 員工的照片所屬集合名稱應該在 repo 中定義
 const commonFields: DynamicFormItemOption<UpdateWorkerCommand>[] = [
   {
     label: "工號",

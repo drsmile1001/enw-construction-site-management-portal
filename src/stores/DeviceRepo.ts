@@ -1,4 +1,3 @@
-import { env } from "@/environment"
 import { FakeRepo, type QueryBase, type Repo } from "@/utilities/repo"
 import { useNameCache } from "./NameCache"
 import { useUserStore } from "./User"
