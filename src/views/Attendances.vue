@@ -33,7 +33,7 @@ import {
 } from "@/stores/AttendanceRepo"
 import { NTime } from "naive-ui"
 import { startOfDay, parseISO } from "date-fns"
-import { useEntityNameCache } from "@/stores/EntityNameCache"
+import { useNameCache } from "@/stores/NameCache"
 import { ensureContractorNameCached } from "@/stores/ContractorRepo"
 
 const props = defineProps<{
@@ -41,7 +41,7 @@ const props = defineProps<{
 }>()
 
 const repo = useAttendanceRepo()
-const nameCache = useEntityNameCache()
+const nameCache = useNameCache()
 
 const defaultQueryDate = startOfDay(new Date()).valueOf()
 const newQueryDate = ref<number>()

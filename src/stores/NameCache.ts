@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 
-export const useEntityNameCache = defineStore("entityNameCache", () => {
+export const useNameCache = defineStore("name-cache", () => {
+  //XXX: 目前假設了使用者登出後，會立刻跳轉到登入頁，導致 cache 自動清空。如果不離開本網站，需要補上清空 cache。
   const map = ref(new Map<string, string>())
   const get = (key: string) => map.value.get(key)
   const set = (key: string, value: string) => map.value.set(key, value)

@@ -1,5 +1,7 @@
-import { HTTPError, type NormalizedOptions } from "ky"
+import ky, { HTTPError, type NormalizedOptions } from "ky"
 import { formatISO } from "date-fns"
+import { useUserStore } from "@/stores/User"
+import type { KyInstance } from "node_modules/ky/distribution/types/ky"
 
 export function buildParms(query: {
   [key: string]:
@@ -54,3 +56,15 @@ export async function tryGetErrorCode(error: unknown) {
   }
   return undefined
 }
+
+export const kyWithBearerToken: KyInstance = ky.create({
+  hooks: {
+    beforeRequest: [
+      async (request) => {
+        const userStore = useUserStore()
+        const token = await userStore.getAccessToken()
+        request.headers.set("Authorization", `Bearer ${token}`)
+      },
+    ],
+  },
+})

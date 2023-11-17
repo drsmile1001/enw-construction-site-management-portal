@@ -1,6 +1,7 @@
 import { env } from "@/environment"
 import { FakeRepo, type QueryBase, type Repo } from "@/utilities/repo"
-import { useEntityNameCache } from "./EntityNameCache"
+import { useNameCache } from "./NameCache"
+import { useUserStore } from "./User"
 
 export type Device = {
   id: string
@@ -19,6 +20,7 @@ class FakeDeviceRepo extends FakeRepo<
   SetDeviceCommand,
   SetDeviceCommand
 > {
+  userStore = useUserStore()
   queryPredicate(query: QueryBase): (item: Device) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
   }
@@ -28,13 +30,13 @@ class FakeDeviceRepo extends FakeRepo<
   createItem(command: SetDeviceCommand): Device {
     return {
       id: Math.random().toString(),
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       ...command,
     }
   }
   updateItem(item: Device, command: SetDeviceCommand): void {
     Object.assign(item, command)
-    const nameCache = useEntityNameCache()
+    const nameCache = useNameCache()
     nameCache.set(`Device:${item.id}`, item.name)
   }
 }
@@ -48,7 +50,7 @@ export function useDeviceRepo() {
 }
 
 export function ensureDeviceNameCached(id: string): string {
-  const nameCache = useEntityNameCache()
+  const nameCache = useNameCache()
   const key = `Device:${id}`
   nameCache.ensureCached(key, async () => {
     const repo = useDeviceRepo()
@@ -93,6 +95,7 @@ class FakeDevicePointRepo extends FakeRepo<
   UpdateDevicePointCommand,
   DevicePointID
 > {
+  userStore = useUserStore()
   queryPredicate(query: DevicePointQuery): (item: DevicePoint) => boolean {
     return (item) =>
       (!query.keyword || item.name.includes(query.keyword)) &&
@@ -103,7 +106,7 @@ class FakeDevicePointRepo extends FakeRepo<
   }
   createItem(command: CreateDevicePointCommand): DevicePoint {
     return {
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       ...command,
     }
   }

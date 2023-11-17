@@ -1,7 +1,7 @@
-import { env } from "@/environment"
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
-import { useEntityNameCache } from "@/stores/EntityNameCache"
+import { useNameCache } from "@/stores/NameCache"
 import type { Accessable } from "@/types/vue-router"
+import { useUserStore } from "./User"
 
 export type Contractor = {
   id: string
@@ -30,6 +30,7 @@ class FakeContractorRepo extends FakeRepo<
   SetContractorCommand,
   SetContractorCommand
 > {
+  userStore = useUserStore()
   queryPredicate(query: ContractorQuery): (item: Contractor) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
   }
@@ -39,13 +40,13 @@ class FakeContractorRepo extends FakeRepo<
   createItem(command: SetContractorCommand): Contractor {
     return {
       id: Math.random().toString(),
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       ...command,
     }
   }
   updateItem(item: Contractor, command: SetContractorCommand): void {
     Object.assign(item, command)
-    const nameCache = useEntityNameCache()
+    const nameCache = useNameCache()
     nameCache.set(`Contractor:${item.id}`, item.name)
   }
 }
@@ -59,7 +60,7 @@ export function useContractorRepo() {
 }
 
 export function ensureContractorNameCached(id: string): string {
-  const nameCache = useEntityNameCache()
+  const nameCache = useNameCache()
   const key = `Contractor:${id}`
   nameCache.ensureCached(key, async () => {
     const repo = useContractorRepo()
@@ -73,9 +74,10 @@ export async function checkContractorAccessable(
   id: string
 ): Promise<Accessable> {
   const repo = useContractorRepo()
+  const userStore = useUserStore()
   try {
     const item = await repo.get(id)
-    if (item.site_id !== env.SITE_ID) return "FORBIDDEN"
+    if (item.site_id !== userStore.getSiteId()) return "FORBIDDEN"
     return "OK"
   } catch (error) {
     return "NOT_FOUND"

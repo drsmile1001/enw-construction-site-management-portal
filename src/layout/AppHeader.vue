@@ -1,5 +1,8 @@
 <template>
-  <NLayoutHeader class="h-16 px-8 py-4 flex items-center" bordered>
+  <NLayoutHeader
+    class="h-16 px-8 py-4 flex items-center justify-between"
+    bordered
+  >
     <NBreadcrumb>
       <NBreadcrumbItem
         v-for="item in controller.breadcrumbItems"
@@ -13,20 +16,20 @@
         >
           <span>{{ item.label }}</span>
           <span v-if="item.entityNameKey">{{
-            entityNameCache.get(item.entityNameKey) ?? "-"
+            nameCache.get(item.entityNameKey) ?? "-"
           }}</span>
         </RouterLink>
       </NBreadcrumbItem>
     </NBreadcrumb>
-    <NButton @click="() => userStore.signOut()">登出</NButton>
+    <NButton quaternary @click="() => userStore.signOut()">登出</NButton>
   </NLayoutHeader>
 </template>
 <script setup lang="ts">
-import { useEntityNameCache } from "@/stores/EntityNameCache"
+import { useNameCache } from "@/stores/NameCache"
 import { useLayoutController } from "./LayoutController"
 import { useUserStore } from "@/stores/User"
 
 const controller = useLayoutController()
-const entityNameCache = useEntityNameCache()
+const nameCache = useNameCache()
 const userStore = useUserStore()
 </script>

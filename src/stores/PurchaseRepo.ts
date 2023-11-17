@@ -1,12 +1,12 @@
 import { env } from "@/environment"
-import { buildParms } from "@/utilities/ky"
+import { buildParms, kyWithBearerToken } from "@/utilities/ky"
 import {
   type Repo,
   type QueryBase,
   FakeRepo,
   type QueryResult,
 } from "@/utilities/repo"
-import ky from "ky"
+import { useUserStore } from "./User"
 
 export type Purchase = {
   site_id: string
@@ -36,8 +36,11 @@ export type PurchaseQuery = QueryBase & {
 }
 
 class HttpPurchaseRepo implements PurchaseRepo {
-  api = ky.create({
-    prefixUrl: `${env.INVENTORY_MANAGER_URL}api/construction-site/${env.SITE_ID}/purchase/`,
+  userStore = useUserStore()
+  api = kyWithBearerToken.create({
+    prefixUrl: `${
+      env.INVENTORY_MANAGER_URL
+    }api/construction-site/${this.userStore.getSiteId()}/purchase/`,
   })
   query(query: PurchaseQuery): Promise<QueryResult<Purchase>> {
     return this.api
@@ -76,6 +79,7 @@ class FakePurchaseRepo extends FakeRepo<
   CreatePurchaseCommand,
   void
 > {
+  userStore = useUserStore()
   queryPredicate(query: PurchaseQuery): (item: Purchase) => boolean {
     return (item) =>
       (!query.keyword || item.name.includes(query.keyword)) &&
@@ -86,7 +90,7 @@ class FakePurchaseRepo extends FakeRepo<
   }
   createItem(command: CreatePurchaseCommand): Purchase {
     return {
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       id: Math.random().toString(),
       update_time: new Date().toISOString(),
       ...command,

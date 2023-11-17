@@ -1,5 +1,5 @@
 import { env } from "@/environment"
-import { buildParms } from "@/utilities/ky"
+import { buildParms, kyWithBearerToken } from "@/utilities/ky"
 import {
   type Repo,
   type QueryBase,
@@ -7,6 +7,7 @@ import {
   type QueryResult,
 } from "@/utilities/repo"
 import ky from "ky"
+import { useUserStore } from "./User"
 
 export type Machinery = {
   site_id: string
@@ -42,11 +43,16 @@ export interface MachineryRepo
   > {}
 
 class HttpMachineryRepo implements MachineryRepo {
-  api = ky.create({
-    prefixUrl: `${env.DOORMAN_URL}api/construction-site/${env.SITE_ID}/machinery/`,
-  })
+  userStore = useUserStore()
+  api = computed(() =>
+    kyWithBearerToken.extend({
+      prefixUrl: `${
+        env.DOORMAN_URL
+      }api/construction-site/${this.userStore.getSiteId()}/machinery/`,
+    })
+  )
   async query(query: MachineryQuery): Promise<QueryResult<Machinery>> {
-    return this.api
+    return this.api.value
       .get("", {
         searchParams: buildParms(query),
       })
@@ -57,7 +63,7 @@ class HttpMachineryRepo implements MachineryRepo {
     return result.items[0]
   }
   async create(command: CreateMachineryCommand): Promise<void> {
-    await this.api.post("", {
+    await this.api.value.post("", {
       json: {
         items: [
           {
@@ -70,7 +76,7 @@ class HttpMachineryRepo implements MachineryRepo {
     })
   }
   async update(id: string, command: UpdateMachineryCommand): Promise<void> {
-    await this.api.patch(id, {
+    await this.api.value.patch(id, {
       json: command,
       searchParams: {
         editor: "",
@@ -78,7 +84,7 @@ class HttpMachineryRepo implements MachineryRepo {
     })
   }
   async delete(id: string): Promise<void> {
-    await this.api.delete(id, {
+    await this.api.value.delete(id, {
       searchParams: {
         editor: "",
       },
@@ -92,6 +98,7 @@ class FakeMachineryRepo extends FakeRepo<
   CreateMachineryCommand,
   UpdateMachineryCommand
 > {
+  userStore = useUserStore()
   queryPredicate(query: MachineryQuery): (item: Machinery) => boolean {
     return (item) =>
       (!query.keyword || item.name.includes(query.keyword)) &&
@@ -103,7 +110,7 @@ class FakeMachineryRepo extends FakeRepo<
   }
   createItem(command: CreateMachineryCommand): Machinery {
     return {
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       id: Math.random().toString(),
       ...command,
     }

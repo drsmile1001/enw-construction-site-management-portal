@@ -27,20 +27,21 @@ export const useUserStore = defineStore("user", () => {
   const userManager = new UserManager(oidcSettings)
   const user = ref<User | null>(null)
 
+  //XXX: 目前設計成一個 site 只有一個使用者，所以 siteid 是使用者的屬性。同時網站設計成必須登入才能使用，所以這裡 siteid 一定會有值。
+  let siteId: string | undefined
   userManager.events.addUserLoaded((u) => {
-    console.info("addUserLoaded", u)
     user.value = u
   })
   userManager.events.addUserUnloaded(() => {
     user.value = null
+    siteId = undefined
   })
+  function getSiteId() {
+    if (!siteId) throw new Error("siteId is not set")
+    return siteId
+  }
 
-  const name = computed(() => user.value?.profile.name)
-  const nickName = computed(() => user.value?.profile.nickname)
   const loggedIn = computed(() => !!user.value)
-  const tibaClaims = computed(() =>
-    !user.value ? {} : (user.value.profile.tiba as Record<string, string[]>)
-  )
 
   function signIn(path?: string) {
     return userManager.signinRedirect({
@@ -60,18 +61,17 @@ export const useUserStore = defineStore("user", () => {
   async function loadUser() {
     if (user.value) return user.value
     user.value = await userManager.getUser()
+    siteId = user.value?.profile.SITE_ID as string | undefined
     return user.value
   }
 
   return {
     loggedIn,
     user,
-    name,
-    nickName,
     getAccessToken,
     signIn,
     signOut,
     loadUser,
-    tibaClaims,
+    getSiteId,
   }
 })

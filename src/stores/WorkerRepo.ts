@@ -1,13 +1,13 @@
 import { env } from "@/environment"
-import { buildParms } from "@/utilities/ky"
+import { buildParms, kyWithBearerToken } from "@/utilities/ky"
 import {
   type QueryBase,
   FakeRepo,
   type Repo,
   type QueryResult,
 } from "@/utilities/repo"
-import ky from "ky"
 import type { Uploadable } from "./FileRepo"
+import { useUserStore } from "./User"
 
 export type Worker = {
   id: string
@@ -36,8 +36,11 @@ export interface WorkerRepo
   extends Repo<Worker, WorkerQuery, CreateWorkerCommand, UpdateWorkerCommand> {}
 
 class HttpWorkerRepo implements WorkerRepo {
-  api = ky.create({
-    prefixUrl: `${env.DOORMAN_URL}api/construction-site/${env.SITE_ID}/worker/`,
+  userStore = useUserStore()
+  api = kyWithBearerToken.create({
+    prefixUrl: `${
+      env.DOORMAN_URL
+    }api/construction-site/${this.userStore.getSiteId()}/worker/`,
   })
   query(query: WorkerQuery): Promise<QueryResult<Worker>> {
     return this.api
@@ -81,6 +84,7 @@ class FakeWorkerRepo extends FakeRepo<
   CreateWorkerCommand,
   UpdateWorkerCommand
 > {
+  userStore = useUserStore()
   queryPredicate(query: WorkerQuery): (item: Worker) => boolean {
     return (item) =>
       (!query.keyword ||
@@ -94,7 +98,7 @@ class FakeWorkerRepo extends FakeRepo<
   }
   createItem(command: CreateWorkerCommand): Worker {
     return {
-      site_id: env.SITE_ID,
+      site_id: this.userStore.getSiteId(),
       id: Math.random().toString(),
       ...command,
     }
