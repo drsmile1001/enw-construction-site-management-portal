@@ -1,7 +1,10 @@
 import { utils, writeFile } from "xlsx"
 export type SheetColumnOption<TItem extends Record<string, unknown>> = {
   name: string
-  selector: keyof TItem | ((item: TItem) => any)
+  selector:
+    | keyof TItem
+    | ((item: TItem) => any)
+    | ((item: TItem) => Promise<any>)
   ref?: (key: string, item: TItem) => Promise<any>
 }
 
@@ -48,13 +51,19 @@ export async function exportXlsx<TItem extends Record<string, unknown>>(
   ]
 
   for (const item of data) {
-    const row = options.columnOptions.map((columnOption) => {
-      if (columnOption.selector instanceof Function) {
-        return columnOption.selector(item)
+    const row = []
+    for (const { selector } of options.columnOptions) {
+      if (selector instanceof Function) {
+        const value = selector(item)
+        if (value instanceof Promise) {
+          row.push(await value)
+        } else {
+          row.push(value)
+        }
       } else {
-        return item[columnOption.selector]
+        row.push(item[selector])
       }
-    })
+    }
     rows.push(row)
   }
   const workbook = utils.book_new()

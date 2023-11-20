@@ -1,5 +1,5 @@
 import { type Repo, type QueryBase, FakeRepo } from "@/utilities/repo"
-import { useNameCache } from "@/stores/NameCache"
+import { Cache } from "@/stores/Cache"
 import type { Accessable } from "@/types/vue-router"
 import { useUserStore } from "./User"
 
@@ -46,8 +46,7 @@ class FakeContractorRepo extends FakeRepo<
   }
   updateItem(item: Contractor, command: SetContractorCommand): void {
     Object.assign(item, command)
-    const nameCache = useNameCache()
-    nameCache.set(`Contractor:${item.id}`, item.name)
+    nameCache.setCache(item.id, item.name)
   }
 }
 
@@ -59,16 +58,20 @@ export function useContractorRepo() {
   return contractorRepo
 }
 
-export function ensureContractorNameCached(id: string): string {
-  const nameCache = useNameCache()
-  const key = `Contractor:${id}`
-  nameCache.ensureCached(key, async () => {
+const nameCache = new Cache(
+  (id: string) => `Contractor:${id}`,
+  async (id) => {
+    console.log("value getter", id)
     const repo = useContractorRepo()
+
     const item = await repo.get(id)
     return item.name
-  })
-  return key
-}
+  },
+  "contractorName"
+)
+
+export const { getValue: getName, getReactiveValue: getReactiveName } =
+  nameCache
 
 export async function checkContractorAccessable(
   id: string

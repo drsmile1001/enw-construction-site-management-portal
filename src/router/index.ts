@@ -1,8 +1,8 @@
 import {
   checkContractorAccessable,
-  ensureContractorNameCached,
+  getReactiveName as contractorName,
 } from "@/stores/ContractorRepo"
-import { ensureDeviceNameCached } from "@/stores/DeviceRepo"
+import { getReactiveName as deviceName } from "@/stores/DeviceRepo"
 import { useUserStore } from "@/stores/User"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
 
@@ -43,8 +43,7 @@ export const routeRecords: RouteRecordRaw[] = [
                 id: "deviceId",
                 backToRouteName: "Devices",
                 prefix: "設備",
-                entityNameKey: (params) =>
-                  ensureDeviceNameCached(params.deviceId as string),
+                name: (params) => deviceName(params.deviceId as string),
                 breadcrumbToRouteName: "DevicePoints",
               },
             },
@@ -88,8 +87,7 @@ export const routeRecords: RouteRecordRaw[] = [
                 id: "contractorId",
                 backToRouteName: "Contractors",
                 prefix: "廠商",
-                entityNameKey: (params) =>
-                  ensureContractorNameCached(params.contractorId as string),
+                name: (params) => contractorName(params.contractorId as string),
                 breadcrumbToRouteName: "SiteContractorBasicInfo",
               },
               guard: (params) =>

@@ -15,9 +15,7 @@
           }"
         >
           <span>{{ item.label }}</span>
-          <span v-if="item.entityNameKey">{{
-            nameCache.get(item.entityNameKey) ?? "-"
-          }}</span>
+          <span v-if="item.name">{{ toValue(item.name) }}</span>
         </RouterLink>
       </NBreadcrumbItem>
     </NBreadcrumb>
@@ -25,11 +23,10 @@
   </NLayoutHeader>
 </template>
 <script setup lang="ts">
-import { useNameCache } from "@/stores/NameCache"
 import { useLayoutController } from "./LayoutController"
 import { useUserStore } from "@/stores/User"
+import { toValue } from "vue"
 
 const controller = useLayoutController()
-const nameCache = useNameCache()
 const userStore = useUserStore()
 </script>

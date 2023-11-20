@@ -9,7 +9,9 @@ declare module "vue-router" {
       id: string
       backToRouteName: string
       prefix: string
-      entityNameKey: (routeParams: RouteParams) => string
+      name: (
+        routeParams: RouteParams
+      ) => string | ComputedRef<string | undefined>
       breadcrumbToRouteName: string
     }
     guard?: (routeParams: RouteParams) => Promise<Accessable>

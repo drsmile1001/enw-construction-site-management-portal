@@ -1,5 +1,5 @@
 import { FakeRepo, type QueryBase, type Repo } from "@/utilities/repo"
-import { useNameCache } from "./NameCache"
+import { Cache } from "@/stores/Cache"
 import { useUserStore } from "./User"
 
 export type Device = {
@@ -35,8 +35,7 @@ class FakeDeviceRepo extends FakeRepo<
   }
   updateItem(item: Device, command: SetDeviceCommand): void {
     Object.assign(item, command)
-    const nameCache = useNameCache()
-    nameCache.set(`Device:${item.id}`, item.name)
+    nameCache.setCache(item.id, item.name)
   }
 }
 
@@ -48,16 +47,17 @@ export function useDeviceRepo() {
   return deviceRepo
 }
 
-export function ensureDeviceNameCached(id: string): string {
-  const nameCache = useNameCache()
-  const key = `Device:${id}`
-  nameCache.ensureCached(key, async () => {
+const nameCache = new Cache(
+  (id: string) => `Device:${id}`,
+  async (id) => {
     const repo = useDeviceRepo()
     const item = await repo.get(id)
     return item.name
-  })
-  return key
-}
+  }
+)
+
+export const { getReactiveValue: getReactiveName, getValue: getName } =
+  nameCache
 
 export type DevicePoint = {
   site_id: string

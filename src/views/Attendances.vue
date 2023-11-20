@@ -37,8 +37,10 @@ import {
 } from "@/stores/AttendanceRepo"
 import { NTime } from "naive-ui"
 import { startOfDay, parseISO } from "date-fns"
-import { useNameCache } from "@/stores/NameCache"
-import { ensureContractorNameCached } from "@/stores/ContractorRepo"
+import {
+  getName as contractorName,
+  getReactiveName as reactiveContractorName,
+} from "@/stores/ContractorRepo"
 import { buildFetcher, exportXlsx } from "@/utilities/sheet"
 
 const props = defineProps<{
@@ -46,7 +48,6 @@ const props = defineProps<{
 }>()
 
 const repo = useAttendanceRepo()
-const nameCache = useNameCache()
 
 const defaultQueryDate = startOfDay(new Date()).valueOf()
 const newQueryDate = ref<number>()
@@ -83,9 +84,7 @@ const workerColumns: TableViewColumn<Attendance>[] = [
   {
     title: "所屬單位",
     key: "worker_contractor_id" as keyof Attendance,
-    render: (row) =>
-      nameCache.get(ensureContractorNameCached(row.worker!.contractor_id)) ??
-      "-",
+    render: (row) => reactiveContractorName(row.worker!.contractor_id).value,
   },
 ]
 
@@ -113,9 +112,7 @@ const machineryColumns: TableViewColumn<Attendance>[] = [
   {
     title: "所屬單位",
     key: "machinery_contractor_id" as keyof Attendance,
-    render: (row) =>
-      nameCache.get(ensureContractorNameCached(row.machinery!.contractor_id)) ??
-      "-",
+    render: (row) => reactiveContractorName(row.machinery!.contractor_id).value,
   },
 ]
 
@@ -182,7 +179,10 @@ async function exportList(query: { date?: number }) {
       },
       {
         name: "所屬單位",
-        selector: (a) => a.worker?.contractor_id,
+        selector: (a) =>
+          a.worker?.contractor_id
+            ? contractorName(a.worker?.contractor_id)
+            : "",
       },
     ],
   })

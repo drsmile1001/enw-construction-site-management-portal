@@ -7,7 +7,7 @@ import type { RouteRecordRaw } from "vue-router"
 export type BreadcrumbItem = {
   label: string
   toRouteName: string
-  entityNameKey?: string
+  name?: string | globalThis.ComputedRef<string | undefined>
 }
 
 export const useLayoutController = defineStore("layout", () => {
@@ -29,7 +29,7 @@ export const useLayoutController = defineStore("layout", () => {
           <BreadcrumbItem>{
             label: o.meta.scope!.prefix,
             toRouteName: o.meta.scope!.breadcrumbToRouteName,
-            entityNameKey: o.meta.scope!.entityNameKey(currentRoute.params),
+            name: o.meta.scope!.name(currentRoute.params),
           }
       ),
   ])
