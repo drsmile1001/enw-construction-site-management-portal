@@ -41,7 +41,11 @@ import {
   getName as contractorName,
   getReactiveName as reactiveContractorName,
 } from "@/stores/ContractorRepo"
-import { buildFetcher, exportXlsx } from "@/utilities/sheet"
+import {
+  buildFetcher,
+  exportXlsx,
+  type SheetColumnOption,
+} from "@/utilities/sheet"
 
 const props = defineProps<{
   type: AttendanceType
@@ -146,8 +150,6 @@ const tableViewSetting: TableViewProps<
 }
 
 async function exportList(query: { date?: number }) {
-  console.log(query)
-
   const fetcher = buildFetcher((page) =>
     repo.query(
       new Date(query.date ? query.date : defaultQueryDate),
@@ -156,9 +158,63 @@ async function exportList(query: { date?: number }) {
     )
   )
 
+  const workerColumns: SheetColumnOption<Attendance>[] = [
+    {
+      name: "工種",
+      selector: (a) => a.worker?.job_title,
+    },
+    {
+      name: "姓名",
+      selector: (a) => a.worker?.name,
+    },
+    {
+      name: "所屬單位",
+      selector: async (a) => {
+        if (!a.worker?.contractor_id) return ""
+        try {
+          return (
+            (await contractorName(a.worker!.contractor_id)) ??
+            `<${a.worker!.contractor_id}>`
+          )
+        } catch (error) {
+          return `<${a.worker!.contractor_id}>`
+        }
+      },
+    },
+    {
+      name: "服裝檢查",
+      selector: (a) => JSON.stringify(a.content),
+    },
+  ]
+
+  const machineryColumns: SheetColumnOption<Attendance>[] = [
+    {
+      name: "類型",
+      selector: (a) => a.machinery?.machine_type,
+    },
+    {
+      name: "車牌號碼",
+      selector: (a) => a.machinery?.license_no,
+    },
+    {
+      name: "所屬單位",
+      selector: async (a) => {
+        if (!a.machinery?.contractor_id) return ""
+        try {
+          return (
+            (await contractorName(a.machinery!.contractor_id)) ??
+            `<${a.machinery!.contractor_id}>`
+          )
+        } catch (error) {
+          return `<${a.machinery!.contractor_id}>`
+        }
+      },
+    },
+  ]
+
   await exportXlsx({
-    sheet: "出席記錄",
-    outputFileName: "出席記錄.xlsx",
+    sheet: "辨識記錄",
+    outputFileName: "辨識記錄.xlsx",
     fetcher: fetcher,
     columnOptions: [
       {
@@ -169,21 +225,7 @@ async function exportList(query: { date?: number }) {
         name: "進出",
         selector: (a) => (a.is_attendance ? "進" : "出"),
       },
-      {
-        name: "工種",
-        selector: (a) => a.worker?.job_title,
-      },
-      {
-        name: "姓名",
-        selector: (a) => a.worker?.name,
-      },
-      {
-        name: "所屬單位",
-        selector: (a) =>
-          a.worker?.contractor_id
-            ? contractorName(a.worker?.contractor_id)
-            : "",
-      },
+      ...(props.type === "worker" ? workerColumns : machineryColumns),
     ],
   })
 }

@@ -61,9 +61,7 @@ export function useContractorRepo() {
 const nameCache = new Cache(
   (id: string) => `Contractor:${id}`,
   async (id) => {
-    console.log("value getter", id)
     const repo = useContractorRepo()
-
     const item = await repo.get(id)
     return item.name
   },

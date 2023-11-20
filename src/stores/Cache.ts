@@ -6,7 +6,7 @@ export class Cache<TId, TValue = string> {
   private getCache: () => Map<string, TValue>
   constructor(
     private keyBuilder: (id: TId) => string,
-    private valueGetter: (id: TId) => Promise<TValue>,
+    private valueGetter: (id: TId) => Promise<TValue | undefined>,
     storeId: string = "cache"
   ) {
     const useStore = defineStore(storeId, () => {
@@ -24,14 +24,20 @@ export class Cache<TId, TValue = string> {
   }
 
   //使用此寫法避免解構時，this會變成undefined
-  getValue = async (id: TId): Promise<TValue> => {
+  getValue = async (id: TId): Promise<TValue | undefined> => {
     const key = this.keyBuilder(id)
     await this.lock.checkAndRunAsync(
       () => !this.getCache().has(key),
       () =>
-        this.valueGetter(id).then((value) => {
-          this.setCache(id, value)
-        })
+        this.valueGetter(id)
+          .then((value) => {
+            if (value === undefined) {
+              this.getCache().delete(key)
+              return
+            }
+            this.getCache().set(key, value)
+          })
+          .catch(() => this.getCache().delete(key))
     )
     return this.getCache().get(key)!
   }
