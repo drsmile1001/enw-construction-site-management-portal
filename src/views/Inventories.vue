@@ -177,7 +177,6 @@ const tableViewSetting: TableViewProps<
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
-      site_id: env.SITE_ID,
       id: "",
       location: "",
       name: "",

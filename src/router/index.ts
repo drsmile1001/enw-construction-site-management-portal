@@ -4,6 +4,7 @@ import {
 } from "@/stores/ContractorRepo"
 import { useUserStore } from "@/stores/User"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
+import { safetyAlarmCategories } from "@/stores/SafetyEventRepo"
 
 export const routeRecords: RouteRecordRaw[] = [
   {
@@ -139,101 +140,16 @@ export const routeRecords: RouteRecordRaw[] = [
           },
         ],
       },
-      // {
-      //   path: "environmental-monitoring",
-      //   children: [
-      //     {
-      //       path: "",
-      //       redirect: { name: "EnvironmentalMonitoringDashboard" },
-      //     },
-      //     {
-      //       path: "dashboard",
-      //       name: "EnvironmentalMonitoringDashboard",
-      //       component: () => import("@/views/FakeDetailView.vue"),
-      //       meta: {
-      //         mainGroup: "工地安全",
-      //         subGroup: "環境檢測",
-      //         title: "環境檢測儀表板",
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   path: "device-safety",
-      //   children: [
-      //     {
-      //       path: "",
-      //       redirect: { name: "EnvironmentalMonitoringDashboard" },
-      //     },
-      //     {
-      //       path: "dashboard",
-      //       name: "DeviceSafetyDashboard",
-      //       component: () => import("@/views/FakeDetailView.vue"),
-      //       meta: {
-      //         mainGroup: "工地安全",
-      //         subGroup: "工地設備防護",
-      //         title: "工地設備防護儀表板",
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   path: "danger-zone-contrl",
-      //   children: [
-      //     {
-      //       path: "",
-      //       redirect: { name: "DangerZoneControlDashboard" },
-      //     },
-      //     {
-      //       path: "dashboard",
-      //       name: "DangerZoneControlDashboard",
-      //       component: () => import("@/views/FakeDetailView.vue"),
-      //       meta: {
-      //         mainGroup: "工地安全",
-      //         subGroup: "工區人員安全",
-      //         title: "危險區域管制",
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   path: "night-security",
-      //   children: [
-      //     {
-      //       path: "",
-      //       redirect: { name: "NightSecurityDashboard" },
-      //     },
-      //     {
-      //       path: "dashboard",
-      //       name: "NightSecurityDashboard",
-      //       component: () => import("@/views/FakeDetailView.vue"),
-      //       meta: {
-      //         mainGroup: "工地安全",
-      //         subGroup: "工區人員安全",
-      //         title: "夜間保全",
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   path: "other-personnel-safety",
-      //   children: [
-      //     {
-      //       path: "",
-      //       redirect: { name: "NightSecurityDashboard" },
-      //     },
-      //     {
-      //       path: "dashboard",
-      //       name: "OtherPersonnelSafetyDashboard",
-      //       component: () => import("@/views/FakeDetailView.vue"),
-      //       meta: {
-      //         mainGroup: "工地安全",
-      //         subGroup: "工區人員安全",
-      //         title: "人員安全...",
-      //       },
-      //     },
-      //   ],
-      // },
+      ...safetyAlarmCategories.map(([id, name]) => ({
+        path: `safety-${id}`,
+        name: `Safety${id}Events`,
+        component: () => import("@/views/SafetyEvents.vue"),
+        props: () => ({ category: id }),
+        meta: {
+          mainGroup: "工地安全",
+          title: `${name}警示`,
+        },
+      })),
       {
         path: "inventories",
         name: "Inventories",

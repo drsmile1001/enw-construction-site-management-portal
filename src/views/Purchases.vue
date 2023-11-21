@@ -109,7 +109,7 @@ const tableViewSetting: TableViewProps<
       stringify: (value) => value,
     },
     {
-      key: "range",
+      key: "range", //TODO: 抽成共用物件
       label: "起訖",
       inputProps: {
         type: "date",
@@ -138,7 +138,6 @@ const tableViewSetting: TableViewProps<
   creator: {
     fields: fieldsOptions,
     modelBuilder: async () => ({
-      site_id: env.SITE_ID,
       id: "",
       name: "",
       description: "",

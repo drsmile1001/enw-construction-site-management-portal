@@ -16,6 +16,7 @@ class AppEnv {
   SITE_URL = "http://192.168.171.174:8004"
   SITE_REPO = "HTTP"
   CONTRACTOR_REPO = "HTTP"
+  SAFETY_EVENT_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {
