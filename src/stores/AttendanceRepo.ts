@@ -37,7 +37,8 @@ class HttpAttendanceRepo implements AttendanceRepo {
   api = kyWithBearerToken.extend({
     prefixUrl: urlJoin(
       env.DOORMAN_URL,
-      `api/construction-site/${this.userStore.getSiteId()}`
+      "api/construction-site",
+      this.userStore.getSiteId()
     ),
   })
   async query(

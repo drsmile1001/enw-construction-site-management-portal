@@ -1,12 +1,17 @@
+import { kyWithBearerToken } from "@/utilities/ky"
 import type { Uploadable } from "./FileRepo"
 import { useUserStore } from "./User"
+import urlJoin from "url-join"
+import { env } from "@/environment"
 
 export type Site = {
-  id: string
   name: string
   address: string
   principal: string
-  period: [string, string]
+  period: {
+    start: string
+    end: string
+  }
   official_phone: string
   blueprint_file: Uploadable
   construction_company: string
@@ -14,11 +19,25 @@ export type Site = {
   organizer: string
 }
 
-export type UpdateSiteCommand = Omit<Site, "id">
-
 export interface SiteRepo {
   get(): Promise<Site>
-  update(command: UpdateSiteCommand): Promise<void>
+  update(command: Site): Promise<void>
+}
+
+class HttpSiteRepo implements SiteRepo {
+  userStore = useUserStore()
+  api = kyWithBearerToken.extend({
+    prefixUrl: urlJoin(
+      env.SITE_URL,
+      `api/construction-site/${this.userStore.getSiteId()}`
+    ),
+  })
+  get(): Promise<Site> {
+    return this.api.get("").json<Site>()
+  }
+  update(command: Site): Promise<void> {
+    return this.api.put("", { json: command }).json()
+  }
 }
 
 class FakeSiteRepo implements SiteRepo {
@@ -26,8 +45,8 @@ class FakeSiteRepo implements SiteRepo {
   userStore = useUserStore()
   constructor() {
     JSON.parse(localStorage.getItem(this.constructor.name) ?? "[]").forEach(
-      (item: Site) => {
-        this.siteMap.set(item.id, item)
+      ([key, value]: [string, Site]) => {
+        this.siteMap.set(key, value)
       }
     )
   }
@@ -35,7 +54,7 @@ class FakeSiteRepo implements SiteRepo {
   private save() {
     localStorage.setItem(
       this.constructor.name,
-      JSON.stringify(Array.from(this.siteMap.values()))
+      JSON.stringify(Array.from(this.siteMap.entries()))
     )
   }
 
@@ -44,11 +63,13 @@ class FakeSiteRepo implements SiteRepo {
     if (!site) {
       const id = this.userStore.getSiteId()
       site = {
-        id,
         name: `${id} 工地`,
         address: "地址",
         principal: "負責人",
-        period: ["2021-01-01", "2021-12-31"],
+        period: {
+          start: "2023-11-21T01:24:35.644Z",
+          end: "2023-11-21T01:24:35.644Z",
+        },
         official_phone: "02-12345678",
         blueprint_file: { value: [] },
         construction_company: "建造公司",
@@ -58,15 +79,15 @@ class FakeSiteRepo implements SiteRepo {
     }
     return site
   }
-  async update(command: UpdateSiteCommand): Promise<void> {
-    const site = this.get()
-    const id = this.userStore.getSiteId()
-    const newSite = { ...site, ...command, id }
-    this.siteMap.set(this.userStore.getSiteId(), newSite)
+  async update(command: Site): Promise<void> {
+    this.siteMap.set(this.userStore.getSiteId(), { ...command })
     this.save()
   }
 }
 
+let siteRepo: SiteRepo
 export function useSiteRepo(): SiteRepo {
-  return new FakeSiteRepo()
+  if (siteRepo) return siteRepo
+  siteRepo = env.SITE_REPO === "HTTP" ? new HttpSiteRepo() : new FakeSiteRepo()
+  return siteRepo
 }

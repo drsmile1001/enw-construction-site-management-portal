@@ -13,6 +13,9 @@ class AppEnv {
   INVENTORY_REPO = "HTTP"
   FILE_STORAGE_URL = "http://localhost:8080/api/v1/files/"
   FILE_REPO = "FAKE" // "HTTP"
+  SITE_URL = "http://192.168.171.174:8004"
+  SITE_REPO = "HTTP"
+  CONTRACTOR_REPO = "HTTP"
 
   constructor() {
     Object.keys(this).forEach((key) => {

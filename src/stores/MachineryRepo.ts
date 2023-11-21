@@ -6,7 +6,6 @@ import {
   FakeRepo,
   type QueryResult,
 } from "@/utilities/repo"
-import ky from "ky"
 import { useUserStore } from "./User"
 
 export type Machinery = {

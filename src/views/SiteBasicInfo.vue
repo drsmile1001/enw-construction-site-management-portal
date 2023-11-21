@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import type { FormViewProps } from "@/components/FormView.vue"
-import { type UpdateSiteCommand, useSiteRepo } from "@/stores/SiteRepo"
+import { useSiteRepo, type Site } from "@/stores/SiteRepo"
 import { parseISO, format } from "date-fns"
 
 const repo = useSiteRepo()
-const formViewProps: FormViewProps<UpdateSiteCommand> = {
+const formViewProps: FormViewProps<Site> = {
   fields: [
     {
       key: "name",
@@ -37,10 +37,14 @@ const formViewProps: FormViewProps<UpdateSiteCommand> = {
       },
       mapper: {
         //TODO: mapper 抽成共用物件
-        parser: (value: [string, string]) =>
-          value.map((v) => parseISO(v).valueOf()),
-        formatter: (value: [number, number]) =>
-          value.map((v) => format(v, "yyyy-MM-dd")),
+        parser: (value: { start: string; end: string }) => [
+          parseISO(value.start).valueOf(),
+          parseISO(value.end).valueOf(),
+        ],
+        formatter: (value: [number, number]) => ({
+          start: format(value[0], "yyyy-MM-dd"),
+          end: format(value[1], "yyyy-MM-dd"),
+        }),
       },
     },
     {
