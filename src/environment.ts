@@ -2,8 +2,6 @@ class AppEnv {
   AUTHORITY = "https://www.drsmile.work/keycloak/realms/dev/"
   CLIENT_ID = "construction-site-management-portal-dev"
   HOST = "http://localhost:5804/"
-  API_HOST = ""
-  FILE_SERVICE = ""
   DOORMAN_URL = "http://192.168.171.174:8005/"
   WORKER_REPO = "HTTP"
   MACHINERY_REPO = "HTTP"

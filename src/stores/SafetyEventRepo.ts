@@ -1,7 +1,10 @@
-import { ITEMS_PER_PAGE } from "@/environment"
+import { ITEMS_PER_PAGE, env } from "@/environment"
 import { type QueryBase, type QueryResult } from "@/utilities/repo"
 import type { Uploadable } from "./FileRepo"
 import { parseISO } from "date-fns"
+import { useUserStore } from "./User"
+import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import urlJoin from "url-join"
 
 export type SafetyEvent = {
   id: string
@@ -19,6 +22,21 @@ export type SafetyEventQuery = QueryBase & {
 
 export interface SafetyEventRepo {
   query(query: SafetyEventQuery): Promise<QueryResult<SafetyEvent>>
+}
+
+class HttpSafetyEventRepo implements SafetyEventRepo {
+  userStore = useUserStore()
+  api = kyWithBearerToken.extend({
+    prefixUrl: urlJoin(
+      env.SITE_URL,
+      "api/construction-site",
+      this.userStore.getSiteId(),
+      "event"
+    ),
+  })
+  query(query: SafetyEventQuery): Promise<QueryResult<SafetyEvent>> {
+    return this.api.get("", { searchParams: buildParms(query) }).json()
+  }
 }
 
 class FakeSafetyEventRepo implements SafetyEventRepo {
@@ -69,7 +87,10 @@ let safetyEventRepo: SafetyEventRepo
 
 export function useSafetyEventRepo() {
   if (!safetyEventRepo) {
-    safetyEventRepo = new FakeSafetyEventRepo()
+    safetyEventRepo =
+      env.SAFETY_EVENT_REPO === "HTTP"
+        ? new HttpSafetyEventRepo()
+        : new FakeSafetyEventRepo()
   }
   return safetyEventRepo
 }
@@ -79,7 +100,7 @@ export type SafetyAlarmType = {
   name: string
   category: string
 }
-
+//TODO: 議定要用的 AlarmType
 const safetyAlarmSetting: [[string, string], [string, string][]][] = [
   [
     ["env", "工地環境"],
