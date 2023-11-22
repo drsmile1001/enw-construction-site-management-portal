@@ -12,7 +12,7 @@ import {
 } from "@/stores/InventoryRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
-import { ITEMS_PER_PAGE, env } from "@/environment"
+import { ITEMS_PER_PAGE } from "@/environment"
 import { parseISO } from "date-fns"
 
 const repo = useInventoryRepo()

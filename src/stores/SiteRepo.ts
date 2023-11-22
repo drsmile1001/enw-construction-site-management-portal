@@ -1,6 +1,4 @@
-import { kyWithBearerToken } from "@/utilities/ky"
-import type { Uploadable } from "./FileRepo"
-import { useUserStore } from "./User"
+import { appKy } from "@/utilities/ky"
 import urlJoin from "url-join"
 import { env } from "@/environment"
 
@@ -13,7 +11,7 @@ export type Site = {
     end: string
   }
   official_phone: string
-  blueprint_file: Uploadable
+  blueprint_file: {}
   construction_company: string
   supervision_company: string
   organizer: string
@@ -25,12 +23,8 @@ export interface SiteRepo {
 }
 
 class HttpSiteRepo implements SiteRepo {
-  userStore = useUserStore()
-  api = kyWithBearerToken.extend({
-    prefixUrl: urlJoin(
-      env.SITE_URL,
-      `api/construction-site/${this.userStore.getSiteId()}`
-    ),
+  api = appKy.extend({
+    prefixUrl: urlJoin(env.SITE_URL, "api/construction-site", env.SITE_ID),
   })
   get(): Promise<Site> {
     return this.api.get("").json<Site>()
@@ -42,7 +36,6 @@ class HttpSiteRepo implements SiteRepo {
 
 class FakeSiteRepo implements SiteRepo {
   siteMap = new Map<string, Site>()
-  userStore = useUserStore()
   constructor() {
     JSON.parse(localStorage.getItem(this.constructor.name) ?? "[]").forEach(
       ([key, value]: [string, Site]) => {
@@ -59,11 +52,10 @@ class FakeSiteRepo implements SiteRepo {
   }
 
   async get(): Promise<Site> {
-    let site = this.siteMap.get(this.userStore.getSiteId())
+    let site = this.siteMap.get(env.SITE_ID)
     if (!site) {
-      const id = this.userStore.getSiteId()
       site = {
-        name: `${id} 工地`,
+        name: `${env.SITE_ID} 工地`,
         address: "地址",
         principal: "負責人",
         period: {
@@ -71,7 +63,7 @@ class FakeSiteRepo implements SiteRepo {
           end: "2023-11-21T01:24:35.644Z",
         },
         official_phone: "02-12345678",
-        blueprint_file: { value: [] },
+        blueprint_file: {},
         construction_company: "建造公司",
         supervision_company: "監造公司",
         organizer: "主辦單位",
@@ -80,7 +72,7 @@ class FakeSiteRepo implements SiteRepo {
     return site
   }
   async update(command: Site): Promise<void> {
-    this.siteMap.set(this.userStore.getSiteId(), { ...command })
+    this.siteMap.set(env.SITE_ID, { ...command })
     this.save()
   }
 }

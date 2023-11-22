@@ -19,14 +19,11 @@
         </RouterLink>
       </NBreadcrumbItem>
     </NBreadcrumb>
-    <NButton quaternary @click="() => userStore.signOut()">登出</NButton>
   </NLayoutHeader>
 </template>
 <script setup lang="ts">
 import { useLayoutController } from "./LayoutController"
-import { useUserStore } from "@/stores/User"
 import { toValue } from "vue"
 
 const controller = useLayoutController()
-const userStore = useUserStore()
 </script>

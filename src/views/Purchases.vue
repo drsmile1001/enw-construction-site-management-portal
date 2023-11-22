@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
-import { ITEMS_PER_PAGE, env } from "@/environment"
+import { ITEMS_PER_PAGE } from "@/environment"
 import {
   type Purchase,
   type CreatePurchaseCommand,

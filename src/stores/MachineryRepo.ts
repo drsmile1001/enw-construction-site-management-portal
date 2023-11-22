@@ -1,12 +1,12 @@
 import { env } from "@/environment"
-import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import { buildParms, appKy } from "@/utilities/ky"
 import {
   type Repo,
   type QueryBase,
   FakeRepo,
   type QueryResult,
 } from "@/utilities/repo"
-import { useUserStore } from "./User"
+import urlJoin from "url-join"
 
 export type Machinery = {
   site_id: string
@@ -42,12 +42,14 @@ export interface MachineryRepo
   > {}
 
 class HttpMachineryRepo implements MachineryRepo {
-  userStore = useUserStore()
   api = computed(() =>
-    kyWithBearerToken.extend({
-      prefixUrl: `${
-        env.DOORMAN_URL
-      }api/construction-site/${this.userStore.getSiteId()}/machinery/`,
+    appKy.extend({
+      prefixUrl: urlJoin(
+        env.DOORMAN_URL,
+        "api/construction-site",
+        env.SITE_ID,
+        "machinery"
+      ),
     })
   )
   async query(query: MachineryQuery): Promise<QueryResult<Machinery>> {
@@ -97,7 +99,6 @@ class FakeMachineryRepo extends FakeRepo<
   CreateMachineryCommand,
   UpdateMachineryCommand
 > {
-  userStore = useUserStore()
   queryPredicate(query: MachineryQuery): (item: Machinery) => boolean {
     return (item) =>
       (!query.keyword || item.name.includes(query.keyword)) &&
@@ -109,7 +110,7 @@ class FakeMachineryRepo extends FakeRepo<
   }
   createItem(command: CreateMachineryCommand): Machinery {
     return {
-      site_id: this.userStore.getSiteId(),
+      site_id: env.SITE_ID,
       id: Math.random().toString(),
       ...command,
     }

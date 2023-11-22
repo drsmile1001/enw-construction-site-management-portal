@@ -6,8 +6,7 @@ import {
 } from "@/utilities/repo"
 import { Cache } from "@/stores/Cache"
 import type { Accessable } from "@/types/vue-router"
-import { useUserStore } from "./User"
-import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import { buildParms, appKy } from "@/utilities/ky"
 import urlJoin from "url-join"
 import { env } from "@/environment"
 
@@ -34,12 +33,11 @@ export interface ContractorRepo
   > {}
 
 class HttpContractorRepo implements ContractorRepo {
-  userStore = useUserStore()
-  api = kyWithBearerToken.extend({
+  api = appKy.extend({
     prefixUrl: urlJoin(
       env.SITE_URL,
       `api/construction-site`,
-      this.userStore.getSiteId(),
+      env.SITE_ID,
       "contractor"
     ),
   })
@@ -78,7 +76,6 @@ class FakeContractorRepo extends FakeRepo<
   SetContractorCommand,
   SetContractorCommand
 > {
-  userStore = useUserStore()
   queryPredicate(query: ContractorQuery): (item: Contractor) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
   }

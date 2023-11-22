@@ -1,9 +1,7 @@
 import { ITEMS_PER_PAGE, env } from "@/environment"
 import { type QueryBase, type QueryResult } from "@/utilities/repo"
-import type { Uploadable } from "./FileRepo"
 import { parseISO } from "date-fns"
-import { useUserStore } from "./User"
-import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import { buildParms, appKy } from "@/utilities/ky"
 import urlJoin from "url-join"
 
 export type SafetyEvent = {
@@ -11,7 +9,7 @@ export type SafetyEvent = {
   alarm_type: string
   description: string
   content: Record<string, unknown>
-  picture_file: Uploadable
+  picture_file: {}
   time: string
 }
 
@@ -25,12 +23,11 @@ export interface SafetyEventRepo {
 }
 
 class HttpSafetyEventRepo implements SafetyEventRepo {
-  userStore = useUserStore()
-  api = kyWithBearerToken.extend({
+  api = appKy.extend({
     prefixUrl: urlJoin(
       env.SITE_URL,
       "api/construction-site",
-      this.userStore.getSiteId(),
+      env.SITE_ID,
       "event"
     ),
   })

@@ -1,12 +1,12 @@
 import { env } from "@/environment"
-import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import { buildParms, appKy } from "@/utilities/ky"
 import {
   type Repo,
   type QueryBase,
   FakeRepo,
   type QueryResult,
 } from "@/utilities/repo"
-import { useUserStore } from "./User"
+import urlJoin from "url-join"
 
 export type Inventory = {
   site_id: string
@@ -43,11 +43,13 @@ export interface InventoryRepo
   > {}
 
 class HttpInventoryRepo implements InventoryRepo {
-  userStore = useUserStore()
-  api = kyWithBearerToken.extend({
-    prefixUrl: `${
-      env.INVENTORY_MANAGER_URL
-    }api/construction-site/${this.userStore.getSiteId()}/inventory/`,
+  api = appKy.extend({
+    prefixUrl: urlJoin(
+      env.INVENTORY_MANAGER_URL,
+      "api/construction-site",
+      env.SITE_ID,
+      "inventory"
+    ),
   })
   query(query: InventoryQuery): Promise<QueryResult<Inventory>> {
     return this.api
@@ -87,7 +89,6 @@ class FakeInventoryRepo extends FakeRepo<
   CreateInventoryCommand,
   UpdateInventoryCommand
 > {
-  userStore = useUserStore()
   queryPredicate(query: QueryBase): (item: Inventory) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
   }
@@ -96,7 +97,7 @@ class FakeInventoryRepo extends FakeRepo<
   }
   createItem(command: CreateInventoryCommand): Inventory {
     return {
-      site_id: this.userStore.getSiteId(),
+      site_id: env.SITE_ID,
       id: Math.random().toString(),
       update_time: new Date().toISOString(),
       ...command,

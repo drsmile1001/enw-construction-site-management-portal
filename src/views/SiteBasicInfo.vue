@@ -53,20 +53,6 @@ const formViewProps: FormViewProps<Site> = {
       inputProps: { type: "text" },
     },
     {
-      key: "blueprint_file",
-      label: "藍圖",
-      inputProps: {
-        type: "file",
-        fileProps: {
-          collection: `site_blueprint`, //TODO: collection 的值很有可能是依據 entity id 來決定，然而目前的設計這裡是寫死的
-          uploadProps: {
-            listType: "image",
-            multiple: true,
-          },
-        },
-      },
-    },
-    {
       key: "construction_company",
       label: "施工廠商",
       inputProps: { type: "text" },

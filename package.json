@@ -19,7 +19,6 @@
     "ky": "^1.0.1",
     "lodash-es": "^4.17.21",
     "naive-ui": "^2.35.0",
-    "oidc-client-ts": "^2.3.0",
     "path-to-regexp": "^6.2.1",
     "pinia": "^2.1.6",
     "url-join": "^5.0.0",

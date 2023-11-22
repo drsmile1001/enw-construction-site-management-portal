@@ -17,17 +17,6 @@
     :value="value"
     @update:value="($event) => emits('update:value', $event)"
   />
-  <AppUploader
-    v-if="type === 'file'"
-    :="fileProps!"
-    :value="value.value"
-    @update:value="
-      ($event) =>
-        emits('update:value', {
-          value: $event,
-        })
-    "
-  />
   <NDatePicker
     v-if="type === 'date'"
     :="dateProps"
@@ -44,14 +33,12 @@ import {
   type InputNumberProps,
   type DatePickerProps,
 } from "naive-ui"
-import { type AppUploaderProps } from "./AppUploader.vue"
 
 export type DynamicInputProps = {
   type: "text" | "number" | "select" | "file" | "date"
   inputProps?: Omit<InputProps, "value">
   inputNumberProps?: Omit<InputNumberProps, "value">
   selectProps?: Omit<SelectProps, "value">
-  fileProps?: Omit<AppUploaderProps, "value">
   dateProps?: Omit<DatePickerProps, "value">
 }
 

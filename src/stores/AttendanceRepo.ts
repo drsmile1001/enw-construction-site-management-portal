@@ -1,9 +1,8 @@
 import { ITEMS_PER_PAGE, env } from "@/environment"
 import { type Worker, useWorkerRepo } from "@/stores/WorkerRepo"
-import { buildParms, kyWithBearerToken } from "@/utilities/ky"
+import { buildParms, appKy } from "@/utilities/ky"
 import type { QueryResult } from "@/utilities/repo"
 import type { Machinery } from "./MachineryRepo"
-import { useUserStore } from "@/stores/User"
 import urlJoin from "url-join"
 
 export type Attendance = {
@@ -33,13 +32,8 @@ export interface AttendanceRepo {
 }
 
 class HttpAttendanceRepo implements AttendanceRepo {
-  userStore = useUserStore()
-  api = kyWithBearerToken.extend({
-    prefixUrl: urlJoin(
-      env.DOORMAN_URL,
-      "api/construction-site",
-      this.userStore.getSiteId()
-    ),
+  api = appKy.extend({
+    prefixUrl: urlJoin(env.DOORMAN_URL, "api/construction-site", env.SITE_ID),
   })
   async query(
     date: Date,
@@ -61,14 +55,13 @@ class HttpAttendanceRepo implements AttendanceRepo {
 }
 
 class FakeAttendanceRepo implements AttendanceRepo {
-  userStore = useUserStore()
   workerRepo = useWorkerRepo()
   async query(date: Date, page: number): Promise<QueryResult<Attendance>> {
     const workers = await this.workerRepo.query({})
     const total = workers.items.map(
       (w) =>
         <Attendance>{
-          site_id: this.userStore.getSiteId(),
+          site_id: env.SITE_ID,
           type: "worker",
           content: {},
           is_attendance: true,
