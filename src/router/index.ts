@@ -102,16 +102,7 @@ export const routeRecords: RouteRecordRaw[] = [
         children: [
           {
             path: "",
-            redirect: { name: "DoormanDashboard" },
-          },
-          {
-            path: "dashboard",
-            name: "DoormanDashboard",
-            component: () => import("@/views/DoormanDashboard.vue"),
-            meta: {
-              mainGroup: "工地進出管理",
-              title: "今日進出狀況",
-            },
+            redirect: { name: "DoormanWorkerAttendances" },
           },
           {
             path: "worker-attendances",
