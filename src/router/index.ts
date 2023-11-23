@@ -146,7 +146,18 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/Inventories.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          title: "資材庫存清冊",
+          subGroup: "資材庫存",
+          title: "清冊",
+        },
+      },
+      {
+        path: "inventories-importer",
+        name: "InventoriesImporter",
+        component: () => import("@/views/InventoriesImporter.vue"),
+        meta: {
+          mainGroup: "工地資材管理",
+          subGroup: "資材庫存",
+          title: "匯入",
         },
       },
       {

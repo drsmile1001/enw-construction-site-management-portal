@@ -126,7 +126,7 @@ async function parseFile() {
       ? book.SheetNames[0]
       : book.SheetNames.find((name) => name === props.defaultSheet)
   if (!sheetName) {
-    message.warning("找不到試算表")
+    message.warning(`找不到試算表 ${props.defaultSheet}`)
     return
   }
   const sheet = book.Sheets[sheetName]

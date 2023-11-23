@@ -119,3 +119,16 @@ export function useInventoryRepo() {
       : new FakeInventoryRepo()
   return inventoryRepo
 }
+
+export const dangerTags = [
+  "氧化性固體",
+  "易燃固體",
+  "發火性液體",
+  "發火性固體",
+  "禁水性物質",
+  "易燃液體",
+  "可燃液體",
+  "自反應物質",
+  "有機過氧化物",
+  "氧化性液體",
+]

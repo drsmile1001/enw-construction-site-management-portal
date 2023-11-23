@@ -9,6 +9,7 @@ import {
   type CreateInventoryCommand,
   useInventoryRepo,
   type UpdateInventoryCommand,
+  dangerTags,
 } from "@/stores/InventoryRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import { NTag, NTime } from "naive-ui"
@@ -57,15 +58,7 @@ const fieldsOptions: DynamicFormItemOption<CreateInventoryCommand>[] = [
     inputProps: {
       type: "select",
       selectProps: {
-        options: [
-          { label: "危險物", value: "危險物" },
-          { label: "易燃物", value: "易燃物" },
-          { label: "易爆物", value: "易爆物" },
-          { label: "腐蝕性物", value: "腐蝕性物" },
-          { label: "有毒物", value: "有毒物" },
-          { label: "放射性物", value: "放射性物" },
-          { label: "其他", value: "其他" },
-        ],
+        options: dangerTags.map((tag) => ({ label: tag, value: tag })),
         multiple: true,
       },
     },
@@ -157,15 +150,7 @@ const tableViewSetting: TableViewProps<
       inputProps: {
         type: "select",
         selectProps: {
-          options: [
-            { label: "危險物", value: "危險物" },
-            { label: "易燃物", value: "易燃物" },
-            { label: "易爆物", value: "易爆物" },
-            { label: "腐蝕性物", value: "腐蝕性物" },
-            { label: "有毒物", value: "有毒物" },
-            { label: "放射性物", value: "放射性物" },
-            { label: "其他", value: "其他" },
-          ],
+          options: dangerTags.map((tag) => ({ label: tag, value: tag })),
           multiple: true,
         },
       },
