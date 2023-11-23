@@ -159,6 +159,15 @@ export const routeRecords: RouteRecordRaw[] = [
         },
       },
       {
+        path: "purchases-importer",
+        name: "PurchasesImporter",
+        component: () => import("@/views/PurchasesImporter.vue"),
+        meta: {
+          mainGroup: "工地資材管理",
+          title: "匯入進場記錄",
+        },
+      },
+      {
         path: "/:pathMatch(.*)*",
         name: "NotFound",
         props: (r) => ({ path: r.query.path, status: "404" }),

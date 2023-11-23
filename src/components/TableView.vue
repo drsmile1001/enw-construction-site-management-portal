@@ -10,17 +10,15 @@
           />
         </slot>
       </div>
-      <div>
-        <NButtonGroup>
-          <NButton
-            v-if="creator"
-            type="primary"
-            @click="() => (showCreator = true)"
-          >
-            新增
-          </NButton>
-          <slot name="page-actions" :search="search" :query="query"></slot>
-        </NButtonGroup>
+      <div class="flex gap-2">
+        <NButton
+          v-if="creator"
+          type="primary"
+          @click="() => (showCreator = true)"
+        >
+          新增
+        </NButton>
+        <slot name="page-actions" :search="search" :query="query"></slot>
       </div>
     </div>
     <NDataTable
@@ -73,12 +71,7 @@ import {
   type LocationQuery,
 } from "vue-router"
 import { ITEMS_PER_PAGE } from "@/environment"
-import {
-  NButton,
-  NButtonGroup,
-  NPopconfirm,
-  type PaginationProps,
-} from "naive-ui"
+import { NButton, NPopconfirm, type PaginationProps } from "naive-ui"
 import { RouterLink } from "vue-router"
 import type { DynamicFormItemOption, DynamicFormModel } from "./DynamicForm.vue"
 import type { SearchBarAdvancedFieldOption } from "./SearchBar.vue"

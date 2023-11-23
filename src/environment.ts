@@ -1,15 +1,17 @@
 class AppEnv {
   SITE_ID = "SITE_ID"
-  DOORMAN_URL = "http://192.168.171.174:8005/"
+  DOORMAN_URL =
+    "https://ai-demo.ennowell.com/construction-site-management-doorman/"
   WORKER_REPO = "HTTP"
   MACHINERY_REPO = "HTTP"
   ATTENDANCE_REPO = "HTTP"
-  INVENTORY_MANAGER_URL = "http://192.168.171.174:8006/"
+  INVENTORY_MANAGER_URL =
+    "https://ai-demo.ennowell.com/construction-site-management-inventory/"
   PURCHASE_REPO = "HTTP"
   INVENTORY_REPO = "HTTP"
   FILE_STORAGE_URL = "http://localhost:8080/api/v1/files/"
   FILE_REPO = "FAKE" // "HTTP"
-  SITE_URL = "http://192.168.171.174:8004"
+  SITE_URL = "https://ai-demo.ennowell.com/construction-site-management-site/"
   SITE_REPO = "HTTP"
   CONTRACTOR_REPO = "HTTP"
   SAFETY_EVENT_REPO = "HTTP"

@@ -1,8 +1,6 @@
 <template>
   <div class="w-full flex justify-center">
-    <div
-      class="w-full sm:w-5/6 md:w-4/6 lg:w-3/6 2xl:w-2/6 flex flex-col gap-4"
-    >
+    <RWDColumn>
       <div>
         <DynamicForm ref="formRef" :="props" />
       </div>
@@ -11,7 +9,7 @@
           >儲存</NButton
         >
       </div>
-    </div>
+    </RWDColumn>
   </div>
 </template>
 

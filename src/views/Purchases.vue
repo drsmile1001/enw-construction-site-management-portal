@@ -1,5 +1,5 @@
 <template>
-  <TableView :="tableViewSetting"> </TableView>
+  <TableView :="tableViewSetting" />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +31,12 @@ const fieldsOptions: DynamicFormItemOption<CreatePurchaseCommand>[] = [
   {
     label: "本次進場數量",
     key: "amount",
+    inputProps: { type: "number" },
+    rules: { required: true },
+  },
+  {
+    key: "accumulation",
+    label: "累積進場數量",
     inputProps: { type: "number" },
     rules: { required: true },
   },
