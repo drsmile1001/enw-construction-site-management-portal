@@ -6,26 +6,40 @@
       <NStep title="執行匯入" />
     </NSteps>
     <div></div>
-    <RWDColumn v-if="step === 1">
-      <NForm label-placement="left" label-width="auto" size="small">
-        <NFormItem label="試算表">
-          <NUpload
-            :max="1"
-            @update:file-list="
-              (files) => (file = files.length ? files[0].file : null)
-            "
-          >
-            <NButton> 選取檔案 </NButton>
-          </NUpload>
-        </NFormItem>
-      </NForm>
-      <ul>
-        <li v-for="error in errors">{{ error }}</li>
-      </ul>
+    <template v-if="step === 1">
+      <RWDColumn>
+        <NForm label-placement="left" label-width="auto" size="small">
+          <NFormItem label="試算表">
+            <NUpload
+              :max="1"
+              @update:file-list="
+                (files) => (file = files.length ? files[0].file : null)
+              "
+            >
+              <NButton> 選取檔案 </NButton>
+            </NUpload>
+          </NFormItem>
+        </NForm>
+      </RWDColumn>
+      <NDataTable
+        v-if="errors?.length"
+        size="small"
+        :columns="[
+          { key: '_row', title: '行' },
+          ...columns.map((column) => ({
+            key: column.key,
+            title: column.title,
+          })),
+        ]"
+        :row-key="(row) => row._row"
+        :data="errors"
+        :pagination="{ pageSize: 10 }"
+      />
       <div class="flex justify-center gap-2">
         <NButton :disabled="!file" @click="parseFile"> 解析 </NButton>
       </div>
-    </RWDColumn>
+    </template>
+
     <div v-if="step === 2" class="w-full flex flex-col gap-4">
       <NDataTable
         size="small"
@@ -86,7 +100,7 @@ const message = useMessage()
 
 const step = ref(1)
 const file = ref<File | null>(null)
-const errors = ref<string[]>([])
+const errors = ref<Record<string, string>[]>()
 
 type ImportingItem = Partial<TItem> & { _row: number }
 const data = ref<ImportingItem[]>()
@@ -129,6 +143,9 @@ async function parseFile() {
 
   for (let index = 0; index < data.value.length; index++) {
     const item = data.value[index]
+    const error: Record<string, string> = {
+      _row: `${index + 2}`,
+    }
     for (const column of props.columns) {
       const value = item[column.key]
       if (!column.checkers) continue
@@ -138,9 +155,10 @@ async function parseFile() {
       for (const checker of checkers) {
         const result = checker(value)
         if (result === true) continue
-        errors.value.push(`第${index + 2}行的${column.title}欄位${result}`)
+        error[column.key] = result
       }
     }
+    if (Object.keys(error).length > 1) errors.value.push(error)
   }
 
   if (errors.value.length) {

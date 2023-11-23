@@ -155,7 +155,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/Purchases.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          title: "進場記錄",
+          subGroup: "物料進場",
+          title: "記錄",
         },
       },
       {
@@ -164,7 +165,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/PurchasesImporter.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          title: "匯入進場記錄",
+          subGroup: "物料進場",
+          title: "匯入",
         },
       },
       {
