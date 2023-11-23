@@ -32,6 +32,7 @@ export const routeRecords: RouteRecordRaw[] = [
             component: () => import("@/views/Contractors.vue"),
             meta: {
               mainGroup: "管理設定",
+              subGroup: "廠商管理",
               title: "廠商清冊",
             },
           },
@@ -98,6 +99,16 @@ export const routeRecords: RouteRecordRaw[] = [
         ],
       },
       {
+        path: "contractors-importer",
+        name: "ContractorsImporter",
+        component: () => import("@/views/ContractorsImporter.vue"),
+        meta: {
+          mainGroup: "管理設定",
+          subGroup: "廠商管理",
+          title: "廠商清冊匯入",
+        },
+      },
+      {
         path: "doorman",
         children: [
           {
@@ -146,8 +157,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/Inventories.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          subGroup: "資材庫存",
-          title: "清冊",
+          subGroup: "資材庫存管理",
+          title: "資材庫存清冊",
         },
       },
       {
@@ -156,8 +167,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/InventoriesImporter.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          subGroup: "資材庫存",
-          title: "匯入",
+          subGroup: "資材庫存管理",
+          title: "資材庫存清冊匯入",
         },
       },
       {
@@ -166,8 +177,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/Purchases.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          subGroup: "物料進場",
-          title: "記錄",
+          subGroup: "物料進場管理",
+          title: "進場記錄",
         },
       },
       {
@@ -176,8 +187,8 @@ export const routeRecords: RouteRecordRaw[] = [
         component: () => import("@/views/PurchasesImporter.vue"),
         meta: {
           mainGroup: "工地資材管理",
-          subGroup: "物料進場",
-          title: "匯入",
+          subGroup: "物料進場管理",
+          title: "進場記錄匯入",
         },
       },
       {
