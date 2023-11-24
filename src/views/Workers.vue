@@ -111,7 +111,16 @@ const tableViewSetting: TableViewProps<
     method: (model) => repo.create(model),
   },
   editor: {
-    fields: commonFields,
+    fields: [
+      ...commonFields,
+      {
+        key: "personal_id" as keyof UpdateWorkerCommand,
+        label: "身份證字號",
+        inputProps: {
+          render: (value) => h("div", value),
+        },
+      },
+    ],
     modelBuilder: async (item) => repo.get(item.id),
     method: (command, item) => repo.update(item.id, command),
   },

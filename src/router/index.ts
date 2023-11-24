@@ -192,6 +192,18 @@ export const routeRecords: RouteRecordRaw[] = [
           title: "進場記錄匯入",
         },
       },
+      ...(!import.meta.env.PROD
+        ? [
+            {
+              path: "lab",
+              name: "Lab",
+              component: () => import("@/views/Lab.vue"),
+              meta: {
+                title: "實驗室",
+              },
+            },
+          ]
+        : []),
       {
         path: "/:pathMatch(.*)*",
         name: "NotFound",

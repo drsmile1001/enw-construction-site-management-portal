@@ -24,6 +24,11 @@
     :value="value"
     @update:value="($event) => emits('update:value', $event)"
   />
+  <costom
+    v-if="render"
+    :value="value"
+    @update:value="($event:any) => emits('update:value', $event)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -33,16 +38,18 @@ import {
   type InputNumberProps,
   type DatePickerProps,
 } from "naive-ui"
+import type { VNodeChild } from "vue"
 
 export type DynamicInputProps = {
-  type: "text" | "number" | "select" | "file" | "date"
+  type?: "text" | "number" | "select" | "file" | "date"
   inputProps?: Omit<InputProps, "value">
   inputNumberProps?: Omit<InputNumberProps, "value">
   selectProps?: Omit<SelectProps, "value">
   dateProps?: Omit<DatePickerProps, "value">
+  render?: ((value: any) => VNodeChild) | undefined
 }
 
-defineProps<
+const props = defineProps<
   DynamicInputProps & {
     value: any
   }
@@ -51,4 +58,6 @@ defineProps<
 const emits = defineEmits<{
   "update:value": [any]
 }>()
+
+const costom = (p: { value: any }) => props.render?.(p.value)
 </script>
