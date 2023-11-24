@@ -25,7 +25,7 @@ deploy:
   variables:
     GIT_STRATEGY: none
   script:
-    - docker compose -f $DEPLOY_PATH/docker-compose.yml up -d
+    - docker compose -f $DEPLOY_PATH/docker-compose.yaml up -d
   tags:
     - shell
     - scdt-ai
