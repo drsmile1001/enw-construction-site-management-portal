@@ -1,5 +1,3 @@
-const imageName =
-  "construction-site-management-portal";
 const packageJson = await Deno.readTextFile("package.json").then((json) =>
   JSON.parse(json)
 );
@@ -10,14 +8,6 @@ if (!version) throw new Error("version is required");
 //update package.json
 packageJson.version = version;
 await Deno.writeTextFile("package.json", JSON.stringify(packageJson, null, 2));
-
-await new Deno.Command("docker", {
-  args: ["build", "-t", `${imageName}:${version}`,"-t",`${imageName}:latest`, "."],
-}).spawn().status;
-
-await new Deno.Command("docker", {
-  args: ["push", `${imageName}:${version}`],
-}).spawn().status;
 
 // git commit
 await new Deno.Command("git", {
