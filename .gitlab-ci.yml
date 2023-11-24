@@ -1,0 +1,31 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  VERSION: $CI_COMMIT_TAG
+  IMAGE_NAME:  construction-site-management-portal
+  DEPLOY_PATH: /home/iwcadmin/docker/construction-site-management
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: always
+
+build:
+  stage: build
+  script:
+    - docker build --rm -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
+  tags:
+    - shell
+    - scdt-ai
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - docker compose up -d -f $DEPLOY_PATH/docker-compose.yml
+  tags:
+    - shell
+    - scdt-ai
