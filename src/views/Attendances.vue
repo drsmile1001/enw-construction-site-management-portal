@@ -150,14 +150,6 @@ const tableViewSetting: TableViewProps<
 }
 
 async function exportList(query: { date?: number }) {
-  const fetcher = buildFetcher((page) =>
-    repo.query(
-      new Date(query.date ? query.date : defaultQueryDate),
-      page,
-      props.type
-    )
-  )
-
   const workerColumns: SheetColumnOption<Attendance>[] = [
     {
       name: "工種",
@@ -215,7 +207,13 @@ async function exportList(query: { date?: number }) {
   await exportXlsx({
     sheet: "辨識記錄",
     outputFileName: "辨識記錄.xlsx",
-    fetcher: fetcher,
+    fetcher: buildFetcher((page) =>
+      repo.query(
+        new Date(query.date ? query.date : defaultQueryDate),
+        page,
+        props.type
+      )
+    ),
     columnOptions: [
       {
         name: "時間",

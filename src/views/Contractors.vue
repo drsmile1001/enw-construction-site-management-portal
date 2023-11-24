@@ -1,5 +1,9 @@
 <template>
-  <TableView :="tableViewSetting"> </TableView>
+  <TableView :="tableViewSetting">
+    <template #page-actions="{ query }">
+      <NButton @click="() => exportList(query)">列表下載</NButton>
+    </template>
+  </TableView>
 </template>
 
 <script setup lang="ts">
@@ -10,15 +14,18 @@ import {
   type Contractor,
   type SetContractorCommand,
 } from "@/stores/ContractorRepo"
+import { buildFetcher, exportXlsx } from "@/utilities/sheet"
 
 const repo = useContractorRepo()
+type ContractorPageQuery = {
+  keyword?: string
+}
+
 const tableViewSetting: TableViewProps<
   Contractor,
   SetContractorCommand,
   SetContractorCommand,
-  {
-    keyword?: string
-  }
+  ContractorPageQuery
 > = {
   columns: [
     {
@@ -100,5 +107,41 @@ const tableViewSetting: TableViewProps<
     method: (model) => repo.create(model),
   },
   deleteMethod: (item) => repo.delete(item.id),
+}
+
+async function exportList(query: ContractorPageQuery) {
+  await exportXlsx({
+    sheet: "廠商清冊",
+    outputFileName: "廠商清冊.xlsx",
+    fetcher: buildFetcher((page) =>
+      repo.query({
+        keyword: query.keyword,
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        take: ITEMS_PER_PAGE,
+      })
+    ),
+    columnOptions: [
+      {
+        name: "統一編號",
+        selector: "tax_number",
+      },
+      {
+        name: "名稱",
+        selector: "name",
+      },
+      {
+        name: "負責人",
+        selector: "principal",
+      },
+      {
+        name: "電話",
+        selector: "phone",
+      },
+      {
+        name: "電子信箱",
+        selector: "email",
+      },
+    ],
+  })
 }
 </script>
