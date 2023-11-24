@@ -15,7 +15,7 @@ workflow:
 build:
   stage: build
   script:
-    - docker build --rm -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
+    - docker build --rm -t $IMAGE_NAME:$VERSION -t $IMAGE_NAME:latest .
   tags:
     - shell
     - scdt-ai
