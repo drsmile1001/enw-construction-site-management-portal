@@ -3,7 +3,7 @@ import {
   getReactiveName as contractorName,
 } from "@/stores/ContractorRepo"
 import { type RouteRecordRaw, createRouter, createWebHistory } from "vue-router"
-import { safetyAlarmCategories } from "@/stores/SafetyEventRepo"
+import { safetyAlarmSettings } from "@/stores/SafetyEventRepo"
 
 export const routeRecords: RouteRecordRaw[] = [
   {
@@ -141,7 +141,7 @@ export const routeRecords: RouteRecordRaw[] = [
           },
         ],
       },
-      ...safetyAlarmCategories.map(([id, name]) => ({
+      ...safetyAlarmSettings.map(({ id, name }) => ({
         path: `safety-${id}`,
         name: `Safety${id}Events`,
         component: () => import("@/views/SafetyEvents.vue"),

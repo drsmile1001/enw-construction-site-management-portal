@@ -10,11 +10,11 @@ export type SafetyEvent = {
   description: string
   content: Record<string, unknown>
   picture_file: {}
-  time: string
+  date: string
 }
 
 export type SafetyEventQuery = QueryBase & {
-  alarm_type?: string[]
+  alarm_types?: string[]
   range?: [Date, Date]
 }
 
@@ -45,17 +45,18 @@ class FakeSafetyEventRepo implements SafetyEventRepo {
     )
   }
 
-  data = safetyAlarmTypes
-    .map(({ id }) =>
+  data = safetyAlarmSettings
+    .flatMap(({ types }) => types)
+    .map((type) =>
       this.latestHours().map(
         (time) =>
           <SafetyEvent>{
             id: Math.random().toString(),
-            alarm_type: id,
+            alarm_type: type,
             description: "描述",
             content: {},
             picture_file: { value: null },
-            time: time.toISOString(),
+            date: time.toISOString(),
           }
       )
     )
@@ -63,11 +64,11 @@ class FakeSafetyEventRepo implements SafetyEventRepo {
   async query(query: SafetyEventQuery): Promise<QueryResult<SafetyEvent>> {
     const filtered = this.data.filter(
       (item) =>
-        !query.alarm_type ||
-        (query.alarm_type.includes(item.alarm_type) &&
+        !query.alarm_types ||
+        (query.alarm_types.includes(item.alarm_type) &&
           (!query.range ||
-            (query.range![0] <= parseISO(item.time) &&
-              parseISO(item.time) <= query.range![1])))
+            (query.range![0] <= parseISO(item.date) &&
+              parseISO(item.date) <= query.range![1])))
     )
 
     return {
@@ -92,41 +93,27 @@ export function useSafetyEventRepo() {
   return safetyEventRepo
 }
 
-export type SafetyAlarmType = {
+//TODO: 議定要用的 AlarmType
+export type SafetyAlarmSetting = {
   id: string
   name: string
-  category: string
+  types: string[]
 }
-//TODO: 議定要用的 AlarmType
-const safetyAlarmSetting: [[string, string], [string, string][]][] = [
-  [
-    ["env", "工地環境"],
-    [
-      ["ID1", "工作環境"],
-      ["ID2", "環境污染"],
-      ["ID3", "重大異常"],
-    ],
-  ],
-  [
-    ["device", "設備防護"],
-    [
-      ["ID4", "機箱溫度"],
-      ["ID5", "機箱開啟"],
-    ],
-  ],
-  [
-    ["person", "人員安全"],
-    [
-      ["ID6", "危險區域管制"],
-      ["ID7", "夜間保全"],
-      ["ID8", "人員安全警戒"],
-    ],
-  ],
-]
-export const safetyAlarmTypes: SafetyAlarmType[] = safetyAlarmSetting.flatMap(
-  ([[category], items]) => items.map(([id, name]) => ({ id, name, category }))
-)
 
-export const safetyAlarmCategories = safetyAlarmSetting.map(
-  ([category]) => category
-)
+export const safetyAlarmSettings: SafetyAlarmSetting[] = [
+  {
+    id: "env",
+    name: "工地環境",
+    types: ["工作環境", "環境污染", "重大異常"],
+  },
+  {
+    id: "device",
+    name: "設備防護",
+    types: ["機箱溫度", "機箱開啟"],
+  },
+  {
+    id: "person",
+    name: "人員安全",
+    types: ["闖入", "跌倒"],
+  },
+]

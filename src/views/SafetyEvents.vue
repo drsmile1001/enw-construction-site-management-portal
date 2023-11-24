@@ -9,7 +9,7 @@ import { parseISO, parse, format } from "date-fns"
 import {
   useSafetyEventRepo,
   type SafetyEvent,
-  safetyAlarmTypes,
+  safetyAlarmSettings,
 } from "@/stores/SafetyEventRepo"
 import { ITEMS_PER_PAGE } from "@/environment"
 
@@ -18,9 +18,9 @@ const props = defineProps<{
 }>()
 
 const repo = useSafetyEventRepo()
-const baseAlarmTypes = safetyAlarmTypes
-  .filter((type) => type.category === props.category)
-  .map((type) => type.id)
+const baseAlarmTypes = safetyAlarmSettings.find(
+  (s) => s.id === props.category
+)!.types
 
 const tableViewSetting: TableViewProps<
   SafetyEvent,
@@ -34,27 +34,24 @@ const tableViewSetting: TableViewProps<
 > = {
   columns: [
     {
-      key: "time",
+      key: "date",
       title: "時間",
-      render: (row) => h(NTime, { time: parseISO(row.time) }),
+      render: (row) => h(NTime, { time: parseISO(row.date) }),
     },
     {
       key: "alarm_type",
       title: "類型",
-      render: (row) =>
-        safetyAlarmTypes.find((t) => t.id === row.alarm_type)?.name,
     },
     {
       key: "description",
       title: "描述",
-      render: (row) => row.description,
     },
   ],
   rowKey: (row) => row.id,
   queryItems: (query, page) =>
     repo.query({
       keyword: query.keyword,
-      alarm_type: baseAlarmTypes.filter(
+      alarm_types: baseAlarmTypes.filter(
         (t) => query.alarm_type?.includes(t) ?? true
       ),
       range: query.range,
