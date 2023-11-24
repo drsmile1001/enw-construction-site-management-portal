@@ -11,12 +11,10 @@
 import type { ImporterViewItemColumn } from "@/components/ImporterView.vue"
 import { type CreateWorkerCommand, useWorkerRepo } from "@/stores/WorkerRepo"
 
-export type WorkersProps = {
-  contractorId: string
-}
-
 const repo = useWorkerRepo()
-const props = defineProps<WorkersProps>()
+const props = defineProps<{
+  contractorId: string
+}>()
 
 const columns: ImporterViewItemColumn<CreateWorkerCommand>[] = [
   {

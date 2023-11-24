@@ -12,12 +12,11 @@ import {
   useWorkerRepo,
 } from "@/stores/WorkerRepo"
 import { ITEMS_PER_PAGE } from "@/environment"
-export type WorkersProps = {
-  contractorId: string
-}
 
 const repo = useWorkerRepo()
-const props = defineProps<WorkersProps>()
+const props = defineProps<{
+  contractorId: string
+}>()
 
 const commonFields: DynamicFormItemOption<UpdateWorkerCommand>[] = [
   {

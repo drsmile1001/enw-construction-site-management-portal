@@ -92,7 +92,18 @@ export const routeRecords: RouteRecordRaw[] = [
                 component: () => import("@/views/Machineries.vue"),
                 props: true,
                 meta: {
+                  mainGroup: "車輛管理",
                   title: "車輛清冊",
+                },
+              },
+              {
+                path: "machineries-importer",
+                name: "MachineriesImporter",
+                component: () => import("@/views/MachineriesImporter.vue"),
+                props: true,
+                meta: {
+                  mainGroup: "車輛管理",
+                  title: "車輛清冊匯入",
                 },
               },
             ],
