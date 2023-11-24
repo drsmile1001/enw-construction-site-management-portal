@@ -68,31 +68,32 @@ export const routeRecords: RouteRecordRaw[] = [
               },
               {
                 path: "workers",
-                children: [
-                  {
-                    path: "",
-                    name: "Workers",
-                    component: () => import("@/views/Workers.vue"),
-                    props: true,
-                    meta: {
-                      title: "員工清冊",
-                    },
-                  },
-                ],
+                name: "Workers",
+                component: () => import("@/views/Workers.vue"),
+                props: true,
+                meta: {
+                  mainGroup: "員工管理",
+                  title: "員工清冊",
+                },
+              },
+              {
+                path: "workers-importer",
+                name: "WorkersImporter",
+                component: () => import("@/views/WorkersImporter.vue"),
+                props: true,
+                meta: {
+                  mainGroup: "員工管理",
+                  title: "員工清冊匯入",
+                },
               },
               {
                 path: "machineries",
-                children: [
-                  {
-                    path: "",
-                    name: "Machineries",
-                    component: () => import("@/views/Machineries.vue"),
-                    props: true,
-                    meta: {
-                      title: "車輛清冊",
-                    },
-                  },
-                ],
+                name: "Machineries",
+                component: () => import("@/views/Machineries.vue"),
+                props: true,
+                meta: {
+                  title: "車輛清冊",
+                },
               },
             ],
           },
