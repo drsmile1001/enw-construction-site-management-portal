@@ -100,6 +100,8 @@ const tableViewSetting: TableViewProps<
       keyword: query.keyword,
       machine_type: query.machine_type,
       contractor_id: props.contractorId,
+      license_no: query.license_no,
+      driver: query.driver,
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),

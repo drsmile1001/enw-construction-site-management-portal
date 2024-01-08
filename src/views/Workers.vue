@@ -45,6 +45,7 @@ const tableViewSetting: TableViewProps<
   {
     keyword?: string
     job_title?: string
+    worker_no?: string
   }
 > = {
   columns: [
@@ -67,6 +68,7 @@ const tableViewSetting: TableViewProps<
       contractor_id: props.contractorId,
       keyword: query.keyword,
       job_title: query.job_title,
+      worker_no: query.worker_no,
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
@@ -74,6 +76,13 @@ const tableViewSetting: TableViewProps<
     {
       key: "keyword",
       label: "關鍵字",
+      inputProps: { type: "text" },
+      parser: (value) => value,
+      stringify: (value) => value,
+    },
+    {
+      key: "worker_no",
+      label: "工號",
       inputProps: { type: "text" },
       parser: (value) => value,
       stringify: (value) => value,
