@@ -15,6 +15,7 @@
               @update:file-list="
                 (files) => (file = files.length ? files[0].file : null)
               "
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             >
               <NButton> 選取檔案 </NButton>
             </NUpload>
@@ -108,6 +109,10 @@ const data = ref<ImportingItem[]>()
 async function parseFile() {
   errors.value = []
   if (!file.value) return
+  if (!file.value.name.endsWith(".xlsx")) {
+    message.warning(`檔案格式錯誤`)
+    return
+  }
   const book = await new Promise<WorkBook>((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
