@@ -105,6 +105,7 @@ const tableViewSetting: TableViewProps<
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
+  searchBarPlaceholder: "查詢機具類型、機具名稱、車牌號碼、操作人員",
   queryFields: [
     {
       key: "keyword",

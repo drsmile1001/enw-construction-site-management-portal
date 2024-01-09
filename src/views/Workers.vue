@@ -72,6 +72,7 @@ const tableViewSetting: TableViewProps<
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
+  searchBarPlaceholder: "查詢工號、姓名、職稱",
   queryFields: [
     {
       key: "keyword",

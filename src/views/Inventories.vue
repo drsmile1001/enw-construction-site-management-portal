@@ -122,6 +122,7 @@ const tableViewSetting: TableViewProps<
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
+  searchBarPlaceholder: "查詢名稱",
   queryFields: [
     {
       key: "keyword",

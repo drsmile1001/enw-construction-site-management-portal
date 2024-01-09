@@ -6,6 +6,7 @@
           <SearchBar
             :query="query"
             :fields="queryFields"
+            :placeholder="searchBarPlaceholder"
             @update:query="(q) => search(q, 1)"
           />
         </slot>
@@ -96,6 +97,7 @@ export type TableViewProps<
     total: number
   }>
   queryFields?: SearchBarAdvancedFieldOption<TQuery>[]
+  searchBarPlaceholder?: string
   creator?: CreatorOptions<TCreatorModel>
   editor?: EditorOptions<TItem, TEditorModel>
   rowActions?: RowActionOptions<TItem>[]
@@ -149,6 +151,7 @@ const pagination = computed<PaginationProps>(() => ({
   page: page.value,
   pageSize: ITEMS_PER_PAGE,
   pageCount: Math.ceil(total.value / ITEMS_PER_PAGE),
+  prefix: (p) => p.pageCount,
 }))
 
 async function search(changeQuery?: TQuery, changePage?: number) {

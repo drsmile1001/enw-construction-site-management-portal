@@ -3,6 +3,7 @@
     <NInput
       ref="mainInputRef"
       :status="mainInputStatus"
+      :placeholder="placeholder"
       clearable
       v-model:value="mainInput"
       @update:value="onMainInputUpdated"
@@ -42,6 +43,7 @@ import type { DynamicInputProps } from "./DynamicInput.vue"
 import type { FormValidationStatus } from "naive-ui/es/form/src/interface"
 
 export type SearchBarProps<TQuery> = {
+  placeholder?: string
   fields?: SearchBarAdvancedFieldOption<TQuery>[]
   query: TQuery
 }
