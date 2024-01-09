@@ -103,6 +103,7 @@ const tableViewSetting: TableViewProps<
         label: "身份證字號",
         key: "personal_id",
         inputProps: { type: "text" },
+        rules: { required: true, trigger: "blur", message: "身份證字號必填" },
       },
     ],
     modelBuilder: async () =>
