@@ -77,7 +77,10 @@ const tableViewSetting: TableViewProps<
     {
       key: "keyword",
       label: "關鍵字",
-      inputProps: { type: "text" },
+      inputProps: {
+        type: "text",
+        inputProps: { placeholder: "工號、姓名、職稱" },
+      },
       parser: (value) => value,
       stringify: (value) => value,
     },
