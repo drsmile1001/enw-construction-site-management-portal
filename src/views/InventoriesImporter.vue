@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import type { ImporterViewItemColumn } from "@/components/ImporterView.vue"
 import {
-  type CreateInventoryCommand,
+  type ModifyInventoryCommand,
   useInventoryRepo,
   dangerTags,
 } from "@/stores/InventoryRepo"
@@ -18,7 +18,7 @@ import { NTag } from "naive-ui"
 
 const repo = useInventoryRepo()
 
-const columns: ImporterViewItemColumn<CreateInventoryCommand>[] = [
+const columns: ImporterViewItemColumn<ModifyInventoryCommand>[] = [
   {
     key: "location",
     title: "位置",

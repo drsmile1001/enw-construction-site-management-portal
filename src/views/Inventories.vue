@@ -6,9 +6,8 @@
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Inventory,
-  type CreateInventoryCommand,
+  type ModifyInventoryCommand,
   useInventoryRepo,
-  type UpdateInventoryCommand,
   dangerTags,
 } from "@/stores/InventoryRepo"
 import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
@@ -17,7 +16,7 @@ import { ITEMS_PER_PAGE } from "@/environment"
 import { parseISO } from "date-fns"
 
 const repo = useInventoryRepo()
-const fieldsOptions: DynamicFormItemOption<CreateInventoryCommand>[] = [
+const fieldsOptions: DynamicFormItemOption<ModifyInventoryCommand>[] = [
   {
     label: "位置",
     key: "location",
@@ -67,8 +66,8 @@ const fieldsOptions: DynamicFormItemOption<CreateInventoryCommand>[] = [
 
 const tableViewSetting: TableViewProps<
   Inventory,
-  CreateInventoryCommand,
-  UpdateInventoryCommand,
+  ModifyInventoryCommand,
+  ModifyInventoryCommand,
   {
     keyword?: string
     location?: string
@@ -175,9 +174,7 @@ const tableViewSetting: TableViewProps<
     method: (model) => repo.create(model),
   },
   editor: {
-    fields: fieldsOptions.filter(
-      (item) => item.key !== "unit"
-    ) as DynamicFormItemOption<UpdateInventoryCommand>[],
+    fields: fieldsOptions,
     modelBuilder: async (item) => repo.get(item.id),
     method: (model, item) => repo.update(item.id, model),
   },

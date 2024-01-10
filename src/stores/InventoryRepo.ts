@@ -27,19 +27,17 @@ export type InventoryQuery = QueryBase & {
   tags?: string[]
 }
 
-export type CreateInventoryCommand = Omit<
+export type ModifyInventoryCommand = Omit<
   Inventory,
   "site_id" | "id" | "update_time"
 >
-
-export type UpdateInventoryCommand = Omit<CreateInventoryCommand, "unit">
 
 export interface InventoryRepo
   extends Repo<
     Inventory,
     InventoryQuery,
-    CreateInventoryCommand,
-    UpdateInventoryCommand
+    ModifyInventoryCommand,
+    ModifyInventoryCommand
   > {}
 
 class HttpInventoryRepo implements InventoryRepo {
@@ -62,7 +60,7 @@ class HttpInventoryRepo implements InventoryRepo {
     const result = await this.query({ ids: [id] })
     return result.items[0]
   }
-  async create(command: CreateInventoryCommand): Promise<void> {
+  async create(command: ModifyInventoryCommand): Promise<void> {
     await this.api.post("", {
       json: {
         items: [command],
@@ -70,7 +68,7 @@ class HttpInventoryRepo implements InventoryRepo {
       },
     })
   }
-  async update(id: string, command: UpdateInventoryCommand): Promise<void> {
+  async update(id: string, command: ModifyInventoryCommand): Promise<void> {
     await this.api.patch(id, {
       json: {
         editor: "",
@@ -86,8 +84,8 @@ class HttpInventoryRepo implements InventoryRepo {
 class FakeInventoryRepo extends FakeRepo<
   Inventory,
   InventoryQuery,
-  CreateInventoryCommand,
-  UpdateInventoryCommand
+  ModifyInventoryCommand,
+  ModifyInventoryCommand
 > {
   queryPredicate(query: QueryBase): (item: Inventory) => boolean {
     return (item) => !query.keyword || item.name.includes(query.keyword)
@@ -95,7 +93,7 @@ class FakeInventoryRepo extends FakeRepo<
   idPredicate(id: string): (item: Inventory) => boolean {
     return (item) => item.id === id
   }
-  createItem(command: CreateInventoryCommand): Inventory {
+  createItem(command: ModifyInventoryCommand): Inventory {
     return {
       site_id: env.SITE_ID,
       id: Math.random().toString(),
@@ -103,7 +101,7 @@ class FakeInventoryRepo extends FakeRepo<
       ...command,
     }
   }
-  updateItem(item: Inventory, command: CreateInventoryCommand): void {
+  updateItem(item: Inventory, command: ModifyInventoryCommand): void {
     Object.assign(item, command)
     item.update_time = new Date().toISOString()
   }
