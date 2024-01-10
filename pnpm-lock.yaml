@@ -42,8 +42,8 @@ dependencies:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.4)
   xlsx:
-    specifier: https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz
-    version: '@cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz'
+    specifier: https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz
+    version: '@cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz'
 
 devDependencies:
   '@tsconfig/node18':
@@ -2678,10 +2678,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  '@cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz':
-    resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz}
+  '@cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz':
+    resolution: {tarball: https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz}
     name: xlsx
-    version: 0.20.0
+    version: 0.20.1
     engines: {node: '>=0.8'}
     hasBin: true
     dev: false

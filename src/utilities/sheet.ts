@@ -53,21 +53,32 @@ export async function exportXlsx<TItem extends Record<string, unknown>>(
   for (const item of data) {
     const row = []
     for (const { selector } of options.columnOptions) {
+      let value
       if (selector instanceof Function) {
-        const value = selector(item)
-        if (value instanceof Promise) {
-          row.push(await value)
-        } else {
-          row.push(value)
-        }
+        value = await Promise.resolve(selector(item))
       } else {
-        row.push(item[selector])
+        value = item[selector]
       }
+      if (value instanceof Date) {
+        value = {
+          t: "n",
+          z: "yyyy-mm-dd hh:mm:ss",
+          v: dateToExcelDate(value),
+        }
+      }
+      row.push(value)
     }
     rows.push(row)
   }
   const workbook = utils.book_new()
   const worksheet = utils.aoa_to_sheet(rows)
+  worksheet["!cols"] = options.columnOptions.map(() => ({ width: 20 }))
   utils.book_append_sheet(workbook, worksheet, options.sheet)
   writeFile(workbook, options.outputFileName)
+}
+
+function dateToExcelDate(date: Date) {
+  return (
+    (date.valueOf() - date.getTimezoneOffset() * 60 * 1000) / 86400000 + 25569
+  )
 }
