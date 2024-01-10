@@ -79,6 +79,8 @@ export async function exportXlsx<TItem extends Record<string, unknown>>(
 
 function dateToExcelDate(date: Date) {
   return (
-    (date.valueOf() - date.getTimezoneOffset() * 60 * 1000) / 86400000 + 25569
+    Math.floor((date.valueOf() - date.getTimezoneOffset() * 60 * 1000) / 1000) /
+      86400 +
+    25569
   )
 }
