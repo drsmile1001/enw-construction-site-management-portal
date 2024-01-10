@@ -35,6 +35,7 @@ import { type DynamicInputProps } from "./DynamicInput.vue"
 export type DynamicFormModel = Record<string, unknown>
 export type DynamicFormProps<TModel extends DynamicFormModel = any> = {
   fields: DynamicFormItemOption<TModel>[]
+  beforeFormVaildation?: (model: TModel) => Promise<void>
   submitMethod: (item: TModel) => Promise<void>
   modelLoader: () => Promise<TModel>
 }
@@ -77,6 +78,9 @@ const formRef = ref<FormInst | null>(null)
 
 async function submit() {
   if (!formModel.value || !formRef.value) return
+  if (props.beforeFormVaildation) {
+    await props.beforeFormVaildation(formModel.value)
+  }
   await formRef.value.validate()
   await props.submitMethod(formModel.value)
 }

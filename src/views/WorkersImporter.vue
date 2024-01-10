@@ -9,14 +9,14 @@
 
 <script setup lang="ts">
 import type { ImporterViewItemColumn } from "@/components/ImporterView.vue"
-import { type CreateWorkerCommand, useWorkerRepo } from "@/stores/WorkerRepo"
+import { type ModifyWorkerCommand, useWorkerRepo } from "@/stores/WorkerRepo"
 
 const repo = useWorkerRepo()
 const props = defineProps<{
   contractorId: string
 }>()
 
-const columns: ImporterViewItemColumn<CreateWorkerCommand>[] = [
+const columns: ImporterViewItemColumn<ModifyWorkerCommand>[] = [
   {
     key: "worker_no",
     title: "工號",
@@ -41,7 +41,7 @@ const columns: ImporterViewItemColumn<CreateWorkerCommand>[] = [
   },
 ]
 
-function importMehtod(item: CreateWorkerCommand) {
+function importMehtod(item: ModifyWorkerCommand) {
   return repo.create({
     ...item,
     contractor_id: props.contractorId,

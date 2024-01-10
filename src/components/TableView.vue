@@ -40,6 +40,7 @@
     title="新增"
     :fields="creator.fields"
     :model-loader="creator.modelBuilder"
+    :before-form-vaildation="creator.beforeFormVaildation"
     :submit-method="creator.method"
     @submitted="() => search()"
   />
@@ -49,6 +50,7 @@
     :title="editorTitle"
     :fields="editor.fields"
     :model-loader="editorModelLoader"
+    :before-form-vaildation="editor.beforeFormVaildation"
     :submit-method="editorModelSubmit"
     @submitted="() => search()"
   />
@@ -108,6 +110,7 @@ export type CreatorOptions<TCreatorModel extends DynamicFormModel> = {
   fields: DynamicFormItemOption<TCreatorModel>[]
   modelBuilder: () => Promise<TCreatorModel>
   method: (model: TCreatorModel) => Promise<void>
+  beforeFormVaildation?: (model: TCreatorModel) => Promise<void>
 }
 
 export type EditorOptions<TItem, TUpdaterModel extends DynamicFormModel> = {
@@ -115,6 +118,7 @@ export type EditorOptions<TItem, TUpdaterModel extends DynamicFormModel> = {
   modelBuilder: (item: TItem) => Promise<TUpdaterModel>
   method: (model: TUpdaterModel, item: TItem) => Promise<void>
   titleBuilder?: (item: TItem) => string
+  beforeFormVaildation?: (model: TUpdaterModel) => Promise<void>
 }
 
 export type RowActionOptions<TItem> = {

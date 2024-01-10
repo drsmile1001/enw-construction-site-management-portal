@@ -7,8 +7,7 @@ import type { DynamicFormItemOption } from "@/components/DynamicForm.vue"
 import TableView, { type TableViewProps } from "@/components/TableView.vue"
 import {
   type Worker,
-  type CreateWorkerCommand,
-  type UpdateWorkerCommand,
+  type ModifyWorkerCommand,
   useWorkerRepo,
 } from "@/stores/WorkerRepo"
 import { ITEMS_PER_PAGE } from "@/environment"
@@ -18,12 +17,27 @@ const props = defineProps<{
   contractorId: string
 }>()
 
-const commonFields: DynamicFormItemOption<UpdateWorkerCommand>[] = [
+let currentEditingId: string | null = null
+const workerNo2Id = new Map<string, string>()
+const commonFields: DynamicFormItemOption<ModifyWorkerCommand>[] = [
   {
     label: "工號",
     key: "worker_no",
     inputProps: { type: "text" },
-    rules: { required: true, trigger: "blur", message: "工號必填" },
+    rules: [
+      { required: true, trigger: "blur", message: "工號必填" },
+      {
+        asyncValidator: async (_rule, value) => {
+          const workerNoMatchedWorkerId = workerNo2Id.get(value)
+          if (
+            !workerNoMatchedWorkerId ||
+            workerNoMatchedWorkerId === currentEditingId
+          )
+            return
+          throw new Error("工號已存在")
+        },
+      },
+    ],
   },
   {
     label: "姓名",
@@ -36,12 +50,17 @@ const commonFields: DynamicFormItemOption<UpdateWorkerCommand>[] = [
     key: "job_title",
     inputProps: { type: "text" },
   },
+  {
+    label: "身份證字號",
+    key: "personal_id",
+    inputProps: { type: "text" },
+  },
 ]
 
 const tableViewSetting: TableViewProps<
   Worker,
-  CreateWorkerCommand,
-  UpdateWorkerCommand,
+  ModifyWorkerCommand,
+  ModifyWorkerCommand,
   {
     keyword?: string
     job_title?: string
@@ -101,17 +120,10 @@ const tableViewSetting: TableViewProps<
   ],
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
-    fields: [
-      ...commonFields,
-      {
-        label: "身份證字號",
-        key: "personal_id",
-        inputProps: { type: "text" },
-        rules: { required: true, trigger: "blur", message: "身份證字號必填" },
-      },
-    ],
-    modelBuilder: async () =>
-      <CreateWorkerCommand>{
+    fields: commonFields,
+    modelBuilder: async () => {
+      currentEditingId = null
+      return <ModifyWorkerCommand>{
         worker_no: "",
         contractor_id: props.contractorId,
         name: "",
@@ -120,22 +132,29 @@ const tableViewSetting: TableViewProps<
           value: null,
         },
         personal_id: "",
-      },
+      }
+    },
+    beforeFormVaildation: async (model) => {
+      const { items } = await repo.query({
+        worker_no: model.worker_no,
+      })
+      items.forEach((item) => workerNo2Id.set(item.worker_no, item.id))
+    },
     method: (model) => repo.create(model),
   },
   editor: {
-    fields: [
-      ...commonFields,
-      {
-        key: "personal_id" as keyof UpdateWorkerCommand,
-        label: "身份證字號",
-        inputProps: {
-          render: (value) => h("div", value),
-        },
-      },
-    ],
-    modelBuilder: async (item) => repo.get(item.id),
+    fields: commonFields,
+    modelBuilder: async (item) => {
+      currentEditingId = item.id
+      return repo.get(item.id)
+    },
     method: (command, item) => repo.update(item.id, command),
+    beforeFormVaildation: async (model) => {
+      const { items } = await repo.query({
+        worker_no: model.worker_no,
+      })
+      items.forEach((item) => workerNo2Id.set(item.worker_no, item.id))
+    },
   },
   deleteMethod: (item) => repo.delete(item.id),
 }

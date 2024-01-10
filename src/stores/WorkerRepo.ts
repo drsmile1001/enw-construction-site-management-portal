@@ -24,14 +24,10 @@ export type WorkerQuery = QueryBase & {
   name?: string
   job_title?: string
 }
-export type CreateWorkerCommand = Omit<Worker, "site_id" | "id">
-export type UpdateWorkerCommand = Pick<
-  Worker,
-  "worker_no" | "name" | "job_title"
->
+export type ModifyWorkerCommand = Omit<Worker, "site_id" | "id">
 
 export interface WorkerRepo
-  extends Repo<Worker, WorkerQuery, CreateWorkerCommand, UpdateWorkerCommand> {}
+  extends Repo<Worker, WorkerQuery, ModifyWorkerCommand, ModifyWorkerCommand> {}
 
 class HttpWorkerRepo implements WorkerRepo {
   api = appKy.create({
@@ -48,7 +44,7 @@ class HttpWorkerRepo implements WorkerRepo {
     const result = await this.query({ ids: [id] })
     return result.items[0]
   }
-  async create(command: CreateWorkerCommand): Promise<void> {
+  async create(command: ModifyWorkerCommand): Promise<void> {
     await this.api.post("", {
       json: {
         items: [command],
@@ -56,7 +52,7 @@ class HttpWorkerRepo implements WorkerRepo {
       },
     })
   }
-  async update(id: string, command: UpdateWorkerCommand): Promise<void> {
+  async update(id: string, command: ModifyWorkerCommand): Promise<void> {
     await this.api.patch(id, {
       json: command,
       searchParams: {
@@ -76,8 +72,8 @@ class HttpWorkerRepo implements WorkerRepo {
 class FakeWorkerRepo extends FakeRepo<
   Worker,
   WorkerQuery,
-  CreateWorkerCommand,
-  UpdateWorkerCommand
+  ModifyWorkerCommand,
+  ModifyWorkerCommand
 > {
   queryPredicate(query: WorkerQuery): (item: Worker) => boolean {
     return (item) =>
@@ -90,7 +86,7 @@ class FakeWorkerRepo extends FakeRepo<
   idPredicate(id: string): (item: Worker) => boolean {
     return (item) => item.id === id
   }
-  createItem(command: CreateWorkerCommand): Worker {
+  createItem(command: ModifyWorkerCommand): Worker {
     return {
       site_id: env.SITE_ID,
       id: Math.random().toString(),

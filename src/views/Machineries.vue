@@ -18,6 +18,8 @@ export type MachineriesProps = {
   contractorId: string
 }
 
+let currentEditingId: string | null = null
+const licenseNo2Id = new Map<string, string>()
 const repo = useMachineryRepo()
 const props = defineProps<MachineriesProps>()
 const fields: DynamicFormItemOption<UpdateMachineryCommand>[] = [
@@ -25,7 +27,20 @@ const fields: DynamicFormItemOption<UpdateMachineryCommand>[] = [
     label: "車牌號碼",
     key: "license_no",
     inputProps: { type: "text" },
-    rules: { required: true, trigger: "blur", message: "車牌號碼必填" },
+    rules: [
+      { required: true, trigger: "blur", message: "車牌號碼必填" },
+      {
+        asyncValidator: async (_rule, value) => {
+          const licenseNoMatchedMachineryId = licenseNo2Id.get(value)
+          if (
+            !licenseNoMatchedMachineryId ||
+            licenseNoMatchedMachineryId === currentEditingId
+          )
+            return
+          throw new Error("車牌號碼已存在")
+        },
+      },
+    ],
   },
   {
     label: "機具名稱",
@@ -153,20 +168,38 @@ const tableViewSetting: TableViewProps<
   rowActions: [{ type: "editor" }, { type: "delete" }],
   creator: {
     fields: fields,
-    modelBuilder: async () => ({
-      contractor_id: props.contractorId,
-      name: "",
-      machine_type: "",
-      license_no: "",
-      driver: "",
-      driver_phone: "",
-    }),
+    modelBuilder: async () => {
+      currentEditingId = null
+      return {
+        contractor_id: props.contractorId,
+        name: "",
+        machine_type: "",
+        license_no: "",
+        driver: "",
+        driver_phone: "",
+      }
+    },
+    beforeFormVaildation: async (model) => {
+      const { items } = await repo.query({
+        license_no: model.license_no,
+      })
+      items.forEach((item) => licenseNo2Id.set(item.license_no, item.id))
+    },
     method: (model) => repo.create(model),
   },
   editor: {
     fields: fields,
-    modelBuilder: async (item) => repo.get(item.id),
+    modelBuilder: async (item) => {
+      currentEditingId = item.id
+      return repo.get(item.id)
+    },
     method: (command, item) => repo.update(item.id, command),
+    beforeFormVaildation: async (model) => {
+      const { items } = await repo.query({
+        license_no: model.license_no,
+      })
+      items.forEach((item) => licenseNo2Id.set(item.license_no, item.id))
+    },
   },
   deleteMethod: (item) => repo.delete(item.id),
 }
