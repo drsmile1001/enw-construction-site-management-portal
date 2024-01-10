@@ -20,12 +20,27 @@ const props = defineProps<{
   contractorId: string
 }>()
 
+const existedLicenseNos = new Set<string>()
 const columns: ImporterViewItemColumn<CreateMachineryCommand>[] = [
   {
     key: "license_no",
     title: "車牌號碼",
     parser: (value) => value?.toString().trim(),
-    checkers: (value) => (!value ? "必填" : true),
+    checkers: [
+      (value) => (!value ? "必填" : true),
+      async (value) => {
+        if (existedLicenseNos.has(value)) return "車牌號碼重複"
+        const { total } = await repo.query({
+          license_no: value,
+          take: 1,
+        })
+        if (total > 0) {
+          existedLicenseNos.add(value)
+          return "車牌號碼重複"
+        }
+        return true
+      },
+    ],
   },
   {
     key: "name",

@@ -16,12 +16,27 @@ const props = defineProps<{
   contractorId: string
 }>()
 
+const existedWorkerNos = new Set<string>()
 const columns: ImporterViewItemColumn<ModifyWorkerCommand>[] = [
   {
     key: "worker_no",
     title: "工號",
     parser: (value) => value?.toString().trim(),
-    checkers: (value) => (!value ? "必填" : true),
+    checkers: [
+      (value) => (!value ? "必填" : true),
+      async (value) => {
+        if (existedWorkerNos.has(value)) return "工號重複"
+        const { total } = await repo.query({
+          worker_no: value,
+          take: 1,
+        })
+        if (total > 0) {
+          existedWorkerNos.add(value)
+          return "工號重複"
+        }
+        return true
+      },
+    ],
   },
   {
     key: "name",

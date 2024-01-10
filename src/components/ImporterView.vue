@@ -86,13 +86,13 @@ export type ImporterViewProps<TItem extends Record<string, unknown>> = {
   importMethod: (item: TItem) => Promise<void>
 }
 
-export type chekcResult = true | string
+export type CheckResult = true | string
 
 export type ImporterViewItemColumn<TItem extends Record<string, unknown>> = {
   key: keyof TItem & string
   title: string
   parser?: (value: string | number | null | undefined) => any
-  checkers?: Arrayable<(value: any) => chekcResult>
+  checkers?: Arrayable<(value: any) => CheckResult | Promise<CheckResult>>
   render?: ((rowData: TItem, rowIndex: number) => VNodeChild) | undefined
 }
 
@@ -158,7 +158,7 @@ async function parseFile() {
         ? column.checkers
         : [column.checkers]
       for (const checker of checkers) {
-        const result = checker(value)
+        const result = await Promise.resolve(checker(value))
         if (result === true) continue
         error[column.key] = result
       }
