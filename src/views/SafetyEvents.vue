@@ -58,11 +58,12 @@ const tableViewSetting: TableViewProps<
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     }),
+  searchBarPlaceholder: "查詢描述",
   queryFields: [
     {
       key: "keyword",
       label: "關鍵字",
-      inputProps: { type: "text" },
+      inputProps: { type: "text", inputProps: { placeholder: "描述" } },
       parser: (value) => value,
       stringify: (value) => value,
     },
