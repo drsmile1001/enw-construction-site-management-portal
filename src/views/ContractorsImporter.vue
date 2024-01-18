@@ -16,12 +16,27 @@ import {
 
 const repo = useContractorRepo()
 
+const registedTaxNumbers = new Set<string>()
 const columns: ImporterViewItemColumn<SetContractorCommand>[] = [
   {
     key: "tax_number",
     title: "統一編號",
     parser: (value) => value?.toString().trim(),
-    checkers: (value) => (!value ? "必填" : true),
+    checkers: [
+      (value) => (!value ? "必填" : true),
+      async (value) => {
+        if (registedTaxNumbers.has(value)) return "統一編號重複"
+        const { total } = await repo.query({
+          tax_number: value,
+          take: 1,
+        })
+        if (total > 0) {
+          registedTaxNumbers.add(value)
+          return "統一編號重複"
+        }
+        return true
+      },
+    ],
   },
   {
     key: "name",

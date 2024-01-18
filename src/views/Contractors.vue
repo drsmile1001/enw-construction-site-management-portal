@@ -16,7 +16,9 @@ import {
 } from "@/stores/ContractorRepo"
 import { buildFetcher, exportXlsx } from "@/utilities/sheet"
 
+const registedTaxNumbers = new Set<string>()
 const repo = useContractorRepo()
+
 type ContractorPageQuery = {
   keyword?: string
 }
@@ -74,7 +76,21 @@ const tableViewSetting: TableViewProps<
         label: "統一編號",
         key: "tax_number",
         inputProps: { type: "text" },
-        rules: { required: true, trigger: "blur", message: "統一編號必填" },
+        rules: [
+          { required: true, trigger: "blur", message: "統一編號必填" },
+          {
+            asyncValidator: async (_rule, value) => {
+              if (!value) {
+                return
+              }
+
+              if (!registedTaxNumbers.has(value)) {
+                return
+              }
+              throw new Error("統一編號已存在")
+            },
+          },
+        ],
       },
       {
         label: "名稱",
@@ -105,6 +121,12 @@ const tableViewSetting: TableViewProps<
       phone: "",
       email: "",
     }),
+    beforeFormVaildation: async (model) => {
+      const { items } = await repo.query({
+        tax_number: model.tax_number,
+      })
+      items.forEach((item) => registedTaxNumbers.add(item.tax_number))
+    },
     method: (model) => repo.create(model),
   },
   deleteMethod: (item) => repo.delete(item.id),
