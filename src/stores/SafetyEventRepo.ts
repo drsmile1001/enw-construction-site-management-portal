@@ -1,6 +1,6 @@
 import { ITEMS_PER_PAGE, env } from "@/environment"
 import { type QueryBase, type QueryResult } from "@/utilities/repo"
-import { parseISO } from "date-fns"
+import { formatISO, parseISO } from "date-fns"
 import { buildParms, appKy } from "@/utilities/ky"
 import urlJoin from "url-join"
 
@@ -15,7 +15,7 @@ export type SafetyEvent = {
 
 export type SafetyEventQuery = QueryBase & {
   alarm_types?: string[]
-  range?: [Date, Date]
+  range?: [number, number]
 }
 
 export interface SafetyEventRepo {
@@ -32,7 +32,16 @@ class HttpSafetyEventRepo implements SafetyEventRepo {
     ),
   })
   query(query: SafetyEventQuery): Promise<QueryResult<SafetyEvent>> {
-    return this.api.get("", { searchParams: buildParms(query) }).json()
+    console.log(query)
+    return this.api
+      .get("", {
+        searchParams: buildParms({
+          ...query,
+          start: query.range ? formatISO(query.range[0]) : undefined,
+          end: query.range ? formatISO(query.range[1]) : undefined,
+        }),
+      })
+      .json()
   }
 }
 
@@ -67,8 +76,8 @@ class FakeSafetyEventRepo implements SafetyEventRepo {
         !query.alarm_types ||
         (query.alarm_types.includes(item.alarm_type) &&
           (!query.range ||
-            (query.range![0] <= parseISO(item.date) &&
-              parseISO(item.date) <= query.range![1])))
+            (query.range![0] <= parseISO(item.date).valueOf() &&
+              parseISO(item.date).valueOf() <= query.range![1])))
     )
 
     return {

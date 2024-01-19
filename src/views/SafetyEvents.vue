@@ -28,7 +28,7 @@ const tableViewSetting: TableViewProps<
   {},
   {
     keyword?: string
-    range?: [Date, Date]
+    range?: [number, number]
     alarm_type?: string[]
   }
 > = {
