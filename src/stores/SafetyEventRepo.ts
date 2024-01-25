@@ -113,7 +113,7 @@ export const safetyAlarmSettings: SafetyAlarmSetting[] = [
   {
     id: "env",
     name: "工地環境",
-    types: ["工作環境", "環境污染", "重大異常", "危險區域入侵", "熱傷害風險"],
+    types: ["工作環境", "環境污染", "重大異常", "熱傷害風險"],
   },
   {
     id: "device",
@@ -123,6 +123,13 @@ export const safetyAlarmSettings: SafetyAlarmSetting[] = [
   {
     id: "person",
     name: "人員安全",
-    types: ["闖入", "跌倒", "未戴安全帽", "工地安全帽偵測", "物件偵測"],
+    types: [
+      "闖入",
+      "跌倒",
+      "未戴安全帽",
+      "危險區域入侵",
+      "工地安全帽偵測",
+      "物件偵測",
+    ],
   },
 ]
