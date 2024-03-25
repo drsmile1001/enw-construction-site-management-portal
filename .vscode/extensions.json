@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "vue.vscode-typescript-vue-plugin",
     "esbenp.prettier-vscode",
     "gruntfuggly.todo-tree",
     "ms-ceintl.vscode-language-pack-zh-hant",
@@ -8,7 +7,4 @@
     "vue.volar",
     "antfu.unocss"
   ],
-  "unwantedRecommendations": [
-    "vscode.typescript-language-features"
-  ]
 }

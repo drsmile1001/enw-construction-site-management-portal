@@ -1,7 +1,4 @@
 {
-    "volar.format.initialIndent": {
-        "html": true
-    },
     "[scss]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
