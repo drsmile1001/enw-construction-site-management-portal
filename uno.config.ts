@@ -1,5 +1,5 @@
 // uno.config.ts
-import { defineConfig } from "unocss";
+import { defineConfig } from "unocss"
 
 export default defineConfig({
   theme: {
@@ -34,8 +34,8 @@ export default defineConfig({
   },
   rules: [
     [
-      /^apng-(.+)$/,
-      ([, name]) => ({ "background-image": `url("@/assets/${name}.png")` }),
+      /^bg-assets-\[(.+)\]$/,
+      ([, file]) => ({ "background-image": `url("@/assets/${file}")` }),
     ],
   ],
-});
+})
