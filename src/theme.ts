@@ -36,6 +36,14 @@ export const themeOverrides: GlobalThemeOverrides = {
   common: {
     primaryColor: primary.DEFAULT,
     bodyColor: secondary[500],
+    errorColor: colors.danger.DEFAULT,
+    warningColor: colors.warning.DEFAULT,
+    modalColor: secondary[600],
+    popoverColor: secondary[600],
+    inputColor: secondary[600],
+    borderColor: secondary[400],
+    primaryColorHover: secondary[300],
+    baseColor: secondary[500],
   },
   Button: {
     textColorPrimary: white,
