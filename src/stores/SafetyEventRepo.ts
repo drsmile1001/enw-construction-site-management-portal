@@ -32,13 +32,13 @@ class HttpSafetyEventRepo implements SafetyEventRepo {
     ),
   })
   query(query: SafetyEventQuery): Promise<QueryResult<SafetyEvent>> {
-    console.log(query)
     return this.api
       .get("", {
         searchParams: buildParms({
           ...query,
           start: query.range ? formatISO(query.range[0]) : undefined,
           end: query.range ? formatISO(query.range[1]) : undefined,
+          range: undefined,
         }),
       })
       .json()

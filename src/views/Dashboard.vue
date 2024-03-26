@@ -69,10 +69,12 @@ async function fetchData() {
   const now = new Date()
   const pastHour = addHours(now, -1)
   const { items: events } = await safetyEventRepo.query({
-    range: [now.valueOf(), pastHour.valueOf()],
+    range: [pastHour.valueOf(), now.valueOf()],
+    alarm_types: safetyEventTypes,
   })
   safetyEventMap.value = new Map(
     events.map((event) => [event.alarm_type, event])
   )
 }
+fetchData()
 </script>

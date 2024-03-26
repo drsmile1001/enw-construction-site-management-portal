@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    DashboardCard: typeof import('./../components/DashboardCard.vue')['default']
     DashboardGroup: typeof import('./../components/DashboardGroup.vue')['default']
     DashboardItem: typeof import('./../components/DashboardItem.vue')['default']
     DynamicForm: typeof import('./../components/DynamicForm.vue')['default']
@@ -33,11 +32,7 @@ declare module 'vue' {
     NMenu: typeof import('naive-ui')['NMenu']
     NModal: typeof import('naive-ui')['NModal']
     NPopover: typeof import('naive-ui')['NPopover']
-    NResult: typeof import('naive-ui')['NResult']
     NSelect: typeof import('naive-ui')['NSelect']
-    NStep: typeof import('naive-ui')['NStep']
-    NSteps: typeof import('naive-ui')['NSteps']
-    NUpload: typeof import('naive-ui')['NUpload']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     RWDColumn: typeof import('./../components/RWDColumn.vue')['default']

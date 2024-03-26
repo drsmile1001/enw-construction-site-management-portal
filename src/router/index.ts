@@ -12,7 +12,7 @@ export const routeRecords: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        redirect: { name: "SiteBasicInfo" },
+        redirect: { name: "Dashboard" },
       },
       {
         path: "dashboard",
