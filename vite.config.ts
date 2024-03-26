@@ -10,6 +10,7 @@ import svgLoader from "vite-svg-loader"
 import { dynamicBase } from "vite-plugin-dynamic-base"
 
 export default defineConfig({
+  base: process.env.NODE_ENV === "production" ? "/__dynamic_base__/" : "/",
   server: {
     port: 5804,
   },
