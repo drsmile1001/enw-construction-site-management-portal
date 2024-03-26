@@ -5,34 +5,12 @@
     <DashboardGroup title="安全監控" class="col-span-3 row-span-2">
       <div class="grow grid grid-cols-3 grid-rows-3 gap-4">
         <DashboardItem
-          title="危險區域入侵"
-          level="success"
-          icon="CheckmarkCircle"
-          description="一切正常"
-        />
-        <DashboardItem
-          title="跌倒偵測"
-          level="success"
-          icon="CheckmarkCircle"
-          description="一切正常"
-        />
-        <DashboardItem
-          title="煙火偵測"
-          level="success"
-          icon="CheckmarkCircle"
-          description="一切正常"
-        />
-        <DashboardItem
-          title="未帶安全帽"
-          level="success"
-          icon="CheckmarkCircle"
-          description="一切正常"
-        />
-        <DashboardItem
-          title="熱傷害風險"
-          icon="AlertCircle"
-          description="風險值 2"
-          level="warning"
+          v-for="t in safetyEventTypes"
+          :key="t"
+          :title="t"
+          :level="safetyEventMap.get(t) ? 'warning' : 'success'"
+          :icon="safetyEventMap.get(t) ? 'AlertCircle' : 'CheckmarkCircle'"
+          :description="safetyEventMap.get(t)?.description ?? '一切正常'"
         />
       </div>
     </DashboardGroup>
@@ -63,8 +41,11 @@
 
 <script setup lang="ts">
 import { useAttendanceRepo } from "@/stores/AttendanceRepo"
+import { SafetyEvent, useSafetyEventRepo } from "@/stores/SafetyEventRepo"
+import { addHours } from "date-fns"
 
 const attendanceRepo = useAttendanceRepo()
+const safetyEventRepo = useSafetyEventRepo()
 
 const polling = setInterval(() => fetchData(), 10000)
 onUnmounted(() => {
@@ -73,9 +54,25 @@ onUnmounted(() => {
 
 const workerInsite = ref(0)
 const machineryInsite = ref(0)
+const safetyEventMap = ref<Map<string, SafetyEvent>>(new Map())
+const safetyEventTypes = [
+  "危險區域入侵",
+  "跌倒偵測",
+  "煙火偵測",
+  "未帶安全帽",
+  "熱傷害風險",
+]
 
 async function fetchData() {
   workerInsite.value = await attendanceRepo.getTotalInsite("worker")
   machineryInsite.value = await attendanceRepo.getTotalInsite("machinery")
+  const now = new Date()
+  const pastHour = addHours(now, -1)
+  const { items: events } = await safetyEventRepo.query({
+    range: [now.valueOf(), pastHour.valueOf()],
+  })
+  safetyEventMap.value = new Map(
+    events.map((event) => [event.alarm_type, event])
+  )
 }
 </script>
