@@ -7,6 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    DashboardCard: typeof import('./../components/DashboardCard.vue')['default']
+    DashboardGroup: typeof import('./../components/DashboardGroup.vue')['default']
+    DashboardItem: typeof import('./../components/DashboardItem.vue')['default']
     DynamicForm: typeof import('./../components/DynamicForm.vue')['default']
     DynamicInput: typeof import('./../components/DynamicInput.vue')['default']
     FormModal: typeof import('./../components/FormModal.vue')['default']
