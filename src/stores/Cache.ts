@@ -15,7 +15,7 @@ export class Cache<TId, TValue = string> {
         map: cache,
       }
     })
-    this.getCache = () => useStore().map
+    this.getCache = () => useStore().map as Map<string, TValue>
   }
 
   setCache(id: TId, value: TValue): void {
