@@ -1,12 +1,13 @@
-import vue from "@vitejs/plugin-vue";
-import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
-import Components from "unplugin-vue-components/vite";
-import AutoImport from "unplugin-auto-import/vite";
-import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
-import path from "path";
-import UnoCSS from "unocss/vite";
-import svgLoader from "vite-svg-loader";
+import vue from "@vitejs/plugin-vue"
+import { fileURLToPath, URL } from "node:url"
+import { defineConfig } from "vite"
+import Components from "unplugin-vue-components/vite"
+import AutoImport from "unplugin-auto-import/vite"
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers"
+import path from "path"
+import UnoCSS from "unocss/vite"
+import svgLoader from "vite-svg-loader"
+import { dynamicBase } from "vite-plugin-dynamic-base"
 
 export default defineConfig({
   server: {
@@ -20,6 +21,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    dynamicBase({
+      transformIndexHtml: true,
+    }),
     UnoCSS(),
     vue(),
     svgLoader({
@@ -51,4 +55,4 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-});
+})
