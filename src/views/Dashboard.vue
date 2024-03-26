@@ -4,14 +4,35 @@
   >
     <DashboardGroup title="安全監控" class="col-span-3 row-span-2">
       <div class="grow grid grid-cols-3 grid-rows-3 gap-4">
-        <DashboardItem title="危險區域入侵" indicator="正常" />
-        <DashboardItem title="跌倒偵測" indicator="正常" />
-        <DashboardItem title="煙火偵測" indicator="正常" />
-        <DashboardItem title="未帶安全帽" indicator="正常" />
+        <DashboardItem
+          title="危險區域入侵"
+          level="success"
+          icon="CheckmarkCircle"
+          description="一切正常"
+        />
+        <DashboardItem
+          title="跌倒偵測"
+          level="success"
+          icon="CheckmarkCircle"
+          description="一切正常"
+        />
+        <DashboardItem
+          title="煙火偵測"
+          level="success"
+          icon="CheckmarkCircle"
+          description="一切正常"
+        />
+        <DashboardItem
+          title="未帶安全帽"
+          level="success"
+          icon="CheckmarkCircle"
+          description="一切正常"
+        />
         <DashboardItem
           title="熱傷害風險"
-          indicator="中度"
+          icon="AlertCircle"
           description="風險值 2"
+          level="warning"
         />
       </div>
     </DashboardGroup>
