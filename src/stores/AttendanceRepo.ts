@@ -29,6 +29,7 @@ export interface AttendanceRepo {
     page: number,
     type: AttendanceType
   ): Promise<QueryResult<Attendance>>
+  getTotalInsite(type: AttendanceType): Promise<number>
 }
 
 class HttpAttendanceRepo implements AttendanceRepo {
@@ -51,6 +52,10 @@ class HttpAttendanceRepo implements AttendanceRepo {
       total: records.length,
       items: records.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE),
     }
+  }
+
+  async getTotalInsite(type: AttendanceType): Promise<number> {
+    return await this.api.get(`${type}/total-insite`).json<number>()
   }
 }
 
@@ -75,6 +80,9 @@ class FakeAttendanceRepo implements AttendanceRepo {
       total: total.length,
       items: total.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE),
     }
+  }
+  getTotalInsite(_type: AttendanceType): Promise<number> {
+    return Promise.resolve(0)
   }
 }
 
