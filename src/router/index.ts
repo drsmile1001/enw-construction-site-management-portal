@@ -15,6 +15,14 @@ export const routeRecords: RouteRecordRaw[] = [
         redirect: { name: "SiteBasicInfo" },
       },
       {
+        path: "dashboard",
+        name: "Dashboard",
+        component: () => import("@/views/Dashboard.vue"),
+        meta: {
+          title: "儀表板",
+        },
+      },
+      {
         path: "site-basic-info",
         name: "SiteBasicInfo",
         component: () => import("@/views/SiteBasicInfo.vue"),
